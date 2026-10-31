@@ -60,7 +60,7 @@ export function ContactAndConsent({ lang, dict, config, errors, children }: {
   );
 }
 
-function Turnstile() {
+export function Turnstile() {
   useEffect(() => {
     if (document.getElementById("cf-turnstile-script")) return;
     const script = document.createElement("script");

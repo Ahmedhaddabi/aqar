@@ -1,21 +1,22 @@
-import type { NextRequest } from "next/server";
+import { NextResponse, type NextRequest } from "next/server";
 
-import { frappeCall } from "@/lib/frappe";
-import { clientIp, readJson, reject, reply, sameOrigin } from "@/lib/request";
+import { isFormKind, submitForm } from "@/lib/intake";
+import { clientIp, readJson, reject, sameOrigin } from "@/lib/request";
 
-const METHODS: Record<string, string> = {
-  search: "public.submit_search_request",
-  property: "public.submit_property_intake",
-  consultation: "public.submit_consultation_request",
-};
-
-/** Relays a public form to Frappe, which validates, rate-limits and stores it (api.md). */
+/** Website forms → CRM (lib/intake.ts): validation, customer match, consent, request number, private link. */
 export async function POST(request: NextRequest, { params }: { params: Promise<{ kind: string }> }) {
   const { kind } = await params;
-  const method = METHODS[kind];
-  if (!method) return reject(404, "not_found", "Unknown form.");
+  if (!isFormKind(kind)) return reject(404, "not_found", "Unknown form.");
   if (!sameOrigin(request)) return reject(403, "not_permitted", "Cross-site requests are not allowed.");
   const body = await readJson(request);
   if (!body) return reject(400, "invalid_request", "Invalid request body.");
-  return reply(await frappeCall(method, { verb: "POST", body, clientIp: clientIp(request) }));
+  try {
+    const result = await submitForm(kind, body, clientIp(request));
+    if (result.ok) return NextResponse.json({ ok: true, data: result.data }, { headers: { "Cache-Control": "no-store" } });
+    const { status, ...error } = result.error;
+    return NextResponse.json({ ok: false, error }, { status, headers: { "Cache-Control": "no-store" } });
+  } catch (error) {
+    console.error("form submission failed:", (error as Error).message);
+    return reject(503, "backend_unavailable", "The service is temporarily unavailable.");
+  }
 }

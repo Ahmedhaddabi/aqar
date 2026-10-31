@@ -4,7 +4,7 @@ import Link from "next/link";
 import { home, PageHead } from "@/components/PageHead";
 import { TrackedLink } from "@/components/TrackedLink";
 import { getDictionary } from "@/i18n/dictionaries";
-import { contact } from "@/lib/config";
+import { getContact } from "@/lib/content";
 import { type LangParams, langOf } from "@/lib/params";
 import { pageMetadata } from "@/lib/seo";
 
@@ -20,6 +20,7 @@ export default async function ContactPage({ params }: LangParams) {
   const lang = await langOf(params);
   const dict = getDictionary(lang);
   const t = dict.pages.contact;
+  const contact = await getContact();
   const any = contact.phone || contact.whatsapp || contact.email;
   return (
     <>

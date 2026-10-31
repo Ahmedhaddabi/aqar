@@ -15,13 +15,16 @@ const csp = [
   `frame-src 'self' https://www.youtube-nocookie.com${turnstile}${gtm}`,
   "frame-ancestors 'none'",
   "base-uri 'self'",
-  "form-action 'self'",
+  // The "Pay online" form is redirected to the gateways' hosted checkout pages.
+  "form-action 'self' https://checkout.thawani.om https://uatcheckout.thawani.om https://om.checkout.paymob.com",
 ].join("; ");
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
+  // Photos are shrunk in the browser and sent one by one; this leaves room for a full-size image (Vercel's cap is 4.5 MB).
+  experimental: { serverActions: { bodySizeLimit: "4mb" } },
   async headers() {
     return [
       {

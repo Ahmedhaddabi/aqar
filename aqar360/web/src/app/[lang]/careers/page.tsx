@@ -1,10 +1,12 @@
 import type { Metadata } from "next";
 
+import { ApplyForm } from "@/components/forms/ApplyForm";
 import { JsonLd } from "@/components/JsonLd";
 import { home, PageHead } from "@/components/PageHead";
 import { getDictionary } from "@/i18n/dictionaries";
-import { companyName, contact, siteUrl } from "@/lib/config";
-import { getJobs } from "@/lib/content";
+import { companyName, siteUrl } from "@/lib/config";
+import { getContact, getJobs } from "@/lib/content";
+import { captchaRequired } from "@/lib/intake";
 import { type LangParams, langOf } from "@/lib/params";
 import { pageMetadata } from "@/lib/seo";
 
@@ -20,7 +22,7 @@ export default async function CareersPage({ params }: LangParams) {
   const lang = await langOf(params);
   const dict = getDictionary(lang);
   const t = dict.pages.careers;
-  const jobs = await getJobs(lang);
+  const [jobs, contact] = await Promise.all([getJobs(lang), getContact()]);
   // JobPosting only for real open vacancies with a closing date (§10.1, §15.3).
   const postings = jobs.filter((j) => j.closes_on).map((j) => ({
     "@context": "https://schema.org", "@type": "JobPosting", title: j.job_title, description: j.description,
@@ -41,13 +43,14 @@ export default async function CareersPage({ params }: LangParams) {
               {job.location && <p className="muted">{job.location}</p>}
               <div className="prose" dangerouslySetInnerHTML={{ __html: job.description }} />
               {job.closes_on && <p className="muted">{t.closes}: {job.closes_on}</p>}
+              <a className="btn secondary" href="#apply">{t.apply}</a>
             </article>
           ))}
         </div>
-        <div className="notice">
-          <p style={{ margin: 0 }}>{t.comingSoon}</p>
-          {contact.email && <p style={{ margin: 0 }}>{t.applyByEmail} <a href={`mailto:${contact.email}`}>{contact.email}</a></p>}
+        <div id="apply" style={{ marginTop: 32 }}>
+          <ApplyForm kind="job" lang={lang} dict={dict} jobs={jobs.map((j) => ({ id: j.id, title: j.job_title }))} captcha={captchaRequired()} />
         </div>
+        {contact.email && <p className="muted">{t.applyByEmail} <a href={`mailto:${contact.email}`}>{contact.email}</a></p>}
         {postings.length > 0 && <JsonLd data={postings} />}
       </section>
     </>

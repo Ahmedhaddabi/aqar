@@ -76,3 +76,21 @@ Customer (website user with Aqar Customer role, session cookie; POST needs X-Fra
 ## Website interest on search requests
 
 `submit_search_request` also accepts `interest_type` (`project` | `property`), `interest_id` (project name or property code), `interest_unit` (unit number within the project) and `source_page`. They are stored on the request (Interested In / Interested Unit / Source Page) only when the listing is public, verified and available; otherwise ignored. Report: "Aqar Website Enquiries" (enquiries per listing, unit enquiries, still open, viewings, offers, latest enquiry, top source page).
+
+## Rebuilt system (Next.js + Neon) — R2
+
+`POST /api/forms/{search|property|consultation}` (same-origin only) → `{ok, data: {request_number, status, self_service_token}}` or `{ok: false, error: {code, message, fields}}`. Validation per form (zod, messages in the visitor's language), Omani phone normalisation (+968XXXXXXXX), customer matched by phone then email, consent per channel, optional listing interest (`interest_type` project|property, `interest_id` = project slug or property code, `interest_unit` = unit number; public verified listings only), idempotency key, 10 submissions per IP per hour, Cloudflare Turnstile when `TURNSTILE_SECRET_KEY` is set. `POST /api/my-request` `{token, action: update|stop_alerts, budget_max?, timing?, notes?, state?: pause|resume|close}`; updating renews the request for `requestValidDays` (90). Implementation: `web/src/lib/intake.ts`.
+
+## Rebuilt system — R5 additions
+
+`POST /api/apply` (same-origin, multipart, max 4 MB file) — fields `kind` job|supplier, `full_name`, `phone`, optional `email`, `job_id` (published job), `company`, `cr_number`, `services`, `areas`, `experience`, `message`, `privacy=on`, `idempotency_key`, optional `file` (PDF/JPG/PNG/WEBP checked from the bytes); honeypot `website` must be empty; 5 per IP per hour; Turnstile when configured. → `{ok:true}` or `{ok:false, error:{code, fields}}`. Implementation: `web/src/lib/applications.ts`.
+
+`GET /doc/{id}?s={signature}` — customer copy of a sent quote/invoice (noindex, no-referrer); 404 for a wrong signature, drafts and cancelled documents. `GET /admin/export/{requests|customers|properties|invoices|payments|expenses|employees|applications}` — CSV for admins and managers (403 otherwise), each download audited.
+
+## Online payments
+
+`POST /api/pay/{thawani|paymob}` (form from the customer invoice page: `id`, `s` = link signature) → 303 to the gateway's hosted checkout, or back to the invoice with `&pay=error|paid`. `GET /api/pay/return/{provider}` → confirms with the gateway and returns to `/doc/{id}?s=…&pay=paid|pending|cancelled|failed|check`. Webhooks: `POST /api/webhooks/thawani` (headers `thawani-signature`, `thawani-timestamp`), `POST /api/webhooks/paymob?hmac=…` (body `{type: "TRANSACTION", obj}`); 401 when the signature is wrong. Implementation: `web/src/lib/payments/`. Setup: `runbooks/payments_setup.md`.
+
+## Customer portal and staff files
+
+`/portal` (sign-in link by email; same answer for unknown emails), `/portal/home?c&e&s` (signed, 30 days), `/portal/job/{id}?s` (job details form, approve, ask for changes), `/portal/file/{id}?c&e&s` (shared vault files of that customer only), `/doc/receipt/{paymentId}?s` (receipt or credit note). Staff: `/admin/files/{id}` (vault file, access-checked, logged), `/admin/notifications/{id}` (mark read and open), `/admin/export/{kind}` limited by app (HR lists need the HR app). Daily cron also escalates late jobs and late first replies.

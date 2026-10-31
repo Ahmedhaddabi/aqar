@@ -127,7 +127,7 @@ const en = {
       title: "Careers", description: "Join our team in Oman.",
       summary: "We are building a team that combines real estate, content and technology.",
       none: "There are no open positions right now.", apply: "Apply", closes: "Applications close",
-      applyByEmail: "Send your CV to", comingSoon: "Online applications will open soon.",
+      applyByEmail: "Or send your CV to",
     },
     partners: {
       title: "Join our supply network", description: "Photographers, technicians, contractors and suppliers: register to work with us.",
@@ -136,7 +136,6 @@ const en = {
       categories: ["Photography, drone and video editing", "Electrical, plumbing and AC", "Painting, carpentry and aluminium", "Cleaning and landscaping", "Construction and subcontracting", "Material suppliers"],
       stepsTitle: "How it works", steps: ["Register", "Verification of documents", "Approval", "Assigned work and ratings"],
       notPromise: "Registration is not a promise of employment or work.",
-      register: "Online registration opens soon. Contact us to register now.",
     },
     about: {
       title: "About us", description: "A managed real estate marketing and services platform in Oman.",
@@ -173,6 +172,19 @@ const en = {
       expired: "Your session has ended. Please sign in again.", back: "Back to my account",
     },
     notFound: { title: "Page not found", text: "The page you are looking for does not exist.", home: "Back to home" },
+  },
+  apply: {
+    jobTitle: "Apply online", supplierTitle: "Register as a supplier", job: "Position", general: "General application (any role)",
+    experience: "Years of experience", message: "Tell us about yourself", cv: "CV (PDF or photo, up to 4 MB)",
+    company: "Company or trade name (if any)", crNumber: "CR number (if any)", services: "What do you offer?",
+    servicesHint: "For example: drone photography, AC maintenance, aluminium works", areas: "Areas you cover",
+    profile: "Company profile or work samples (PDF or photo, optional)", privacy: "I agree that my details are kept to review this application.",
+    privacyLink: "Careers privacy notice", submit: "Send", submitting: "Sending…",
+    doneJob: "Thank you. We received your application and will contact you if it fits a role.",
+    doneSupplier: "Thank you. We received your registration and will contact you after checking it.",
+    error: "Please check the highlighted fields.", unknownError: "Sending failed. Please try again.",
+    rateLimited: "Too many attempts. Please try again in an hour.", tooBig: "The file is too big (max 4 MB).",
+    badFile: "Please upload a PDF, JPG, PNG or WEBP file.", phoneInvalid: "Please enter a valid mobile number.",
   },
   form: {
     contactSection: "Your contact details", requirementsSection: "Your requirements", propertySection: "Property details",
@@ -367,7 +379,7 @@ const ar: Dictionary = {
       title: "الوظائف", description: "انضم لفريقنا في عُمان.",
       summary: "نبني فريقا يجمع العقار والمحتوى والتقنية.",
       none: "لا توجد وظائف شاغرة حاليا.", apply: "قدّم الآن", closes: "آخر موعد للتقديم",
-      applyByEmail: "أرسل سيرتك الذاتية إلى", comingSoon: "سيتاح التقديم الإلكتروني قريبا.",
+      applyByEmail: "أو أرسل سيرتك الذاتية إلى",
     },
     partners: {
       title: "انضم إلى شبكة الموردين", description: "مصورون وفنيون ومقاولون وموردون: سجّل للعمل معنا.",
@@ -376,7 +388,6 @@ const ar: Dictionary = {
       categories: ["التصوير والدرون والمونتاج", "الكهرباء والسباكة والتكييف", "الدهان والنجارة والألمنيوم", "التنظيف وتنسيق الحدائق", "البناء والمقاولات الفرعية", "موردو المواد"],
       stepsTitle: "كيف يعمل التسجيل", steps: ["التسجيل", "التحقق من المستندات", "الاعتماد", "إسناد الأعمال والتقييم"],
       notPromise: "التسجيل ليس وعدا بالتوظيف أو بإسناد أعمال.",
-      register: "سيتاح التسجيل الإلكتروني قريبا. تواصل معنا للتسجيل الآن.",
     },
     about: {
       title: "من نحن", description: "منصة مُدارة للتسويق والخدمات العقارية في عُمان.",
@@ -413,6 +424,19 @@ const ar: Dictionary = {
       expired: "انتهت جلستك. يرجى تسجيل الدخول مرة أخرى.", back: "العودة إلى حسابي",
     },
     notFound: { title: "الصفحة غير موجودة", text: "الصفحة التي تبحث عنها غير موجودة.", home: "العودة للرئيسية" },
+  },
+  apply: {
+    jobTitle: "قدّم إلكترونيا", supplierTitle: "سجّل كمورد", job: "الوظيفة", general: "طلب عام (أي وظيفة)",
+    experience: "سنوات الخبرة", message: "حدثنا عن نفسك", cv: "السيرة الذاتية (PDF أو صورة، حتى 4 ميجابايت)",
+    company: "اسم الشركة أو النشاط (إن وجد)", crNumber: "رقم السجل التجاري (إن وجد)", services: "ماذا تقدم؟",
+    servicesHint: "مثال: تصوير بالدرون، صيانة مكيفات، أعمال ألمنيوم", areas: "المناطق التي تغطيها",
+    profile: "ملف الشركة أو نماذج أعمال (PDF أو صورة، اختياري)", privacy: "أوافق على حفظ بياناتي لمراجعة هذا الطلب.",
+    privacyLink: "إشعار خصوصية الوظائف", submit: "إرسال", submitting: "جارٍ الإرسال…",
+    doneJob: "شكرا لك. استلمنا طلبك وسنتواصل معك إذا كان مناسبا لإحدى الوظائف.",
+    doneSupplier: "شكرا لك. استلمنا تسجيلك وسنتواصل معك بعد مراجعته.",
+    error: "يرجى مراجعة الحقول المحددة.", unknownError: "تعذر الإرسال. حاول مرة أخرى.",
+    rateLimited: "محاولات كثيرة. حاول مرة أخرى بعد ساعة.", tooBig: "الملف كبير جدا (الحد 4 ميجابايت).",
+    badFile: "يرجى رفع ملف PDF أو JPG أو PNG أو WEBP.", phoneInvalid: "يرجى إدخال رقم هاتف صحيح.",
   },
   form: {
     contactSection: "بيانات التواصل", requirementsSection: "متطلباتك", propertySection: "بيانات العقار",

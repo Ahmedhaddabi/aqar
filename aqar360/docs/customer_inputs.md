@@ -19,7 +19,7 @@ The platform is built with editable placeholders wherever the information belong
 | 13 | Developer and project master lists, focal points (§27.27) | Empty | Aqar Development Project |
 | 14 | Staff users and role assignment | Test users only | User → Roles (Aqar roles; add Accounts User for full accounting staff) |
 | 15 | Outgoing email provider | Local Mailpit capture | Email Account (SMTP or provider) |
-| 16 | Payment gateway (e.g. Thawani) | Not connected; payments recorded manually | Phase 2 `online_payment_checkout` flag + provider credentials |
+| 16 | Payment gateways: Thawani and Paymob merchant accounts and keys | Built and hidden until keys are set; staff can still record payments manually | Vercel environment variables (THAWANI_*, PAYMOB_*), see runbooks/payments_setup.md; Admin → Settings → Online payments |
 | 17 | WhatsApp Business route | Not connected | Phase 2 `whatsapp_messaging` flag + Meta/BSP credentials |
 | 18 | Form protection (Cloudflare Turnstile) | Not configured (Local/Staging only accept forms) | site_config `aqar_turnstile_secret` |
 | 19 | Domain, hosting, off-server backup account | Local staging | Deployment runbook |

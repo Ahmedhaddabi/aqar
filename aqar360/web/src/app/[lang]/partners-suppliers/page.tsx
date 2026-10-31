@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 
+import { ApplyForm } from "@/components/forms/ApplyForm";
 import { home, PageHead } from "@/components/PageHead";
 import { getDictionary } from "@/i18n/dictionaries";
+import { captchaRequired } from "@/lib/intake";
 import { type LangParams, langOf } from "@/lib/params";
 import { pageMetadata } from "@/lib/seo";
 
@@ -28,8 +29,7 @@ export default async function PartnersPage({ params }: LangParams) {
         <h2 style={{ marginTop: 32 }}>{t.stepsTitle}</h2>
         <ol className="steps">{t.steps.map((s) => <li key={s}>{s}</li>)}</ol>
         <p className="notice warn">{t.notPromise}</p>
-        <p>{t.register}</p>
-        <Link className="btn primary" href={`/${lang}/contact`}>{dict.nav.contact}</Link>
+        <div style={{ marginTop: 24 }}><ApplyForm kind="supplier" lang={lang} dict={dict} captcha={captchaRequired()} /></div>
       </section>
     </>
   );

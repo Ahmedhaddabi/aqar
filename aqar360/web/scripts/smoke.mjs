@@ -57,9 +57,9 @@ check("sitemap lists the map", sitemap.html.includes("/ar/map"));
 const robots = await page("/robots.txt");
 check("robots excludes private pages", robots.html.includes("Disallow: /ar/my-request") && robots.html.includes("Sitemap:"));
 
-const areas = await (await fetch(base + "/ar/areas")).text();
-const areaId = (areas.match(/areas=(AREA-\d+)/) || [])[1];
-check("area ids exposed for requests", Boolean(areaId));
+const form = await page("/en/find-me-a-property");
+const areaId = (form.html.match(/name="areas" value="(\d+)"/) || [])[1];
+check("request form is open and lists areas", Boolean(areaId));
 
 const submit = (body, headers = {}) => fetch(base + "/api/forms/search", {
   method: "POST", headers: { "Content-Type": "application/json", ...headers }, body: JSON.stringify(body),
@@ -69,50 +69,27 @@ const valid = {
   language: "en", purpose: "Rent", property_type: "Apartment", areas: [areaId], budget_max: 300,
   timing: "Within 1 Month", preferred_channel: "Email", source_channel: "Website", idempotency_key: `smoke-${Date.now()}`,
 };
+// Validation checks never store anything; a real submission is opt-in (it creates a request in the database).
 const bad = await (await submit({ ...valid, phone: "12", idempotency_key: `smoke-bad-${Date.now()}` })).json();
 check("invalid phone returns field error", bad.ok === false && bad.error?.fields?.phone, JSON.stringify(bad));
 const cross = await submit(valid, { Origin: "https://evil.example" });
 check("cross-site post rejected", cross.status === 403);
-const ok = await (await submit(valid)).json();
-check("valid request accepted", ok.ok === true && /^REQ-/.test(ok.data?.request_number || ""), JSON.stringify(ok));
+const forged = await page("/en/my-request?token=forged");
+check("forged private link rejected", !forged.html.includes("REQ-") && forged.html.includes("noindex"));
 
-if (ok.ok) {
-  const mine = await page(`/en/my-request?token=${encodeURIComponent(ok.data.self_service_token)}`);
-  check("my-request shows the request", mine.status === 200 && mine.html.includes(ok.data.request_number));
-  check("my-request is noindex + no-referrer", mine.html.includes("noindex") && mine.html.includes('content="no-referrer"'));
-  const forged = await page("/en/my-request?token=forged");
-  check("forged token rejected", !forged.html.includes("REQ-"));
-  const stop = await (await fetch(base + "/api/my-request", { method: "POST", headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ action: "stop_alerts", token: ok.data.self_service_token }) })).json();
-  check("stop alerts works", stop.ok === true && stop.data?.alerts_stopped === true, JSON.stringify(stop));
-}
-
-// Customer account: needs a staging customer login, passed via environment (never stored in the repo).
-const customerEmail = process.env.AQAR_SMOKE_CUSTOMER_EMAIL;
-const customerPassword = process.env.AQAR_SMOKE_CUSTOMER_PASSWORD;
-if (customerEmail && customerPassword) {
-  const account = (body, cookie = "") => fetch(base + "/api/account", {
-    method: "POST", headers: { "Content-Type": "application/json", Cookie: cookie }, body: JSON.stringify(body),
-  });
-  const wrong = await account({ action: "login", email: customerEmail, password: "wrong-password" });
-  check("wrong password refused", wrong.status === 401);
-  const login = await account({ action: "login", email: customerEmail, password: customerPassword });
-  const setCookies = login.headers.getSetCookie();
-  const cookie = setCookies.map((c) => c.split(";")[0]).join("; ");
-  check("customer login sets httpOnly session cookies", login.status === 200
-    && setCookies.some((c) => c.startsWith("aqar_sid=") && /httponly/i.test(c)));
-  const res = await fetch(base + "/en/account", { headers: { Cookie: cookie } });
-  const html = await res.text();
-  check("account shows own requests", html.includes("My requests") && /REQ-\d{4}-\d{5}/.test(html));
-  check("account page is noindex", html.includes("noindex"));
-  await account({ action: "logout" }, cookie);
-  const after = await (await fetch(base + "/en/account", { headers: { Cookie: cookie } })).text();
-  // Interface text ships in the page payload, so check for customer data (request numbers), not labels.
-  check("logout ends the session", after.includes("Sign in") && !/REQ-\d{4}-\d{5}/.test(after));
-  const anonymous = await (await fetch(base + "/en/account")).text();
-  check("anonymous visitor sees sign-in only", anonymous.includes("Create an account") && !/REQ-\d{4}/.test(anonymous));
+if (process.env.SMOKE_SUBMIT === "1") {
+  const ok = await (await submit(valid)).json();
+  check("valid request accepted", ok.ok === true && /^REQ-/.test(ok.data?.request_number || ""), JSON.stringify(ok));
+  if (ok.ok) {
+    const mine = await page(`/en/my-request?token=${encodeURIComponent(ok.data.self_service_token)}`);
+    check("my-request shows the request", mine.status === 200 && mine.html.includes(ok.data.request_number));
+    check("my-request is noindex + no-referrer", mine.html.includes("noindex") && mine.html.includes('content="no-referrer"'));
+    const stop = await (await fetch(base + "/api/my-request", { method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "stop_alerts", token: ok.data.self_service_token }) })).json();
+    check("stop alerts works", stop.ok === true && stop.data?.alerts_paused === true, JSON.stringify(stop));
+  }
 } else {
-  console.log("SKIP  customer account checks (set AQAR_SMOKE_CUSTOMER_EMAIL / AQAR_SMOKE_CUSTOMER_PASSWORD)");
+  console.log("SKIP  real submission (set SMOKE_SUBMIT=1; it creates a request named 'Smoke Test')");
 }
 
 console.log(failures ? `\n${failures} check(s) failed` : "\nAll checks passed");

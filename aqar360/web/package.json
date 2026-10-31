@@ -4,23 +4,36 @@
   "private": true,
   "scripts": {
     "postinstall": "node scripts/copy-map-worker.mjs",
-    "prebuild": "node scripts/copy-map-worker.mjs",
+    "prebuild": "node scripts/copy-map-worker.mjs && tsx scripts/migrate.mts",
     "dev": "next dev -p 3000",
     "build": "next build",
     "start": "next start -p 3000",
     "typecheck": "tsc --noEmit",
-    "smoke": "node scripts/smoke.mjs"
+    "smoke": "node scripts/smoke.mjs",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "tsx --env-file=.env.local scripts/migrate.mts",
+    "db:seed": "tsx --env-file=.env.local scripts/seed.mts",
+    "db:seed-kb": "tsx --env-file=.env.local scripts/seed-kb.mts"
   },
   "dependencies": {
+    "@vercel/blob": "2.8.2",
+    "bcryptjs": "3.0.3",
+    "drizzle-orm": "0.45.4",
     "maplibre-gl": "6.14.0",
     "next": "15.5.28",
+    "postgres": "3.4.9",
+    "qrcode": "^1.5.4",
     "react": "19.2.8",
-    "react-dom": "19.2.8"
+    "react-dom": "19.2.8",
+    "zod": "4.6.7"
   },
   "devDependencies": {
     "@types/node": "20.19.43",
+    "@types/qrcode": "^1.5.5",
     "@types/react": "19.2.18",
     "@types/react-dom": "19.2.7",
+    "drizzle-kit": "0.31.11",
+    "tsx": "4.23.15",
     "typescript": "5.9.3"
   }
 }

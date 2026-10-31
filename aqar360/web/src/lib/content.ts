@@ -1,11 +1,12 @@
-// Cached public content from Frappe. Failures are thrown inside the cache so errors are never cached.
+// Cached public content from the database (lib/public-data.ts). Failures fall back to empty content, never cached.
 import { unstable_cache } from "next/cache";
 
-import type { Locale } from "./config";
-import { frappeCall } from "./frappe";
+import { contact, type Locale } from "./config";
+import { formConfig } from "./intake";
+import * as data from "./public-data";
 
 export type PageCard = { slug: string; page_type: string; title: string; summary: string; area: string | null; last_reviewed: string | null };
-export type ContentPage = PageCard & {
+export type ContentPage = Omit<PageCard, "area"> & {
   facts: { label: string; value: string }[];
   body: string;
   faqs: { question: string; answer: string }[];
@@ -18,7 +19,7 @@ export type ContentPage = PageCard & {
 export type Area = { id: string; name: string; slug: string; wilayat: string | null; guide_slug: string | null };
 export type Service = { code: string; name: string; scope: string; price: number | null; currency: string };
 export type Job = {
-  name: string; job_title: string; designation?: string; description: string;
+  name: string; id: number; job_title: string; designation?: string; description: string;
   closes_on: string | null; posted_on: string | null; location?: string; employment_type?: string;
 };
 export type Policy = { policy_type: string; available: boolean; version?: string; effective_from?: string; body?: string };
@@ -31,40 +32,44 @@ export type FormConfig = {
 
 const REVALIDATE = 300;
 
-async function load<T>(method: string, params: Record<string, string>): Promise<T> {
-  const res = await frappeCall<T>(method, { params });
-  if (res.ok) return res.data;
-  if (res.error.code === "not_found") return null as T;
-  throw new Error(`${method}: ${res.error.code}`);
-}
-
-function cached<T>(method: string, params: Record<string, string>, revalidate = REVALIDATE) {
-  const key = `${method}:${JSON.stringify(params)}`;
-  return unstable_cache(() => load<T>(method, params), [key], { revalidate, tags: ["aqar-content"] })();
+function cached<A extends unknown[], T>(name: string, fn: (...args: A) => Promise<T>, revalidate = REVALIDATE) {
+  return (...args: A) => unstable_cache(() => fn(...args), [name, JSON.stringify(args)],
+    { revalidate, tags: ["aqar-content"] })();
 }
 
 async function safe<T>(promise: Promise<T>, fallback: T): Promise<T> {
   try {
     return (await promise) ?? fallback;
-  } catch {
+  } catch (error) {
+    const cause = (error as { cause?: { message?: string; code?: string } }).cause;
+    console.error("content unavailable:", cause ? `${cause.code ?? ""} ${cause.message ?? ""}` : (error as Error).message);
     return fallback;
   }
 }
 
-export const getPages = (lang: Locale, pageType?: string) =>
-  safe(cached<PageCard[]>("content.list_pages", { language: lang, ...(pageType ? { page_type: pageType } : {}) }), []);
-export const getPage = (lang: Locale, slug: string) =>
-  safe(cached<ContentPage | null>("content.get_page", { language: lang, slug }), null);
-export const getAreas = (lang: Locale) => safe(cached<Area[]>("content.list_areas", { language: lang }), []);
-export const getServices = (lang: Locale) => safe(cached<Service[]>("content.list_services", { language: lang }), []);
-export const getJobs = (lang: Locale) => safe(cached<Job[]>("content.list_jobs", { language: lang }), []);
-export const getPolicy = (lang: Locale, slug: string) =>
-  safe(cached<Policy | null>("content.get_policy", { language: lang, slug }), null);
-export const getSitemapEntries = () =>
-  safe(cached<{ slug: string; section: string; modified: string }[]>("content.sitemap_entries", {}), []);
-/** null when the public forms are switched off (feature flag) or the backend is unavailable. */
-export const getFormConfig = (lang: Locale) =>
-  safe(cached<FormConfig | null>("public.get_form_config", { language: lang }, 60), null);
+const pagesCached = cached("pages", data.listPages);
+const pageCached = cached("page", data.getPage);
+const areasCached = cached("areas", data.listAreas);
+const servicesCached = cached("services", data.listServices);
+const sitemapCached = cached("sitemap", data.sitemapEntries);
+const mapCached = cached("map", data.getMapData);
+const projectsCached = cached("projects", data.listProjects);
+const projectCached = cached("project", data.getProject);
+
+export const getPages = (lang: Locale, pageType?: string) => safe(pagesCached(lang, pageType), []);
+export const getPage = (lang: Locale, slug: string) => safe(pageCached(lang, slug), null);
+export const getAreas = (lang: Locale) => safe(areasCached(lang), []);
+export const getServices = (lang: Locale) => safe(servicesCached(lang), []);
+const jobsCached = cached("jobs", data.listJobs);
+export const getJobs = (lang: Locale) => safe(jobsCached(lang), []);
+const contactCached = cached("contact", data.siteContact);
+export const getContact = () => safe(contactCached(), contact);
+/** Legal texts are not approved yet: the legal pages say they are being prepared. */
+export const getPolicy = async (_lang: Locale, _slug: string): Promise<Policy | null> => null;
+export const getSitemapEntries = () => safe(sitemapCached(), []);
+const formConfigCached = cached("form-config", formConfig);
+/** Areas and option lists for the website forms; null only when the database is unavailable. */
+export const getFormConfig = (lang: Locale) => safe<FormConfig | null>(formConfigCached(lang), null);
 
 export type Point = [number, number];
 export type MapArea = {
@@ -85,8 +90,7 @@ export type MapListing = {
 };
 export type MapData = { areas: MapArea[]; listings: MapListing[] };
 
-export const getMapData = (lang: Locale) =>
-  safe(cached<MapData | null>("content.get_map_data", { language: lang }), null);
+export const getMapData = (lang: Locale) => safe(mapCached(lang), null);
 
 export type ProjectCard = MapListing & { area_name: string | null };
 export type ProjectUnit = {
@@ -99,6 +103,5 @@ export type ProjectPage = Omit<MapListing, "area"> & {
   area: { id: string; name: string; slug: string; wilayat: string | null; guide_slug: string | null } | null;
 };
 
-export const getProjects = (lang: Locale) => safe(cached<ProjectCard[]>("content.list_projects", { language: lang }), []);
-export const getProject = (lang: Locale, slug: string) =>
-  safe(cached<ProjectPage | null>("content.get_project", { language: lang, slug }), null);
+export const getProjects = (lang: Locale) => safe(projectsCached(lang), []);
+export const getProject = (lang: Locale, slug: string) => safe(projectCached(lang, slug), null);
