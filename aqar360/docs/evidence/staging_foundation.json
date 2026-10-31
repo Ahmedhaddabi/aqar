@@ -1,0 +1,50 @@
+{
+  "site": "staging.localhost",
+  "installed_apps": [
+    "frappe",
+    "erpnext",
+    "hrms",
+    "crm",
+    "real_estate",
+    "aqar360"
+  ],
+  "security": {
+    "enable_two_factor_auth": 1,
+    "two_factor_method": "OTP App",
+    "session_expiry": "02:00",
+    "allow_guests_to_upload_files": 0,
+    "allow_error_traceback": 0,
+    "encrypt_backup": 1
+  },
+  "mfa_roles": [
+    "Aqar Admin",
+    "Accountant",
+    "HR User",
+    "HR Manager",
+    "Accounts User",
+    "Accounts Manager",
+    "System Manager",
+    "Aqar HR",
+    "Aqar Finance",
+    "Aqar Manager"
+  ],
+  "policy": {
+    "environment": "Staging",
+    "legal_approval_status": "Pending Legal Approval",
+    "real_personal_data_allowed": 0,
+    "selected_campaigns_only": 1,
+    "phase_2_enabled": 0,
+    "phase_3_enabled": 0,
+    "public_ai_enabled": 0
+  },
+  "legacy_portal_overrides": {
+    "real_estate.www.tenant-portal.index.submit_maintenance_request": [
+      "aqar360.security.legacy_portal_disabled"
+    ],
+    "real_estate.www.tenant-portal.index.get_invoice_pdf": [
+      "aqar360.security.legacy_portal_disabled"
+    ]
+  },
+  "direct_provider_key_present": false,
+  "local_monitor_enabled": true
+}

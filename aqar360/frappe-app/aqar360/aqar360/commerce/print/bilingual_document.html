@@ -1,0 +1,79 @@
+{%- set is_invoice = doc.doctype == "Sales Invoice" -%}
+{%- set company = frappe.get_doc("Company", doc.company) -%}
+<style>
+	.aqar-doc { font-family: "Tajawal", "Segoe UI", Arial, sans-serif; font-size: 12px; color: #1f2933; }
+	.aqar-doc .head { display: flex; justify-content: space-between; border-bottom: 2px solid #12355b; padding-bottom: 8px; }
+	.aqar-doc .ar { direction: rtl; text-align: right; }
+	.aqar-doc h1 { font-size: 18px; margin: 0; color: #12355b; }
+	.aqar-doc table.lines { width: 100%; border-collapse: collapse; margin-top: 12px; }
+	.aqar-doc table.lines th { background: #12355b; color: #fff; padding: 6px; font-weight: 600; }
+	.aqar-doc table.lines td { border-bottom: 1px solid #d9e2ec; padding: 6px; vertical-align: top; }
+	.aqar-doc .num { text-align: right; white-space: nowrap; }
+	.aqar-doc .totals { width: 55%; margin-left: auto; margin-top: 12px; border-collapse: collapse; }
+	.aqar-doc .totals td { padding: 4px 6px; }
+	.aqar-doc .totals tr.grand td { border-top: 2px solid #12355b; font-weight: 700; font-size: 14px; }
+	.aqar-doc .muted { color: #627d98; font-size: 10px; }
+	.aqar-doc .note { margin-top: 14px; padding: 8px; background: #f0f4f8; }
+</style>
+<div class="aqar-doc">
+	<div class="head">
+		<div>
+			<h1>{{ "Tax Invoice" if is_invoice else "Quotation" }}</h1>
+			<div>{{ company.company_name }}</div>
+			{% if company.tax_id %}<div class="muted">VAT / الرقم الضريبي: {{ company.tax_id }}</div>{% endif %}
+		</div>
+		<div class="ar">
+			<h1>{{ "فاتورة ضريبية" if is_invoice else "عرض سعر" }}</h1>
+			<div>{{ doc.name }}</div>
+			<div class="muted">{{ frappe.utils.formatdate(doc.posting_date if is_invoice else doc.transaction_date) }}</div>
+		</div>
+	</div>
+
+	<table style="width:100%; margin-top:10px">
+		<tr>
+			<td><b>Customer</b><br>{{ doc.customer_name }}</td>
+			<td class="ar"><b>العميل</b><br>{{ doc.customer_name }}</td>
+		</tr>
+		<tr>
+			<td>{% if is_invoice %}<b>Due</b> {{ frappe.utils.formatdate(doc.due_date) }}{% else %}<b>Valid until</b> {{ frappe.utils.formatdate(doc.valid_till) }}{% endif %}</td>
+			<td class="ar">{% if is_invoice %}<b>تاريخ الاستحقاق</b> {{ frappe.utils.formatdate(doc.due_date) }}{% else %}<b>صالح حتى</b> {{ frappe.utils.formatdate(doc.valid_till) }}{% endif %}</td>
+		</tr>
+	</table>
+
+	<table class="lines">
+		<tr>
+			<th>#</th><th>Service / الخدمة</th><th class="num">Qty / الكمية</th>
+			<th class="num">Rate / السعر</th><th class="num">Amount / المبلغ</th>
+		</tr>
+		{% for row in doc.items %}
+		<tr>
+			<td>{{ row.idx }}</td>
+			<td><b>{{ row.item_name }}</b><br><span class="muted">{{ row.description | striptags }}</span></td>
+			<td class="num">{{ row.get_formatted("qty") }}</td>
+			<td class="num">{{ row.get_formatted("rate") }}</td>
+			<td class="num">{{ row.get_formatted("amount") }}</td>
+		</tr>
+		{% endfor %}
+	</table>
+
+	<table class="totals">
+		<tr><td>Net total / المجموع</td><td class="num">{{ doc.get_formatted("net_total") }}</td></tr>
+		{% for tax in doc.taxes %}
+		<tr><td>{{ tax.description }}</td><td class="num">{{ tax.get_formatted("tax_amount") }}</td></tr>
+		{% endfor %}
+		{% if doc.discount_amount %}<tr><td>Discount / الخصم</td><td class="num">-{{ doc.get_formatted("discount_amount") }}</td></tr>{% endif %}
+		<tr class="grand"><td>Total / الإجمالي</td><td class="num">{{ doc.get_formatted("grand_total") }}</td></tr>
+		{% if is_invoice and doc.docstatus == 1 %}
+		<tr><td>Outstanding / المتبقي</td><td class="num">{{ doc.get_formatted("outstanding_amount") }}</td></tr>
+		{% endif %}
+	</table>
+
+	{% if doc.items | selectattr("item_code", "equalto", "AQ-MEDIA-BUDGET") | list %}
+	<div class="note">
+		Media budget lines are paid to advertising platforms on the client's behalf and are not a fee for our services.
+		<div class="ar">بنود ميزانية الإعلانات تُدفع لمنصات الإعلان نيابةً عن العميل وليست أتعابًا لخدماتنا.</div>
+	</div>
+	{% endif %}
+	{% if doc.terms %}<div class="note">{{ doc.terms }}</div>{% endif %}
+	<p class="muted">Placeholder layout: company identity, VAT details and legal wording are completed by the customer before launch.</p>
+</div>

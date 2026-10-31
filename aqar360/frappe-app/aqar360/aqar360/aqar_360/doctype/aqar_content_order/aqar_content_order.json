@@ -1,0 +1,386 @@
+{
+ "doctype": "DocType",
+ "name": "Aqar Content Order",
+ "module": "Aqar 360",
+ "engine": "InnoDB",
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "autoname": "format:CNT-{YYYY}-{#####}",
+ "title_field": "title",
+ "track_changes": 1,
+ "search_fields": "title,contact,property,status",
+ "permissions": [
+  {
+   "role": "System Manager",
+   "read": 1,
+   "report": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 1,
+   "export": 1
+  },
+  {
+   "role": "Aqar Admin",
+   "read": 1,
+   "report": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 1,
+   "export": 1
+  },
+  {
+   "role": "Aqar Manager",
+   "read": 1,
+   "report": 1,
+   "write": 1,
+   "create": 1
+  },
+  {
+   "role": "Aqar Team Lead",
+   "read": 1,
+   "report": 1,
+   "write": 1,
+   "create": 1
+  },
+  {
+   "role": "Aqar Content Coordinator",
+   "read": 1,
+   "report": 1,
+   "write": 1,
+   "create": 1
+  },
+  {
+   "role": "Aqar Finance",
+   "read": 1,
+   "report": 1
+  },
+  {
+   "role": "Aqar Marketing",
+   "read": 1,
+   "report": 1
+  },
+  {
+   "role": "Aqar Opportunity Staff",
+   "read": 1,
+   "report": 1
+  },
+  {
+   "role": "System Manager",
+   "read": 1,
+   "write": 1,
+   "permlevel": 1
+  },
+  {
+   "role": "Aqar Admin",
+   "read": 1,
+   "write": 1,
+   "permlevel": 1
+  },
+  {
+   "role": "Aqar Manager",
+   "read": 1,
+   "write": 1,
+   "permlevel": 1
+  },
+  {
+   "role": "Aqar Team Lead",
+   "read": 1,
+   "permlevel": 1
+  },
+  {
+   "role": "Aqar Content Coordinator",
+   "read": 1,
+   "permlevel": 1
+  }
+ ],
+ "field_order": [
+  "status",
+  "title",
+  "contact",
+  "customer",
+  "company",
+  "col_a",
+  "delivery_mode",
+  "property",
+  "intake",
+  "assigned_to",
+  "producer",
+  "language",
+  "services_section",
+  "services",
+  "services_total",
+  "col_b",
+  "media_budget",
+  "schedule_section",
+  "shoot_at",
+  "shoot_location",
+  "col_c",
+  "shot_at",
+  "delivered_at",
+  "deliverables_section",
+  "deliverables",
+  "change_request_note",
+  "revisions",
+  "revisions_included",
+  "revisions_used",
+  "finance_section",
+  "quotation",
+  "sales_invoice",
+  "payment_status",
+  "col_d",
+  "invoiced_amount",
+  "outstanding_amount",
+  "override_section",
+  "payment_override",
+  "allow_extra_revisions"
+ ],
+ "fields": [
+  {
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "label": "Status",
+   "options": "Draft\nQuoted\nConfirmed\nScheduled\nShot\nIn Production\nClient Review\nChanges Requested\nWaiting on Client\nDelivered\nClosed\nCancelled",
+   "default": "Draft",
+   "in_list_view": 1,
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "title",
+   "fieldtype": "Data",
+   "label": "Title",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "contact",
+   "fieldtype": "Link",
+   "label": "Client",
+   "options": "Contact",
+   "reqd": 1,
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "customer",
+   "fieldtype": "Link",
+   "label": "Customer",
+   "read_only": 1,
+   "options": "Customer"
+  },
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "label": "Company",
+   "options": "Company",
+   "reqd": 1
+  },
+  {
+   "fieldname": "col_a",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "delivery_mode",
+   "fieldtype": "Select",
+   "label": "Delivery",
+   "reqd": 1,
+   "default": "Clean Final (Content Only)",
+   "options": "Clean Final (Content Only)\nBranded (Market My Property)",
+   "description": "Content only: client receives clean final assets; raw/project files are not included (§5.3)."
+  },
+  {
+   "fieldname": "property",
+   "fieldtype": "Link",
+   "label": "Property",
+   "options": "Property",
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "intake",
+   "fieldtype": "Link",
+   "label": "Opportunity Intake",
+   "options": "Aqar Opportunity Intake"
+  },
+  {
+   "fieldname": "assigned_to",
+   "fieldtype": "Link",
+   "label": "Coordinator",
+   "options": "User",
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "producer",
+   "fieldtype": "Link",
+   "label": "Producer / Photographer",
+   "options": "User"
+  },
+  {
+   "fieldname": "language",
+   "fieldtype": "Select",
+   "label": "Client Language",
+   "options": "ar\nen",
+   "default": "ar"
+  },
+  {
+   "fieldname": "services_section",
+   "fieldtype": "Section Break",
+   "label": "Services"
+  },
+  {
+   "fieldname": "services",
+   "fieldtype": "Table",
+   "label": "Services",
+   "options": "Aqar Content Order Service",
+   "reqd": 1
+  },
+  {
+   "fieldname": "services_total",
+   "fieldtype": "Currency",
+   "label": "Services Total (OMR)",
+   "read_only": 1,
+   "precision": "3"
+  },
+  {
+   "fieldname": "col_b",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "media_budget",
+   "fieldtype": "Currency",
+   "label": "Client Media Budget (OMR)",
+   "precision": "3",
+   "description": "Paid to ad platforms for the client. Invoiced as pass-through, not revenue (§9.2)."
+  },
+  {
+   "fieldname": "schedule_section",
+   "fieldtype": "Section Break",
+   "label": "Shoot"
+  },
+  {
+   "fieldname": "shoot_at",
+   "fieldtype": "Datetime",
+   "label": "Shoot Date & Time"
+  },
+  {
+   "fieldname": "shoot_location",
+   "fieldtype": "Small Text",
+   "label": "Location / Access"
+  },
+  {
+   "fieldname": "col_c",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "shot_at",
+   "fieldtype": "Datetime",
+   "label": "Shot At",
+   "read_only": 1
+  },
+  {
+   "fieldname": "delivered_at",
+   "fieldtype": "Datetime",
+   "label": "Delivered At",
+   "read_only": 1
+  },
+  {
+   "fieldname": "deliverables_section",
+   "fieldtype": "Section Break",
+   "label": "Deliverables & Revisions"
+  },
+  {
+   "fieldname": "deliverables",
+   "fieldtype": "Table",
+   "label": "Deliverables",
+   "options": "Aqar Content Deliverable"
+  },
+  {
+   "fieldname": "change_request_note",
+   "fieldtype": "Small Text",
+   "label": "Client's Requested Changes",
+   "description": "Required when moving to Changes Requested; it is logged as a revision round."
+  },
+  {
+   "fieldname": "revisions",
+   "fieldtype": "Table",
+   "label": "Revision Log",
+   "options": "Aqar Content Revision",
+   "read_only": 1
+  },
+  {
+   "fieldname": "revisions_included",
+   "fieldtype": "Int",
+   "label": "Included Revision Rounds",
+   "read_only": 1
+  },
+  {
+   "fieldname": "revisions_used",
+   "fieldtype": "Int",
+   "label": "Revision Rounds Used",
+   "read_only": 1
+  },
+  {
+   "fieldname": "finance_section",
+   "fieldtype": "Section Break",
+   "label": "Billing"
+  },
+  {
+   "fieldname": "quotation",
+   "fieldtype": "Link",
+   "label": "Quotation",
+   "read_only": 1,
+   "options": "Quotation"
+  },
+  {
+   "fieldname": "sales_invoice",
+   "fieldtype": "Link",
+   "label": "Sales Invoice",
+   "read_only": 1,
+   "options": "Sales Invoice"
+  },
+  {
+   "fieldname": "payment_status",
+   "fieldtype": "Select",
+   "label": "Payment Status",
+   "read_only": 1,
+   "default": "Not Invoiced",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "options": "Not Invoiced\nInvoice Draft\nUnpaid\nPartly Paid\nPaid"
+  },
+  {
+   "fieldname": "col_d",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "invoiced_amount",
+   "fieldtype": "Currency",
+   "label": "Invoiced (OMR)",
+   "read_only": 1,
+   "precision": "3"
+  },
+  {
+   "fieldname": "outstanding_amount",
+   "fieldtype": "Currency",
+   "label": "Outstanding (OMR)",
+   "read_only": 1,
+   "precision": "3"
+  },
+  {
+   "fieldname": "override_section",
+   "fieldtype": "Section Break",
+   "label": "Manager Overrides",
+   "permlevel": 1,
+   "collapsible": 1
+  },
+  {
+   "fieldname": "payment_override",
+   "fieldtype": "Check",
+   "label": "Allow Scheduling and Delivery Before Full Payment",
+   "permlevel": 1
+  },
+  {
+   "fieldname": "allow_extra_revisions",
+   "fieldtype": "Check",
+   "label": "Allow Revisions Beyond Included Rounds",
+   "permlevel": 1,
+   "description": "Use with an Additional Revision Round service or an agreed exception."
+  }
+ ]
+}

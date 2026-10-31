@@ -1,0 +1,47 @@
+{
+ "doctype": "DocType",
+ "name": "Aqar Content FAQ",
+ "module": "Aqar 360",
+ "engine": "InnoDB",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "istable": 1,
+ "editable_grid": 1,
+ "permissions": [],
+ "field_order": [
+  "question_ar",
+  "answer_ar",
+  "question_en",
+  "answer_en"
+ ],
+ "fields": [
+  {
+   "fieldname": "question_ar",
+   "fieldtype": "Data",
+   "label": "Question (Arabic)",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "answer_ar",
+   "fieldtype": "Small Text",
+   "label": "Answer (Arabic)",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "question_en",
+   "fieldtype": "Data",
+   "label": "Question (English)",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "answer_en",
+   "fieldtype": "Small Text",
+   "label": "Answer (English)",
+   "reqd": 1,
+   "in_list_view": 1
+  }
+ ]
+}

@@ -1,0 +1,9 @@
+{
+  "json_files_parsed": 12,
+  "python_compileall": "passed",
+  "bash_syntax": "passed for backup-offserver.sh and ci-foundation.sh",
+  "yaml_syntax": "passed",
+  "docker_compose_config": "passed",
+  "secret_and_log_git_exclusions": "verified",
+  "hosted_ci": "not run; no Git remote configured"
+}

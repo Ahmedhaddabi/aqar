@@ -1,0 +1,221 @@
+{
+ "doctype": "DocType",
+ "name": "Aqar Content Page",
+ "module": "Aqar 360",
+ "engine": "InnoDB",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "autoname": "field:slug",
+ "title_field": "title_en",
+ "track_changes": 1,
+ "search_fields": "title_ar,title_en,page_type",
+ "permissions": [
+  {
+   "role": "System Manager",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 1,
+   "report": 1
+  },
+  {
+   "role": "Aqar Admin",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 1,
+   "report": 1
+  },
+  {
+   "role": "Aqar Manager",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "report": 1
+  },
+  {
+   "role": "Aqar Marketing",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "report": 1
+  },
+  {
+   "role": "Aqar Content Coordinator",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "report": 1
+  }
+ ],
+ "field_order": [
+  "page_type",
+  "slug",
+  "published",
+  "area",
+  "col_a",
+  "last_reviewed",
+  "reviewed_by",
+  "arabic_section",
+  "title_ar",
+  "summary_ar",
+  "facts_ar",
+  "body_ar",
+  "seo_title_ar",
+  "meta_description_ar",
+  "english_section",
+  "title_en",
+  "summary_en",
+  "facts_en",
+  "body_en",
+  "seo_title_en",
+  "meta_description_en",
+  "faq_section",
+  "faqs",
+  "sources"
+ ],
+ "fields": [
+  {
+   "fieldname": "page_type",
+   "fieldtype": "Select",
+   "label": "Page Type",
+   "options": "Area Guide\nBuying Guide\nRenting Guide\nOwner Guide\nInvestor Guide\nProject Guide\nMarketing Guide\nMarket Insight\nFAQ",
+   "reqd": 1,
+   "in_list_view": 1,
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "slug",
+   "fieldtype": "Data",
+   "label": "URL Slug",
+   "reqd": 1,
+   "unique": 1,
+   "set_only_once": 1,
+   "description": "Lowercase letters, numbers and hyphens, e.g. al-khoudh or renting-apartment-muscat."
+  },
+  {
+   "fieldname": "published",
+   "fieldtype": "Check",
+   "label": "Published",
+   "in_list_view": 1,
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "area",
+   "fieldtype": "Link",
+   "label": "Area",
+   "options": "Aqar Area",
+   "depends_on": "eval:doc.page_type=='Area Guide'"
+  },
+  {
+   "fieldname": "col_a",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "last_reviewed",
+   "fieldtype": "Date",
+   "label": "Last Reviewed",
+   "read_only": 1
+  },
+  {
+   "fieldname": "reviewed_by",
+   "fieldtype": "Link",
+   "label": "Reviewed By",
+   "options": "User",
+   "read_only": 1
+  },
+  {
+   "fieldname": "arabic_section",
+   "fieldtype": "Section Break",
+   "label": "Arabic"
+  },
+  {
+   "fieldname": "title_ar",
+   "fieldtype": "Data",
+   "label": "Title (Arabic)",
+   "reqd": 1
+  },
+  {
+   "fieldname": "summary_ar",
+   "fieldtype": "Small Text",
+   "label": "Answer Summary (Arabic)",
+   "description": "Answer the reader's question directly in the first 100–150 words (§14.2)."
+  },
+  {
+   "fieldname": "facts_ar",
+   "fieldtype": "Small Text",
+   "label": "Fact Block (Arabic)",
+   "description": "One fact per line: Label: value"
+  },
+  {
+   "fieldname": "body_ar",
+   "fieldtype": "Text Editor",
+   "label": "Body (Arabic)"
+  },
+  {
+   "fieldname": "seo_title_ar",
+   "fieldtype": "Data",
+   "label": "SEO Title (Arabic)"
+  },
+  {
+   "fieldname": "meta_description_ar",
+   "fieldtype": "Small Text",
+   "label": "Meta Description (Arabic)"
+  },
+  {
+   "fieldname": "english_section",
+   "fieldtype": "Section Break",
+   "label": "English"
+  },
+  {
+   "fieldname": "title_en",
+   "fieldtype": "Data",
+   "label": "Title (English)",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "summary_en",
+   "fieldtype": "Small Text",
+   "label": "Answer Summary (English)"
+  },
+  {
+   "fieldname": "facts_en",
+   "fieldtype": "Small Text",
+   "label": "Fact Block (English)",
+   "description": "One fact per line: Label: value"
+  },
+  {
+   "fieldname": "body_en",
+   "fieldtype": "Text Editor",
+   "label": "Body (English)"
+  },
+  {
+   "fieldname": "seo_title_en",
+   "fieldtype": "Data",
+   "label": "SEO Title (English)"
+  },
+  {
+   "fieldname": "meta_description_en",
+   "fieldtype": "Small Text",
+   "label": "Meta Description (English)"
+  },
+  {
+   "fieldname": "faq_section",
+   "fieldtype": "Section Break",
+   "label": "FAQ & Sources"
+  },
+  {
+   "fieldname": "faqs",
+   "fieldtype": "Table",
+   "label": "FAQs",
+   "options": "Aqar Content FAQ"
+  },
+  {
+   "fieldname": "sources",
+   "fieldtype": "Small Text",
+   "label": "Sources and Method",
+   "description": "Required for Market Insight: sources, date and method (§14.2)."
+  }
+ ]
+}

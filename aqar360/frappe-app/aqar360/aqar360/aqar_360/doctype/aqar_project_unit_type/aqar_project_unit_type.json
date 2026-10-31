@@ -1,0 +1,78 @@
+{
+ "doctype": "DocType",
+ "name": "Aqar Project Unit Type",
+ "module": "Aqar 360",
+ "engine": "InnoDB",
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "istable": 1,
+ "editable_grid": 1,
+ "permissions": [],
+ "field_order": [
+  "unit_type",
+  "bedrooms",
+  "size_from_sqm",
+  "size_to_sqm",
+  "price_from",
+  "price_to",
+  "available_units",
+  "sales_availability"
+ ],
+ "fields": [
+  {
+   "fieldname": "unit_type",
+   "fieldtype": "Link",
+   "label": "Unit Type",
+   "options": "Aqar Unit Type",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "bedrooms",
+   "fieldtype": "Int",
+   "label": "Bedrooms",
+   "fetch_from": "unit_type.bedrooms",
+   "fetch_if_empty": 1
+  },
+  {
+   "fieldname": "size_from_sqm",
+   "fieldtype": "Float",
+   "label": "Size From (m²)",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "size_to_sqm",
+   "fieldtype": "Float",
+   "label": "Size To (m²)"
+  },
+  {
+   "fieldname": "price_from",
+   "fieldtype": "Currency",
+   "label": "Price From (OMR)",
+   "in_list_view": 1,
+   "precision": "3"
+  },
+  {
+   "fieldname": "price_to",
+   "fieldtype": "Currency",
+   "label": "Price To (OMR)",
+   "in_list_view": 1,
+   "precision": "3"
+  },
+  {
+   "fieldname": "available_units",
+   "fieldtype": "Data",
+   "label": "Available Units (if confirmed)",
+   "in_list_view": 1,
+   "description": "Leave blank when the source does not state it; never estimate (§27.15)."
+  },
+  {
+   "fieldname": "sales_availability",
+   "fieldtype": "Select",
+   "label": "Availability",
+   "options": "Active\nLimited\nPaused\nSold Out\nWithdrawn\nClosed\nArchived",
+   "default": "Active",
+   "in_list_view": 1
+  }
+ ]
+}

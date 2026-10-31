@@ -1,0 +1,23 @@
+Starting test run with parameters: site=staging.localhost, app=aqar360, verbose=False, tests=(), force=False, profile=False, failfast=False, skip_before_tests=True, debug=False, selected_categories=[]
+View detailed logs (using --verbose): /home/frappe/frappe-bench/logs/frappe.testing.log
+
+Running 7 integration tests for aqar360
+
+aqar360.tests.test_foundation.TestFoundation
+    ✔  test_entity_change_tracking
+    ✔  test_extended_property_schema_is_valid
+    ✔  test_guest_has_no_internal_inventory_permission
+       ▸  /home/frappe/frappe-bench/apps/frappe/frappe/model/qb_query.py:163: V17FrappeDeprecationWarning: This codepath was marked (DATE: 2024-01-01) deprecated for removal (from v17 onwards); note:
+       ▸   The 'limit_page_length' parameter is deprecated. Use 'limit' instead.
+       ▸  
+       ▸    deprecation_warning(
+    ✔  test_idempotent_role_configuration_and_mfa  (2.75s)
+    ✔  test_legacy_portal_methods_are_denied
+    ✔  test_legal_and_phase_gates_are_server_enforced
+    ✔  test_person_master_uses_existing_entities
+----------------------------------------------------------------------
+Ran 7 tests in 3.440s
+
+OK
+
+

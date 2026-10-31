@@ -1,0 +1,114 @@
+{
+ "doctype": "DocType",
+ "name": "Aqar Area",
+ "module": "Aqar 360",
+ "engine": "InnoDB",
+ "autoname": "format:AREA-{#####}",
+ "title_field": "area_name_en",
+ "show_title_field_in_link": 1,
+ "search_fields": "area_name_en,area_name_ar,wilayat",
+ "permissions": [
+  {
+   "role": "System Manager",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 1
+  },
+  {
+   "role": "Aqar Admin",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 1
+  },
+  {
+   "role": "Aqar Manager",
+   "read": 1,
+   "write": 1,
+   "create": 1
+  },
+  {
+   "role": "All",
+   "read": 1
+  }
+ ],
+ "field_order": [
+  "area_name_en",
+  "area_name_ar",
+  "wilayat",
+  "slug",
+  "governorate",
+  "latitude",
+  "longitude",
+  "boundary",
+  "is_active"
+ ],
+ "fields": [
+  {
+   "fieldname": "area_name_en",
+   "fieldtype": "Data",
+   "label": "Name (English)",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "area_name_ar",
+   "fieldtype": "Data",
+   "label": "Name (Arabic)",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "wilayat",
+   "fieldtype": "Link",
+   "label": "Wilayat",
+   "options": "Aqar Wilayat",
+   "reqd": 1,
+   "in_list_view": 1,
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "slug",
+   "fieldtype": "Data",
+   "label": "URL Slug",
+   "read_only": 1,
+   "unique": 1
+  },
+  {
+   "fieldname": "governorate",
+   "fieldtype": "Link",
+   "label": "Governorate",
+   "options": "Aqar Governorate",
+   "read_only": 1,
+   "fetch_from": "wilayat.governorate",
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "latitude",
+   "fieldtype": "Float",
+   "label": "Latitude",
+   "precision": "6"
+  },
+  {
+   "fieldname": "longitude",
+   "fieldtype": "Float",
+   "label": "Longitude",
+   "precision": "6"
+  },
+  {
+   "fieldname": "boundary",
+   "fieldtype": "Geolocation",
+   "label": "Boundary",
+   "description": "Draw the area outline (polygon tool). The centre is calculated from it when empty."
+  },
+  {
+   "fieldname": "is_active",
+   "fieldtype": "Check",
+   "label": "Active",
+   "default": "1"
+  }
+ ],
+ "sort_field": "creation",
+ "sort_order": "DESC"
+}

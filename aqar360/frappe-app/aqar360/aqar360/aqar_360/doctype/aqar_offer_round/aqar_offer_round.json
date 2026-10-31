@@ -1,0 +1,48 @@
+{
+ "doctype": "DocType",
+ "name": "Aqar Offer Round",
+ "module": "Aqar 360",
+ "engine": "InnoDB",
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "istable": 1,
+ "editable_grid": 1,
+ "permissions": [],
+ "field_order": [
+  "party",
+  "amount",
+  "round_date",
+  "terms"
+ ],
+ "fields": [
+  {
+   "fieldname": "party",
+   "fieldtype": "Select",
+   "label": "From",
+   "options": "Customer\nOwner\nDeveloper",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "amount",
+   "fieldtype": "Currency",
+   "label": "Amount (OMR)",
+   "reqd": 1,
+   "in_list_view": 1,
+   "precision": "3"
+  },
+  {
+   "fieldname": "round_date",
+   "fieldtype": "Date",
+   "label": "Date",
+   "default": "Today",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "terms",
+   "fieldtype": "Small Text",
+   "label": "Terms",
+   "in_list_view": 1
+  }
+ ]
+}

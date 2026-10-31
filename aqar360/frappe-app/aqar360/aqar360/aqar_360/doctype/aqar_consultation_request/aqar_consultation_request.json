@@ -1,0 +1,300 @@
+{
+ "doctype": "DocType",
+ "name": "Aqar Consultation Request",
+ "module": "Aqar 360",
+ "engine": "InnoDB",
+ "autoname": "format:CON-{YYYY}-{#####}",
+ "title_field": "submitted_name",
+ "track_changes": 1,
+ "search_fields": "submitted_name,submitted_phone,status",
+ "permissions": [
+  {
+   "role": "System Manager",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 1,
+   "export": 1,
+   "report": 1
+  },
+  {
+   "role": "Aqar Admin",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 1,
+   "export": 1,
+   "report": 1
+  },
+  {
+   "role": "Aqar Manager",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "report": 1
+  },
+  {
+   "role": "Aqar Team Lead",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "report": 1
+  },
+  {
+   "role": "Aqar Opportunity Staff",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "report": 1
+  },
+  {
+   "role": "Aqar Business Development",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "report": 1
+  }
+ ],
+ "field_order": [
+  "status",
+  "asset_type",
+  "client_goal",
+  "requested_output",
+  "status_col",
+  "area",
+  "map_link",
+  "budget",
+  "expected_timeline",
+  "assigned_to",
+  "first_response_at",
+  "current_situation",
+  "scope_note",
+  "customer_section",
+  "contact",
+  "submitted_name",
+  "submitted_phone",
+  "submitted_email",
+  "customer_col",
+  "language",
+  "duplicate_candidate",
+  "duplicate_review",
+  "source_section",
+  "source_channel",
+  "utm_source",
+  "utm_medium",
+  "utm_campaign",
+  "source_col",
+  "utm_content",
+  "landing_page",
+  "referrer",
+  "submitted_at",
+  "idempotency_key"
+ ],
+ "fields": [
+  {
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "default": "New",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "options": "New\nScoping\nQuoted\nIn Progress\nDelivered\nClosed\nDeclined",
+   "label": "Status"
+  },
+  {
+   "fieldname": "asset_type",
+   "fieldtype": "Select",
+   "options": "Land\nBuilding\nProject\nCommercial\nResidential",
+   "reqd": 1,
+   "in_list_view": 1,
+   "label": "Asset Type"
+  },
+  {
+   "fieldname": "client_goal",
+   "fieldtype": "Select",
+   "reqd": 1,
+   "in_list_view": 1,
+   "options": "Sell\nRent\nDevelop\nReposition\nMarketing\nIncrease Occupancy",
+   "label": "Client Goal"
+  },
+  {
+   "fieldname": "requested_output",
+   "fieldtype": "Select",
+   "reqd": 1,
+   "options": "Session\nSite Visit\nMarketing Plan\nFeasibility Lite\nPositioning\nContent Plan",
+   "label": "Requested Output"
+  },
+  {
+   "fieldname": "status_col",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "area",
+   "fieldtype": "Link",
+   "options": "Aqar Area",
+   "label": "Area"
+  },
+  {
+   "fieldname": "map_link",
+   "fieldtype": "Data",
+   "label": "Map Link"
+  },
+  {
+   "fieldname": "budget",
+   "fieldtype": "Currency",
+   "precision": "3",
+   "label": "Budget (OMR)"
+  },
+  {
+   "fieldname": "expected_timeline",
+   "fieldtype": "Select",
+   "options": "\nImmediately\nWithin 1 Month\n1-3 Months\n3-6 Months\nNot Urgent",
+   "label": "Expected Timeline"
+  },
+  {
+   "fieldname": "assigned_to",
+   "fieldtype": "Link",
+   "label": "Owner",
+   "options": "User",
+   "in_standard_filter": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "first_response_at",
+   "fieldtype": "Datetime",
+   "label": "First Response At",
+   "description": "Set when the customer is first contacted; completes the first-response SLA."
+  },
+  {
+   "fieldname": "current_situation",
+   "fieldtype": "Text",
+   "description": "Use, occupancy, income, challenges, known competitors.",
+   "label": "Current Situation"
+  },
+  {
+   "fieldname": "scope_note",
+   "fieldtype": "Small Text",
+   "default": "This consultation is not an engineering, legal or official valuation unless provided by a licensed specialist (§11.3).",
+   "label": "Scope Note"
+  },
+  {
+   "fieldname": "customer_section",
+   "fieldtype": "Section Break",
+   "label": "Customer"
+  },
+  {
+   "fieldname": "contact",
+   "fieldtype": "Link",
+   "options": "Contact",
+   "in_standard_filter": 1,
+   "label": "Contact"
+  },
+  {
+   "fieldname": "submitted_name",
+   "fieldtype": "Data",
+   "reqd": 1,
+   "in_list_view": 1,
+   "label": "Name as Submitted"
+  },
+  {
+   "fieldname": "submitted_phone",
+   "fieldtype": "Data",
+   "options": "Phone",
+   "label": "Phone as Submitted"
+  },
+  {
+   "fieldname": "submitted_email",
+   "fieldtype": "Data",
+   "options": "Email",
+   "label": "Email as Submitted"
+  },
+  {
+   "fieldname": "customer_col",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "language",
+   "fieldtype": "Select",
+   "options": "ar\nen",
+   "default": "ar",
+   "label": "Language"
+  },
+  {
+   "fieldname": "duplicate_candidate",
+   "fieldtype": "Link",
+   "options": "Contact",
+   "read_only": 1,
+   "label": "Possible Duplicate Of"
+  },
+  {
+   "fieldname": "duplicate_review",
+   "fieldtype": "Select",
+   "options": "\nNeeds Review\nConfirmed Same Person\nConfirmed Different Person",
+   "depends_on": "duplicate_candidate",
+   "label": "Duplicate Review"
+  },
+  {
+   "fieldname": "source_section",
+   "fieldtype": "Section Break",
+   "collapsible": 1,
+   "label": "Source"
+  },
+  {
+   "fieldname": "source_channel",
+   "fieldtype": "Select",
+   "options": "Website\nInstagram\nGoogle\nMeta\nTikTok\nSnapchat\nReferral\nWhatsApp\nPhone\nWalk-in\nStaff Entry\nOther",
+   "default": "Staff Entry",
+   "in_standard_filter": 1,
+   "label": "Source Channel"
+  },
+  {
+   "fieldname": "utm_source",
+   "fieldtype": "Data",
+   "label": "UTM Source"
+  },
+  {
+   "fieldname": "utm_medium",
+   "fieldtype": "Data",
+   "label": "UTM Medium"
+  },
+  {
+   "fieldname": "utm_campaign",
+   "fieldtype": "Data",
+   "label": "UTM Campaign"
+  },
+  {
+   "fieldname": "source_col",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "utm_content",
+   "fieldtype": "Data",
+   "label": "UTM Content"
+  },
+  {
+   "fieldname": "landing_page",
+   "fieldtype": "Data",
+   "label": "Landing Page"
+  },
+  {
+   "fieldname": "referrer",
+   "fieldtype": "Data",
+   "label": "Referrer"
+  },
+  {
+   "fieldname": "submitted_at",
+   "fieldtype": "Datetime",
+   "read_only": 1,
+   "label": "Submitted At"
+  },
+  {
+   "fieldname": "idempotency_key",
+   "fieldtype": "Data",
+   "unique": 1,
+   "read_only": 1,
+   "hidden": 1,
+   "label": "Idempotency Key"
+  }
+ ],
+ "sort_field": "creation",
+ "sort_order": "DESC"
+}

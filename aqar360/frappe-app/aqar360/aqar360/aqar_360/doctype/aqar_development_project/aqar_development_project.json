@@ -1,0 +1,396 @@
+{
+ "doctype": "DocType",
+ "name": "Aqar Development Project",
+ "module": "Aqar 360",
+ "engine": "InnoDB",
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "autoname": "format:P-{#####}",
+ "title_field": "project_name",
+ "show_title_field_in_link": 1,
+ "track_changes": 1,
+ "search_fields": "project_name,developer_name,area",
+ "permissions": [
+  {
+   "role": "System Manager",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 1,
+   "export": 1,
+   "report": 1
+  },
+  {
+   "role": "Aqar Admin",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 1,
+   "export": 1,
+   "report": 1
+  },
+  {
+   "role": "Aqar Manager",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "report": 1
+  },
+  {
+   "role": "Aqar Team Lead",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "report": 1
+  },
+  {
+   "role": "Aqar Opportunity Staff",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "report": 1
+  },
+  {
+   "role": "Aqar Business Development",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "report": 1
+  },
+  {
+   "role": "Aqar Content Coordinator",
+   "read": 1,
+   "report": 1
+  },
+  {
+   "role": "Aqar Marketing",
+   "read": 1,
+   "report": 1
+  }
+ ],
+ "field_order": [
+  "project_name",
+  "project_name_ar",
+  "developer_name",
+  "focal_point",
+  "developer_website",
+  "slug",
+  "identity_col",
+  "project_category",
+  "area",
+  "location_details",
+  "map_link",
+  "map_section",
+  "location",
+  "map_col",
+  "latitude",
+  "longitude",
+  "cover_image",
+  "status_section",
+  "construction_status",
+  "sales_availability",
+  "visibility",
+  "status_col",
+  "verification_status",
+  "last_verified",
+  "verified_by",
+  "reverify_after_days",
+  "commercial_section",
+  "price_from",
+  "price_to",
+  "handover_date",
+  "payment_plan",
+  "payment_plan_ar",
+  "commercial_col",
+  "foreign_ownership",
+  "foreign_ownership_note",
+  "units_section",
+  "unit_types",
+  "description",
+  "description_ar",
+  "source_section",
+  "primary_source_type",
+  "source_url",
+  "source_col",
+  "brochure",
+  "gallery_section",
+  "gallery"
+ ],
+ "fields": [
+  {
+   "fieldname": "project_name",
+   "fieldtype": "Data",
+   "label": "Project Name",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "project_name_ar",
+   "fieldtype": "Data",
+   "label": "Project Name (Arabic)"
+  },
+  {
+   "fieldname": "developer_name",
+   "fieldtype": "Data",
+   "label": "Developer",
+   "reqd": 1,
+   "in_list_view": 1,
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "focal_point",
+   "fieldtype": "Link",
+   "label": "Focal Point",
+   "options": "Contact"
+  },
+  {
+   "fieldname": "developer_website",
+   "fieldtype": "Data",
+   "label": "Developer / Project Website",
+   "options": "URL"
+  },
+  {
+   "fieldname": "slug",
+   "fieldtype": "Data",
+   "label": "Website Slug",
+   "unique": 1,
+   "description": "Public page address /projects/<slug>. Filled automatically from the project name."
+  },
+  {
+   "fieldname": "identity_col",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "project_category",
+   "fieldtype": "Select",
+   "label": "Category",
+   "options": "Residential\nCommercial\nMixed-Use\nLand Plots",
+   "default": "Residential",
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "area",
+   "fieldtype": "Link",
+   "label": "Area",
+   "options": "Aqar Area",
+   "in_list_view": 1,
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "location_details",
+   "fieldtype": "Small Text",
+   "label": "Location Details"
+  },
+  {
+   "fieldname": "map_link",
+   "fieldtype": "Data",
+   "label": "Map Link"
+  },
+  {
+   "fieldname": "map_section",
+   "fieldtype": "Section Break",
+   "label": "Map Location",
+   "collapsible": 0
+  },
+  {
+   "fieldname": "location",
+   "fieldtype": "Geolocation",
+   "label": "Location",
+   "description": "Drop a pin on the map, type the coordinates, or paste a Google Maps link above."
+  },
+  {
+   "fieldname": "map_col",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "latitude",
+   "fieldtype": "Float",
+   "label": "Latitude",
+   "precision": "6"
+  },
+  {
+   "fieldname": "longitude",
+   "fieldtype": "Float",
+   "label": "Longitude",
+   "precision": "6"
+  },
+  {
+   "fieldname": "cover_image",
+   "fieldtype": "Attach Image",
+   "label": "Cover Image",
+   "description": "Shown on the public map when the project is a Selected Public Page. Must be a public file."
+  },
+  {
+   "fieldname": "status_section",
+   "fieldtype": "Section Break",
+   "label": "Availability & Verification"
+  },
+  {
+   "fieldname": "construction_status",
+   "fieldtype": "Select",
+   "label": "Construction Status",
+   "options": "\nPre-Launch\nUnder Construction\nReady",
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "sales_availability",
+   "fieldtype": "Select",
+   "label": "Sales Availability",
+   "options": "Active\nLimited\nPaused\nSold Out\nWithdrawn\nClosed\nArchived",
+   "default": "Active",
+   "in_list_view": 1,
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "visibility",
+   "fieldtype": "Select",
+   "label": "Visibility",
+   "options": "Internal Only\nOff-Market Confidential\nSelected Public Page",
+   "default": "Internal Only",
+   "description": "Internal by default; a public page needs publication rights and approval (§27.14)."
+  },
+  {
+   "fieldname": "status_col",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "verification_status",
+   "fieldtype": "Select",
+   "label": "Verification Status",
+   "options": "Unverified\nVerified\nNeeds Reverification",
+   "default": "Unverified",
+   "in_list_view": 1,
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "last_verified",
+   "fieldtype": "Date",
+   "label": "Last Verified",
+   "read_only": 1
+  },
+  {
+   "fieldname": "verified_by",
+   "fieldtype": "Link",
+   "label": "Verified By",
+   "options": "User",
+   "read_only": 1
+  },
+  {
+   "fieldname": "reverify_after_days",
+   "fieldtype": "Int",
+   "label": "Reverify After (Days)",
+   "default": "30"
+  },
+  {
+   "fieldname": "commercial_section",
+   "fieldtype": "Section Break",
+   "label": "Commercial"
+  },
+  {
+   "fieldname": "price_from",
+   "fieldtype": "Currency",
+   "label": "Price From (OMR)",
+   "precision": "3",
+   "description": "Calculated from unit types when they have prices."
+  },
+  {
+   "fieldname": "price_to",
+   "fieldtype": "Currency",
+   "label": "Price To (OMR)",
+   "precision": "3"
+  },
+  {
+   "fieldname": "handover_date",
+   "fieldtype": "Date",
+   "label": "Expected Handover"
+  },
+  {
+   "fieldname": "payment_plan",
+   "fieldtype": "Small Text",
+   "label": "Payment Plan",
+   "description": "One step per line, e.g. 10% booking. Percentages adding up to 100 are shown as a bar."
+  },
+  {
+   "fieldname": "payment_plan_ar",
+   "fieldtype": "Small Text",
+   "label": "Payment Plan (Arabic)",
+   "description": "One step per line, e.g. 10% عند الحجز. Shown on the Arabic website."
+  },
+  {
+   "fieldname": "commercial_col",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "foreign_ownership",
+   "fieldtype": "Select",
+   "label": "Foreign Ownership",
+   "options": "Unknown\nEligible (Verified)\nNot Eligible (Verified)",
+   "default": "Unknown",
+   "description": "Only set from a verified source; never inferred."
+  },
+  {
+   "fieldname": "foreign_ownership_note",
+   "fieldtype": "Small Text",
+   "label": "Foreign Ownership Note"
+  },
+  {
+   "fieldname": "units_section",
+   "fieldtype": "Section Break",
+   "label": "Unit Types"
+  },
+  {
+   "fieldname": "unit_types",
+   "fieldtype": "Table",
+   "label": "Unit Types",
+   "options": "Aqar Project Unit Type"
+  },
+  {
+   "fieldname": "description",
+   "fieldtype": "Text Editor",
+   "label": "Description"
+  },
+  {
+   "fieldname": "description_ar",
+   "fieldtype": "Text Editor",
+   "label": "Description (Arabic)"
+  },
+  {
+   "fieldname": "source_section",
+   "fieldtype": "Section Break",
+   "label": "Source",
+   "collapsible": 1
+  },
+  {
+   "fieldname": "primary_source_type",
+   "fieldtype": "Select",
+   "label": "Primary Source Type",
+   "options": "\nFirst-Party / Developer Confirmed\nSigned Agreement / Official Document\nApproved Partner / API\nOfficial Public Source\nPublic Discovery Signal\nUnverified Lead"
+  },
+  {
+   "fieldname": "source_url",
+   "fieldtype": "Data",
+   "label": "Source URL"
+  },
+  {
+   "fieldname": "source_col",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "brochure",
+   "fieldtype": "Attach",
+   "label": "Brochure / PDF"
+  },
+  {
+   "fieldname": "gallery_section",
+   "fieldtype": "Section Break",
+   "label": "Website Gallery"
+  },
+  {
+   "fieldname": "gallery",
+   "fieldtype": "Table",
+   "label": "Gallery",
+   "options": "Aqar Project Image",
+   "description": "Shown on the public project page when the project is a Selected Public Page."
+  }
+ ]
+}

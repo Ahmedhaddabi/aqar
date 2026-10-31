@@ -1,0 +1,110 @@
+{
+ "doctype": "DocType",
+ "name": "Aqar Price Change",
+ "module": "Aqar 360",
+ "engine": "InnoDB",
+ "sort_field": "changed_at",
+ "sort_order": "DESC",
+ "autoname": "hash",
+ "in_create": 1,
+ "title_field": "reference_name",
+ "permissions": [
+  {
+   "role": "System Manager",
+   "read": 1,
+   "report": 1
+  },
+  {
+   "role": "Aqar Admin",
+   "read": 1,
+   "report": 1
+  },
+  {
+   "role": "Aqar Manager",
+   "read": 1,
+   "report": 1
+  },
+  {
+   "role": "Aqar Team Lead",
+   "read": 1,
+   "report": 1
+  },
+  {
+   "role": "Aqar Opportunity Staff",
+   "read": 1,
+   "report": 1
+  },
+  {
+   "role": "Aqar Business Development",
+   "read": 1,
+   "report": 1
+  }
+ ],
+ "field_order": [
+  "reference_doctype",
+  "reference_name",
+  "price_field",
+  "old_value",
+  "new_value",
+  "direction",
+  "change_pct",
+  "changed_at"
+ ],
+ "fields": [
+  {
+   "fieldname": "reference_doctype",
+   "fieldtype": "Link",
+   "label": "Reference DocType",
+   "options": "DocType",
+   "reqd": 1,
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "reference_name",
+   "fieldtype": "Dynamic Link",
+   "label": "Reference Name",
+   "options": "reference_doctype",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "price_field",
+   "fieldtype": "Data",
+   "label": "Price Field",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "old_value",
+   "fieldtype": "Currency",
+   "label": "Old Price (OMR)",
+   "in_list_view": 1,
+   "precision": "3"
+  },
+  {
+   "fieldname": "new_value",
+   "fieldtype": "Currency",
+   "label": "New Price (OMR)",
+   "in_list_view": 1,
+   "precision": "3"
+  },
+  {
+   "fieldname": "direction",
+   "fieldtype": "Select",
+   "label": "Direction",
+   "options": "Set\nIncrease\nDecrease",
+   "in_list_view": 1,
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "change_pct",
+   "fieldtype": "Percent",
+   "label": "Change %"
+  },
+  {
+   "fieldname": "changed_at",
+   "fieldtype": "Datetime",
+   "label": "Changed At",
+   "read_only": 1
+  }
+ ]
+}

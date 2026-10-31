@@ -1,0 +1,33 @@
+{
+ "doctype": "DocType",
+ "name": "Aqar Search Request Area",
+ "module": "Aqar 360",
+ "engine": "InnoDB",
+ "istable": 1,
+ "editable_grid": 1,
+ "permissions": [],
+ "field_order": [
+  "area",
+  "area_name"
+ ],
+ "fields": [
+  {
+   "fieldname": "area",
+   "fieldtype": "Link",
+   "options": "Aqar Area",
+   "reqd": 1,
+   "in_list_view": 1,
+   "label": "Area"
+  },
+  {
+   "fieldname": "area_name",
+   "fieldtype": "Data",
+   "fetch_from": "area.area_name_en",
+   "read_only": 1,
+   "in_list_view": 1,
+   "label": "Area Name"
+  }
+ ],
+ "sort_field": "creation",
+ "sort_order": "DESC"
+}

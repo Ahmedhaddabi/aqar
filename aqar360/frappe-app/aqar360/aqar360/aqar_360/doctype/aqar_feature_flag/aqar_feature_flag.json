@@ -1,0 +1,83 @@
+{
+ "doctype": "DocType",
+ "name": "Aqar Feature Flag",
+ "module": "Aqar 360",
+ "engine": "InnoDB",
+ "autoname": "field:flag_key",
+ "title_field": "flag_key",
+ "track_changes": 1,
+ "permissions": [
+  {
+   "role": "System Manager",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 1
+  },
+  {
+   "role": "Aqar Admin",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 1
+  },
+  {
+   "role": "Aqar Manager",
+   "read": 1
+  }
+ ],
+ "field_order": [
+  "flag_key",
+  "enabled",
+  "required_gate",
+  "audience",
+  "rollout_percentage",
+  "description"
+ ],
+ "fields": [
+  {
+   "fieldname": "flag_key",
+   "fieldtype": "Data",
+   "label": "Flag Key",
+   "reqd": 1,
+   "unique": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "enabled",
+   "fieldtype": "Check",
+   "label": "Enabled",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "required_gate",
+   "fieldtype": "Select",
+   "label": "Required Gate",
+   "options": "None\nPhase 2\nPhase 3\nPublic AI",
+   "default": "None",
+   "read_only": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "audience",
+   "fieldtype": "Select",
+   "label": "Audience",
+   "options": "Staff Only\nPercentage of Users\nEveryone",
+   "default": "Staff Only",
+   "reqd": 1
+  },
+  {
+   "fieldname": "rollout_percentage",
+   "fieldtype": "Int",
+   "label": "Rollout Percentage",
+   "depends_on": "eval:doc.audience=='Percentage of Users'"
+  },
+  {
+   "fieldname": "description",
+   "fieldtype": "Small Text",
+   "label": "Description"
+  }
+ ],
+ "sort_field": "creation",
+ "sort_order": "DESC"
+}

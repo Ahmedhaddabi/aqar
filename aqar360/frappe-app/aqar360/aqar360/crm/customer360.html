@@ -1,0 +1,46 @@
+{%- macro link(doctype, name, label=None) -%}
+<a href="/app/{{ doctype | lower | replace(' ', '-') }}/{{ name | urlencode }}">{{ label or name }}</a>
+{%- endmacro -%}
+{%- macro section(title, rows, columns) -%}
+<h5 style="margin-top:16px">{{ _(title) }} <span class="text-muted">({{ rows | length }})</span></h5>
+{% if rows %}
+<table class="table table-sm table-bordered" style="font-size:12px">
+	<thead><tr>{% for c in columns %}<th>{{ _(c[1]) }}</th>{% endfor %}</tr></thead>
+	<tbody>
+	{% for r in rows %}<tr>{% for c in columns %}<td>{% if loop.first %}{{ link(c[2], r.name) }}{% else %}{{ r[c[0]] if r[c[0]] is not none else "" }}{% endif %}</td>{% endfor %}</tr>{% endfor %}
+	</tbody>
+</table>
+{% else %}<p class="text-muted">—</p>{% endif %}
+{%- endmacro -%}
+<div class="aqar-360">
+	<div class="row">
+		<div class="col-sm-6">
+			<h4 style="margin-top:0">{{ d.profile.name }}</h4>
+			<div>{{ d.profile.emails | join(", ") }}</div>
+			<div dir="ltr" style="text-align:start">{{ d.profile.phones | join(", ") }}</div>
+			{% if d.profile.customers %}<div>{{ _("Customer") }}: {% for c in d.profile.customers %}{{ link("Customer", c) }} {% endfor %}</div>{% endif %}
+			{% if d.profile.possible_duplicates %}<div class="text-warning">{{ _("Possible Duplicate Of") }}: {% for c in d.profile.possible_duplicates %}{{ link("Contact", c) }} {% endfor %}</div>{% endif %}
+		</div>
+		<div class="col-sm-6">
+			<div>{{ _("Invoiced (OMR)") }}: <b>{{ frappe.format(d.totals.invoiced, {"fieldtype": "Currency"}) }}</b></div>
+			<div>{{ _("Outstanding (OMR)") }}: <b>{{ frappe.format(d.totals.outstanding, {"fieldtype": "Currency"}) }}</b></div>
+			<div style="margin-top:6px">
+			{% for c in d.consents if c.granted %}<span class="indicator-pill green" style="margin:2px">{{ _(c.purpose) }} · {{ _(c.channel) }}</span>{% endfor %}
+			</div>
+		</div>
+	</div>
+	{{ section("Search Requests", d.requests, [("name", "Request", "Aqar Search Request"), ("status", "Status"), ("purpose", "Purpose"), ("property_type", "Property Type"), ("budget_max", "Budget To (OMR)"), ("asked_about", "Asked About"), ("assigned_to", "Owner")]) }}
+	{{ section("Matching", d.matches, [("name", "Match", "Aqar Match"), ("status", "Status"), ("score", "Match Score"), ("supply_label", "Supply"), ("price", "Price (OMR)")]) }}
+	{{ section("Viewings", d.viewings, [("name", "Viewing", "Aqar Viewing"), ("status", "Status"), ("scheduled_at", "Scheduled At"), ("supply_label", "Property / Unit"), ("outcome", "Outcome")]) }}
+	{{ section("Offers", d.offers, [("name", "Offer", "Aqar Offer"), ("status", "Status"), ("offered_amount", "Offered (OMR)"), ("final_amount", "Agreed Amount (OMR)")]) }}
+	{{ section("Property Intakes", d.intakes, [("name", "Intake", "Aqar Opportunity Intake"), ("review_status", "Review Status"), ("request_type", "Request Type"), ("property", "Property")]) }}
+	{{ section("Owned Properties", d.properties, [("name", "Property", "Property"), ("property_name", "Name"), ("custom_aqar_sales_availability", "Sales Availability"), ("custom_aqar_verification_status", "Verification Status")]) }}
+	{{ section("Consultations", d.consultations, [("name", "Consultation", "Aqar Consultation Request"), ("status", "Status"), ("client_goal", "Client Goal")]) }}
+	{{ section("Content Orders", d.content_orders, [("name", "Order", "Aqar Content Order"), ("title", "Title"), ("status", "Status"), ("payment_status", "Payment Status")]) }}
+	{{ section("Invoices", d.invoices, [("name", "Invoice", "Sales Invoice"), ("posting_date", "Date"), ("grand_total", "Total"), ("outstanding_amount", "Outstanding (OMR)"), ("status", "Status")]) }}
+	{{ section("Documents", d.documents, [("name", "Document", "Aqar Document"), ("title", "Title"), ("document_type", "Document Type"), ("classification", "Classification")]) }}
+	<h5 style="margin-top:16px">{{ _("Timeline") }}</h5>
+	<ul style="font-size:12px; max-height:260px; overflow:auto">
+	{% for e in d.timeline %}<li><span class="text-muted">{{ e.time[:16] }}</span> · {{ _(e.doctype) }} {{ link(e.doctype, e.name) }} — {{ e.summary }}</li>{% endfor %}
+	</ul>
+</div>

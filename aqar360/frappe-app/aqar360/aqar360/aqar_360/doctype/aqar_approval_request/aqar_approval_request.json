@@ -1,0 +1,175 @@
+{
+ "doctype": "DocType",
+ "name": "Aqar Approval Request",
+ "module": "Aqar 360",
+ "engine": "InnoDB",
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "autoname": "format:APR-{#####}",
+ "in_create": 1,
+ "title_field": "reference_name",
+ "track_changes": 1,
+ "permissions": [
+  {
+   "role": "System Manager",
+   "read": 1,
+   "report": 1
+  },
+  {
+   "role": "Aqar Admin",
+   "read": 1,
+   "report": 1
+  },
+  {
+   "role": "Aqar Manager",
+   "read": 1,
+   "report": 1
+  },
+  {
+   "role": "Aqar Team Lead",
+   "read": 1,
+   "report": 1
+  },
+  {
+   "role": "Aqar Opportunity Staff",
+   "read": 1,
+   "report": 1
+  },
+  {
+   "role": "Aqar Business Development",
+   "read": 1,
+   "report": 1
+  },
+  {
+   "role": "Aqar Finance",
+   "read": 1,
+   "report": 1
+  }
+ ],
+ "field_order": [
+  "status",
+  "action",
+  "rule",
+  "approver_role",
+  "reference_doctype",
+  "reference_name",
+  "col",
+  "fieldname",
+  "current_value",
+  "proposed_value",
+  "note",
+  "requested_by",
+  "decision_section",
+  "decided_by",
+  "decided_at",
+  "decision_note"
+ ],
+ "fields": [
+  {
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "label": "Status",
+   "read_only": 1,
+   "options": "Pending\nApproved\nRejected",
+   "in_list_view": 1,
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "action",
+   "fieldtype": "Data",
+   "label": "Action",
+   "read_only": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "rule",
+   "fieldtype": "Link",
+   "label": "Rule",
+   "read_only": 1,
+   "options": "Aqar Approval Rule"
+  },
+  {
+   "fieldname": "approver_role",
+   "fieldtype": "Link",
+   "label": "Approver Role",
+   "read_only": 1,
+   "options": "Role",
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "reference_doctype",
+   "fieldtype": "Link",
+   "label": "Reference DocType",
+   "read_only": 1,
+   "options": "DocType"
+  },
+  {
+   "fieldname": "reference_name",
+   "fieldtype": "Dynamic Link",
+   "label": "Reference",
+   "read_only": 1,
+   "options": "reference_doctype",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "col",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "fieldname",
+   "fieldtype": "Data",
+   "label": "Field",
+   "read_only": 1
+  },
+  {
+   "fieldname": "current_value",
+   "fieldtype": "Data",
+   "label": "Current Value",
+   "read_only": 1
+  },
+  {
+   "fieldname": "proposed_value",
+   "fieldtype": "Data",
+   "label": "Proposed Value",
+   "read_only": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "note",
+   "fieldtype": "Small Text",
+   "label": "Reason",
+   "read_only": 1
+  },
+  {
+   "fieldname": "requested_by",
+   "fieldtype": "Link",
+   "label": "Requested By",
+   "read_only": 1,
+   "options": "User"
+  },
+  {
+   "fieldname": "decision_section",
+   "fieldtype": "Section Break",
+   "label": "Decision"
+  },
+  {
+   "fieldname": "decided_by",
+   "fieldtype": "Link",
+   "label": "Decided By",
+   "read_only": 1,
+   "options": "User"
+  },
+  {
+   "fieldname": "decided_at",
+   "fieldtype": "Datetime",
+   "label": "Decided At",
+   "read_only": 1
+  },
+  {
+   "fieldname": "decision_note",
+   "fieldtype": "Small Text",
+   "label": "Decision Note",
+   "read_only": 1
+  }
+ ]
+}

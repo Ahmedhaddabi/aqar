@@ -1,0 +1,166 @@
+{
+ "doctype": "DocType",
+ "name": "Aqar Platform Settings",
+ "module": "Aqar 360",
+ "issingle": 1,
+ "track_changes": 1,
+ "field_order": [
+  "environment",
+  "legal_approval_status",
+  "real_personal_data_allowed",
+  "selected_campaigns_only",
+  "phase_2_enabled",
+  "phase_3_enabled",
+  "public_ai_enabled",
+  "calendar_section",
+  "work_days",
+  "work_start",
+  "col_calendar",
+  "work_end",
+  "holiday_list",
+  "auto_assign_requests",
+  "messaging_section",
+  "quiet_hours_start",
+  "quiet_hours_end",
+  "col_messaging",
+  "max_followups_per_week",
+  "still_searching_days"
+ ],
+ "fields": [
+  {
+   "fieldname": "environment",
+   "fieldtype": "Select",
+   "label": "Environment",
+   "options": "Local\nStaging\nProduction",
+   "default": "Local",
+   "reqd": 1
+  },
+  {
+   "fieldname": "legal_approval_status",
+   "fieldtype": "Select",
+   "label": "Legal Approval Status",
+   "options": "Pending Legal Approval\nApproved",
+   "default": "Pending Legal Approval",
+   "reqd": 1
+  },
+  {
+   "fieldname": "real_personal_data_allowed",
+   "fieldtype": "Check",
+   "label": "Real Personal Data Allowed",
+   "default": "0"
+  },
+  {
+   "fieldname": "selected_campaigns_only",
+   "fieldtype": "Check",
+   "label": "Selected Campaigns Only",
+   "default": "1"
+  },
+  {
+   "fieldname": "phase_2_enabled",
+   "fieldtype": "Check",
+   "label": "Phase 2 Enabled",
+   "default": "0",
+   "read_only": 1
+  },
+  {
+   "fieldname": "phase_3_enabled",
+   "fieldtype": "Check",
+   "label": "Phase 3 Enabled",
+   "default": "0",
+   "read_only": 1
+  },
+  {
+   "fieldname": "public_ai_enabled",
+   "fieldtype": "Check",
+   "label": "Public AI Enabled",
+   "default": "0",
+   "read_only": 1
+  },
+  {
+   "fieldname": "calendar_section",
+   "fieldtype": "Section Break",
+   "label": "Working Hours (SLA)"
+  },
+  {
+   "fieldname": "work_days",
+   "fieldtype": "Data",
+   "label": "Work Days",
+   "default": "Sun,Mon,Tue,Wed,Thu"
+  },
+  {
+   "fieldname": "work_start",
+   "fieldtype": "Time",
+   "label": "Work Starts",
+   "default": "08:00:00"
+  },
+  {
+   "fieldname": "col_calendar",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "work_end",
+   "fieldtype": "Time",
+   "label": "Work Ends",
+   "default": "17:00:00"
+  },
+  {
+   "fieldname": "holiday_list",
+   "fieldtype": "Link",
+   "label": "Holiday List",
+   "options": "Holiday List"
+  },
+  {
+   "fieldname": "auto_assign_requests",
+   "fieldtype": "Check",
+   "label": "Auto-assign New Requests",
+   "default": "1",
+   "description": "Round-robin new requests, intakes and consultations among Aqar Opportunity Staff."
+  },
+  {
+   "fieldname": "messaging_section",
+   "fieldtype": "Section Break",
+   "label": "Customer Messages"
+  },
+  {
+   "fieldname": "quiet_hours_start",
+   "fieldtype": "Time",
+   "label": "Quiet Hours Start",
+   "default": "21:00:00",
+   "description": "Follow-up and marketing messages wait until quiet hours end. Request confirmations are not delayed."
+  },
+  {
+   "fieldname": "quiet_hours_end",
+   "fieldtype": "Time",
+   "label": "Quiet Hours End",
+   "default": "08:00:00"
+  },
+  {
+   "fieldname": "col_messaging",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "max_followups_per_week",
+   "fieldtype": "Int",
+   "label": "Max Follow-ups per Customer per Week",
+   "default": "2"
+  },
+  {
+   "fieldname": "still_searching_days",
+   "fieldtype": "Int",
+   "label": "Ask 'Still Searching?' After (Days)",
+   "default": "14"
+  }
+ ],
+ "permissions": [
+  {
+   "role": "System Manager",
+   "read": 1,
+   "write": 1
+  },
+  {
+   "role": "Aqar Admin",
+   "read": 1,
+   "write": 1
+  }
+ ]
+}

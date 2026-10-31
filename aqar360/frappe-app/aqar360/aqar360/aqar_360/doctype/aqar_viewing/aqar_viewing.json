@@ -1,0 +1,217 @@
+{
+ "doctype": "DocType",
+ "name": "Aqar Viewing",
+ "module": "Aqar 360",
+ "engine": "InnoDB",
+ "sort_field": "scheduled_at",
+ "sort_order": "DESC",
+ "autoname": "format:VIEW-{YYYY}-{#####}",
+ "title_field": "supply_label",
+ "track_changes": 1,
+ "permissions": [
+  {
+   "role": "System Manager",
+   "read": 1,
+   "report": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 1
+  },
+  {
+   "role": "Aqar Admin",
+   "read": 1,
+   "report": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 1
+  },
+  {
+   "role": "Aqar Manager",
+   "read": 1,
+   "report": 1,
+   "write": 1,
+   "create": 1
+  },
+  {
+   "role": "Aqar Team Lead",
+   "read": 1,
+   "report": 1,
+   "write": 1,
+   "create": 1
+  },
+  {
+   "role": "Aqar Opportunity Staff",
+   "read": 1,
+   "report": 1,
+   "write": 1,
+   "create": 1
+  },
+  {
+   "role": "Aqar Business Development",
+   "read": 1,
+   "report": 1,
+   "write": 1,
+   "create": 1
+  }
+ ],
+ "field_order": [
+  "status",
+  "search_request",
+  "match",
+  "contact",
+  "col",
+  "scheduled_at",
+  "staff",
+  "meeting_point",
+  "supply_section",
+  "supply_label",
+  "property",
+  "project",
+  "area",
+  "price",
+  "outcome_section",
+  "outcome",
+  "not_suitable_reason",
+  "customer_feedback",
+  "col2",
+  "next_step",
+  "follow_up_on"
+ ],
+ "fields": [
+  {
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "label": "Status",
+   "options": "Scheduled\nConfirmed\nCompleted\nNo Show\nCancelled",
+   "default": "Scheduled",
+   "in_list_view": 1,
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "search_request",
+   "fieldtype": "Link",
+   "label": "Search Request",
+   "options": "Aqar Search Request",
+   "reqd": 1,
+   "in_list_view": 1,
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "match",
+   "fieldtype": "Link",
+   "label": "Match",
+   "options": "Aqar Match",
+   "reqd": 1
+  },
+  {
+   "fieldname": "contact",
+   "fieldtype": "Link",
+   "label": "Customer",
+   "read_only": 1,
+   "options": "Contact",
+   "fetch_from": "search_request.contact"
+  },
+  {
+   "fieldname": "col",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "scheduled_at",
+   "fieldtype": "Datetime",
+   "label": "Scheduled At",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "staff",
+   "fieldtype": "Link",
+   "label": "Staff",
+   "options": "User",
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "meeting_point",
+   "fieldtype": "Small Text",
+   "label": "Meeting Point / Notes"
+  },
+  {
+   "fieldname": "supply_section",
+   "fieldtype": "Section Break",
+   "label": "Property"
+  },
+  {
+   "fieldname": "supply_label",
+   "fieldtype": "Data",
+   "label": "Property / Unit",
+   "read_only": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "property",
+   "fieldtype": "Link",
+   "label": "Property",
+   "read_only": 1,
+   "options": "Property"
+  },
+  {
+   "fieldname": "project",
+   "fieldtype": "Link",
+   "label": "Project",
+   "read_only": 1,
+   "options": "Aqar Development Project"
+  },
+  {
+   "fieldname": "area",
+   "fieldtype": "Link",
+   "label": "Area",
+   "read_only": 1,
+   "options": "Aqar Area"
+  },
+  {
+   "fieldname": "price",
+   "fieldtype": "Currency",
+   "label": "Price (OMR)",
+   "read_only": 1,
+   "precision": "3"
+  },
+  {
+   "fieldname": "outcome_section",
+   "fieldtype": "Section Break",
+   "label": "Outcome"
+  },
+  {
+   "fieldname": "outcome",
+   "fieldtype": "Select",
+   "label": "Outcome",
+   "options": "\nInterested\nNegotiating\nNot Suitable\nWants Alternatives",
+   "in_list_view": 1,
+   "depends_on": "eval:doc.status=='Completed'"
+  },
+  {
+   "fieldname": "not_suitable_reason",
+   "fieldtype": "Select",
+   "label": "Not Suitable Because",
+   "options": "\nPrice\nLocation\nSize\nCondition\nLayout\nOther",
+   "depends_on": "eval:doc.outcome=='Not Suitable'"
+  },
+  {
+   "fieldname": "customer_feedback",
+   "fieldtype": "Small Text",
+   "label": "Customer Feedback"
+  },
+  {
+   "fieldname": "col2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "next_step",
+   "fieldtype": "Small Text",
+   "label": "Next Step"
+  },
+  {
+   "fieldname": "follow_up_on",
+   "fieldtype": "Date",
+   "label": "Follow Up On"
+  }
+ ]
+}

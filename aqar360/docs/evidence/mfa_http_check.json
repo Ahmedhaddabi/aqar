@@ -1,0 +1,5 @@
+{
+  "PasswordOnlyLoggedIn": false,
+  "OtpChallengeReturned": true,
+  "OtpMethod": "Email"
+}

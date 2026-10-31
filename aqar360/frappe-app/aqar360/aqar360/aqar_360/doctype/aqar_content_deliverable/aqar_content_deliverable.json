@@ -1,0 +1,70 @@
+{
+ "doctype": "DocType",
+ "name": "Aqar Content Deliverable",
+ "module": "Aqar 360",
+ "engine": "InnoDB",
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "istable": 1,
+ "editable_grid": 1,
+ "permissions": [],
+ "field_order": [
+  "service_item",
+  "deliverable_type",
+  "file",
+  "version",
+  "status",
+  "uploaded_on",
+  "note"
+ ],
+ "fields": [
+  {
+   "fieldname": "service_item",
+   "fieldtype": "Link",
+   "label": "Service",
+   "options": "Item",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "deliverable_type",
+   "fieldtype": "Select",
+   "label": "Type",
+   "options": "Photos\nFloor Plan\nVideo\nOther",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "file",
+   "fieldtype": "Attach",
+   "label": "File",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "version",
+   "fieldtype": "Int",
+   "label": "Version",
+   "read_only": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "label": "Client Status",
+   "options": "Uploaded\nClient Approved\nChanges Requested",
+   "default": "Uploaded",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "uploaded_on",
+   "fieldtype": "Datetime",
+   "label": "Uploaded On",
+   "read_only": 1
+  },
+  {
+   "fieldname": "note",
+   "fieldtype": "Small Text",
+   "label": "Note"
+  }
+ ]
+}

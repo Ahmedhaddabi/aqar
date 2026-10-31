@@ -1,0 +1,11 @@
+{
+  "name": "Aqar 360 Frappe development",
+  "dockerComposeFile": [
+    "../../frappe_docker/compose.custom.yaml",
+    "../infra/compose.dev.yaml"
+  ],
+  "service": "dev",
+  "workspaceFolder": "/workspace/aqar360",
+  "remoteUser": "frappe",
+  "shutdownAction": "none"
+}

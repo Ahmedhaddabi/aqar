@@ -1,0 +1,107 @@
+{
+ "doctype": "DocType",
+ "name": "Aqar Terms Version",
+ "module": "Aqar 360",
+ "engine": "InnoDB",
+ "title_field": "policy_type",
+ "track_changes": 1,
+ "permissions": [
+  {
+   "role": "System Manager",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 1
+  },
+  {
+   "role": "Aqar Admin",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 1
+  },
+  {
+   "role": "Aqar Manager",
+   "read": 1
+  }
+ ],
+ "field_order": [
+  "policy_type",
+  "language",
+  "version",
+  "status",
+  "effective_from",
+  "body",
+  "content_hash",
+  "approved_by",
+  "approved_on"
+ ],
+ "fields": [
+  {
+   "fieldname": "policy_type",
+   "fieldtype": "Select",
+   "label": "Policy Type",
+   "options": "Website Terms of Use\nService Terms\nPaid Media Terms\nMarketing Success Fee Terms\nPayment Refund Cancellation\nPrivacy Policy\nMarketing Consent\nContent IP Terms\nSupplier Terms\nCareers Privacy Notice\nConsulting Terms",
+   "reqd": 1,
+   "in_list_view": 1,
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "language",
+   "fieldtype": "Select",
+   "label": "Language",
+   "options": "ar\nen",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "version",
+   "fieldtype": "Data",
+   "label": "Version",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "label": "Status",
+   "options": "Draft\nLegal Review\nApproved\nRetired",
+   "default": "Draft",
+   "reqd": 1,
+   "in_list_view": 1,
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "effective_from",
+   "fieldtype": "Datetime",
+   "label": "Effective From"
+  },
+  {
+   "fieldname": "body",
+   "fieldtype": "Text Editor",
+   "label": "Body",
+   "reqd": 1
+  },
+  {
+   "fieldname": "content_hash",
+   "fieldtype": "Data",
+   "label": "Content Hash",
+   "read_only": 1
+  },
+  {
+   "fieldname": "approved_by",
+   "fieldtype": "Link",
+   "label": "Approved By",
+   "options": "User",
+   "read_only": 1
+  },
+  {
+   "fieldname": "approved_on",
+   "fieldtype": "Datetime",
+   "label": "Approved On",
+   "read_only": 1
+  }
+ ],
+ "sort_field": "creation",
+ "sort_order": "DESC"
+}

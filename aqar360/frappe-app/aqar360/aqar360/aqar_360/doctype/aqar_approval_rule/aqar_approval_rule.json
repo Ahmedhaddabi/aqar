@@ -1,0 +1,114 @@
+{
+ "doctype": "DocType",
+ "name": "Aqar Approval Rule",
+ "module": "Aqar 360",
+ "engine": "InnoDB",
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "autoname": "field:rule_name",
+ "title_field": "rule_name",
+ "track_changes": 1,
+ "permissions": [
+  {
+   "role": "System Manager",
+   "read": 1,
+   "report": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 1
+  },
+  {
+   "role": "Aqar Admin",
+   "read": 1,
+   "report": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 1
+  },
+  {
+   "role": "Aqar Manager",
+   "read": 1,
+   "report": 1
+  }
+ ],
+ "field_order": [
+  "rule_name",
+  "active",
+  "action",
+  "applies_to",
+  "watched_field",
+  "col",
+  "threshold_type",
+  "threshold_value",
+  "approver_role",
+  "description"
+ ],
+ "fields": [
+  {
+   "fieldname": "rule_name",
+   "fieldtype": "Data",
+   "label": "Rule",
+   "reqd": 1,
+   "unique": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "active",
+   "fieldtype": "Check",
+   "label": "Active",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "action",
+   "fieldtype": "Select",
+   "label": "Action",
+   "reqd": 1,
+   "in_list_view": 1,
+   "options": "Price Change\nDiscount\nRefund\nExpense\nMedia Budget\nOther"
+  },
+  {
+   "fieldname": "applies_to",
+   "fieldtype": "Link",
+   "label": "Applies To",
+   "options": "DocType",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "watched_field",
+   "fieldtype": "Data",
+   "label": "Watched Field",
+   "reqd": 1
+  },
+  {
+   "fieldname": "col",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "threshold_type",
+   "fieldtype": "Select",
+   "label": "Threshold",
+   "reqd": 1,
+   "options": "Percent Decrease\nPercent Change\nAmount Above"
+  },
+  {
+   "fieldname": "threshold_value",
+   "fieldtype": "Float",
+   "label": "Threshold Value",
+   "reqd": 1
+  },
+  {
+   "fieldname": "approver_role",
+   "fieldtype": "Link",
+   "label": "Approver Role",
+   "options": "Role",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "description",
+   "fieldtype": "Small Text",
+   "label": "Description"
+  }
+ ]
+}

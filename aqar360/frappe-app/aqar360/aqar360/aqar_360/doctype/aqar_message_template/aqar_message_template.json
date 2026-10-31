@@ -1,0 +1,176 @@
+{
+ "doctype": "DocType",
+ "name": "Aqar Message Template",
+ "module": "Aqar 360",
+ "engine": "InnoDB",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "title_field": "title",
+ "track_changes": 1,
+ "search_fields": "template_key,language,status",
+ "permissions": [
+  {
+   "role": "System Manager",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 1,
+   "report": 1
+  },
+  {
+   "role": "Aqar Admin",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 1,
+   "report": 1
+  },
+  {
+   "role": "Aqar Manager",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "report": 1
+  },
+  {
+   "role": "Aqar Marketing",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "report": 1
+  }
+ ],
+ "field_order": [
+  "template_key",
+  "title",
+  "language",
+  "channel",
+  "col",
+  "version",
+  "status",
+  "category",
+  "consent_purpose",
+  "content_section",
+  "subject",
+  "body",
+  "variables",
+  "approval_section",
+  "approved_by",
+  "approved_on"
+ ],
+ "fields": [
+  {
+   "fieldname": "template_key",
+   "fieldtype": "Data",
+   "label": "Template Key",
+   "reqd": 1,
+   "in_list_view": 1,
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "title",
+   "fieldtype": "Data",
+   "label": "Title",
+   "reqd": 1
+  },
+  {
+   "fieldname": "language",
+   "fieldtype": "Select",
+   "label": "Language",
+   "options": "ar\nen",
+   "reqd": 1,
+   "in_list_view": 1,
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "channel",
+   "fieldtype": "Select",
+   "label": "Channel",
+   "options": "Email\nWhatsApp",
+   "default": "Email",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "col",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "version",
+   "fieldtype": "Int",
+   "label": "Version",
+   "reqd": 1,
+   "default": "1",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "label": "Status",
+   "options": "Draft\nApproved\nRetired",
+   "default": "Draft",
+   "reqd": 1,
+   "in_list_view": 1,
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "category",
+   "fieldtype": "Select",
+   "label": "Category",
+   "options": "Transactional\nFollow-up\nMarketing\nStaff",
+   "reqd": 1,
+   "default": "Transactional"
+  },
+  {
+   "fieldname": "consent_purpose",
+   "fieldtype": "Select",
+   "label": "Consent Purpose",
+   "reqd": 1,
+   "default": "Request Updates",
+   "options": "Request Updates\nMatch Alerts\nMarketing\nStaff (no consent)"
+  },
+  {
+   "fieldname": "content_section",
+   "fieldtype": "Section Break",
+   "label": "Content"
+  },
+  {
+   "fieldname": "subject",
+   "fieldtype": "Data",
+   "label": "Subject",
+   "reqd": 1,
+   "description": "Jinja variables, e.g. {{ request_number }}."
+  },
+  {
+   "fieldname": "body",
+   "fieldtype": "Text",
+   "label": "Body",
+   "reqd": 1,
+   "description": "Plain text with Jinja variables: {{ person }}, {{ request_number }}, {{ link }}, {{ company }} …"
+  },
+  {
+   "fieldname": "variables",
+   "fieldtype": "Small Text",
+   "label": "Available Variables",
+   "read_only": 1
+  },
+  {
+   "fieldname": "approval_section",
+   "fieldtype": "Section Break",
+   "label": "Approval"
+  },
+  {
+   "fieldname": "approved_by",
+   "fieldtype": "Link",
+   "label": "Approved By",
+   "read_only": 1,
+   "options": "User"
+  },
+  {
+   "fieldname": "approved_on",
+   "fieldtype": "Datetime",
+   "label": "Approved On",
+   "read_only": 1
+  }
+ ]
+}

@@ -1,0 +1,451 @@
+{
+ "doctype": "DocType",
+ "name": "Aqar Opportunity Intake",
+ "module": "Aqar 360",
+ "engine": "InnoDB",
+ "autoname": "format:OPP-{YYYY}-{#####}",
+ "title_field": "submitted_name",
+ "track_changes": 1,
+ "search_fields": "submitted_name,submitted_phone,review_status",
+ "permissions": [
+  {
+   "role": "System Manager",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 1,
+   "export": 1,
+   "report": 1
+  },
+  {
+   "role": "Aqar Admin",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 1,
+   "export": 1,
+   "report": 1
+  },
+  {
+   "role": "Aqar Manager",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "report": 1
+  },
+  {
+   "role": "Aqar Team Lead",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "report": 1
+  },
+  {
+   "role": "Aqar Opportunity Staff",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "report": 1
+  },
+  {
+   "role": "Aqar Business Development",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "report": 1
+  },
+  {
+   "role": "System Manager",
+   "read": 1,
+   "write": 1,
+   "permlevel": 1
+  },
+  {
+   "role": "Aqar Admin",
+   "read": 1,
+   "write": 1,
+   "permlevel": 1
+  },
+  {
+   "role": "Aqar Manager",
+   "read": 1,
+   "write": 1,
+   "permlevel": 1
+  },
+  {
+   "role": "Aqar Team Lead",
+   "read": 1,
+   "write": 1,
+   "permlevel": 1
+  },
+  {
+   "role": "Aqar Opportunity Staff",
+   "read": 1,
+   "write": 1,
+   "permlevel": 1
+  }
+ ],
+ "field_order": [
+  "review_status",
+  "request_type",
+  "property_type",
+  "review_col",
+  "area",
+  "location_details",
+  "property",
+  "assigned_to",
+  "customer_section",
+  "contact",
+  "submitted_name",
+  "submitted_phone",
+  "submitted_email",
+  "customer_col",
+  "language",
+  "duplicate_candidate",
+  "duplicate_review",
+  "property_section",
+  "asking_price",
+  "size_sqm",
+  "bedrooms",
+  "bathrooms",
+  "property_col",
+  "property_condition",
+  "readiness",
+  "description",
+  "accuracy_declaration",
+  "internal_section",
+  "internal_decline_reason",
+  "internal_notes",
+  "internal_col",
+  "score_current_demand",
+  "score_price_realism",
+  "score_asset_quality",
+  "score_production_ease",
+  "score_expected_value",
+  "score_conversion",
+  "score_documents",
+  "opportunity_score",
+  "source_section",
+  "source_channel",
+  "utm_source",
+  "utm_medium",
+  "utm_campaign",
+  "source_col",
+  "utm_content",
+  "landing_page",
+  "referrer",
+  "submitted_at",
+  "idempotency_key"
+ ],
+ "fields": [
+  {
+   "fieldname": "review_status",
+   "fieldtype": "Select",
+   "read_only": 1,
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "default": "Submitted",
+   "allow_on_submit": 0,
+   "options": "Submitted\nUnder Review\nNeed More Info\nAdjustment Suggested\nAccepted\nNot Selected",
+   "label": "Review Status"
+  },
+  {
+   "fieldname": "request_type",
+   "fieldtype": "Select",
+   "options": "Sell\nLet\nContent Only\nMarket Project",
+   "reqd": 1,
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Request Type"
+  },
+  {
+   "fieldname": "property_type",
+   "fieldtype": "Select",
+   "options": "Apartment\nVilla\nLand\nBuilding\nShop\nOffice\nWarehouse\nShowroom\nProject\nCommercial\nOther",
+   "reqd": 1,
+   "in_list_view": 1,
+   "label": "Property Type"
+  },
+  {
+   "fieldname": "review_col",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "area",
+   "fieldtype": "Link",
+   "options": "Aqar Area",
+   "in_standard_filter": 1,
+   "label": "Area"
+  },
+  {
+   "fieldname": "location_details",
+   "fieldtype": "Small Text",
+   "label": "Location Details"
+  },
+  {
+   "fieldname": "property",
+   "fieldtype": "Link",
+   "options": "Property",
+   "read_only": 1,
+   "description": "Linked once the opportunity is accepted and registered (M3).",
+   "label": "Property"
+  },
+  {
+   "fieldname": "assigned_to",
+   "fieldtype": "Link",
+   "label": "Owner",
+   "options": "User",
+   "in_standard_filter": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "customer_section",
+   "fieldtype": "Section Break",
+   "label": "Customer"
+  },
+  {
+   "fieldname": "contact",
+   "fieldtype": "Link",
+   "options": "Contact",
+   "in_standard_filter": 1,
+   "label": "Contact"
+  },
+  {
+   "fieldname": "submitted_name",
+   "fieldtype": "Data",
+   "reqd": 1,
+   "in_list_view": 1,
+   "label": "Name as Submitted"
+  },
+  {
+   "fieldname": "submitted_phone",
+   "fieldtype": "Data",
+   "options": "Phone",
+   "label": "Phone as Submitted"
+  },
+  {
+   "fieldname": "submitted_email",
+   "fieldtype": "Data",
+   "options": "Email",
+   "label": "Email as Submitted"
+  },
+  {
+   "fieldname": "customer_col",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "language",
+   "fieldtype": "Select",
+   "options": "ar\nen",
+   "default": "ar",
+   "label": "Language"
+  },
+  {
+   "fieldname": "duplicate_candidate",
+   "fieldtype": "Link",
+   "options": "Contact",
+   "read_only": 1,
+   "label": "Possible Duplicate Of"
+  },
+  {
+   "fieldname": "duplicate_review",
+   "fieldtype": "Select",
+   "options": "\nNeeds Review\nConfirmed Same Person\nConfirmed Different Person",
+   "depends_on": "duplicate_candidate",
+   "label": "Duplicate Review"
+  },
+  {
+   "fieldname": "property_section",
+   "fieldtype": "Section Break",
+   "label": "Property Facts"
+  },
+  {
+   "fieldname": "asking_price",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "precision": "3",
+   "label": "Asking Price / Rent (OMR)"
+  },
+  {
+   "fieldname": "size_sqm",
+   "fieldtype": "Float",
+   "label": "Size (m²)"
+  },
+  {
+   "fieldname": "bedrooms",
+   "fieldtype": "Int",
+   "label": "Bedrooms"
+  },
+  {
+   "fieldname": "bathrooms",
+   "fieldtype": "Int",
+   "label": "Bathrooms"
+  },
+  {
+   "fieldname": "property_col",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "property_condition",
+   "fieldtype": "Select",
+   "options": "\nNew\nExcellent\nGood\nNeeds Renovation\nUnder Construction",
+   "label": "Condition"
+  },
+  {
+   "fieldname": "readiness",
+   "fieldtype": "Select",
+   "options": "\nReady Now\nWithin 3 Months\nLater",
+   "label": "Readiness"
+  },
+  {
+   "fieldname": "description",
+   "fieldtype": "Text",
+   "label": "Description"
+  },
+  {
+   "fieldname": "accuracy_declaration",
+   "fieldtype": "Check",
+   "reqd": 1,
+   "description": "The owner confirms the information is accurate and accepts review without any commitment to accept (§5.1).",
+   "label": "Owner Accuracy Declaration"
+  },
+  {
+   "fieldname": "internal_section",
+   "fieldtype": "Section Break",
+   "permlevel": 1,
+   "label": "Internal Review"
+  },
+  {
+   "fieldname": "internal_decline_reason",
+   "fieldtype": "Select",
+   "permlevel": 1,
+   "options": "\nPrice Far From Market\nArea Outside Focus\nWeak Demand\nHard to Market\nMissing Information\nLegal / Documentation Risk\nInsufficient Commercial Return\nCapacity Pressure\nDuplicate\nOther",
+   "label": "Internal Decline Reason"
+  },
+  {
+   "fieldname": "internal_notes",
+   "fieldtype": "Text",
+   "permlevel": 1,
+   "label": "Internal Notes"
+  },
+  {
+   "fieldname": "internal_col",
+   "fieldtype": "Column Break",
+   "permlevel": 1
+  },
+  {
+   "fieldname": "score_current_demand",
+   "fieldtype": "Rating",
+   "permlevel": 1,
+   "label": "Current Demand"
+  },
+  {
+   "fieldname": "score_price_realism",
+   "fieldtype": "Rating",
+   "permlevel": 1,
+   "label": "Price Realism"
+  },
+  {
+   "fieldname": "score_asset_quality",
+   "fieldtype": "Rating",
+   "permlevel": 1,
+   "label": "Asset Quality"
+  },
+  {
+   "fieldname": "score_production_ease",
+   "fieldtype": "Rating",
+   "permlevel": 1,
+   "label": "Ease of Production"
+  },
+  {
+   "fieldname": "score_expected_value",
+   "fieldtype": "Rating",
+   "permlevel": 1,
+   "label": "Expected Value"
+  },
+  {
+   "fieldname": "score_conversion",
+   "fieldtype": "Rating",
+   "permlevel": 1,
+   "label": "Conversion Likelihood"
+  },
+  {
+   "fieldname": "score_documents",
+   "fieldtype": "Rating",
+   "permlevel": 1,
+   "label": "Document Completeness"
+  },
+  {
+   "fieldname": "opportunity_score",
+   "fieldtype": "Percent",
+   "read_only": 1,
+   "permlevel": 1,
+   "description": "Average of the rated factors; advisory only — the decision stays human.",
+   "label": "Opportunity Score"
+  },
+  {
+   "fieldname": "source_section",
+   "fieldtype": "Section Break",
+   "collapsible": 1,
+   "label": "Source"
+  },
+  {
+   "fieldname": "source_channel",
+   "fieldtype": "Select",
+   "options": "Website\nInstagram\nGoogle\nMeta\nTikTok\nSnapchat\nReferral\nWhatsApp\nPhone\nWalk-in\nStaff Entry\nOther",
+   "default": "Staff Entry",
+   "in_standard_filter": 1,
+   "label": "Source Channel"
+  },
+  {
+   "fieldname": "utm_source",
+   "fieldtype": "Data",
+   "label": "UTM Source"
+  },
+  {
+   "fieldname": "utm_medium",
+   "fieldtype": "Data",
+   "label": "UTM Medium"
+  },
+  {
+   "fieldname": "utm_campaign",
+   "fieldtype": "Data",
+   "label": "UTM Campaign"
+  },
+  {
+   "fieldname": "source_col",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "utm_content",
+   "fieldtype": "Data",
+   "label": "UTM Content"
+  },
+  {
+   "fieldname": "landing_page",
+   "fieldtype": "Data",
+   "label": "Landing Page"
+  },
+  {
+   "fieldname": "referrer",
+   "fieldtype": "Data",
+   "label": "Referrer"
+  },
+  {
+   "fieldname": "submitted_at",
+   "fieldtype": "Datetime",
+   "read_only": 1,
+   "label": "Submitted At"
+  },
+  {
+   "fieldname": "idempotency_key",
+   "fieldtype": "Data",
+   "unique": 1,
+   "read_only": 1,
+   "hidden": 1,
+   "label": "Idempotency Key"
+  }
+ ],
+ "sort_field": "creation",
+ "sort_order": "DESC"
+}

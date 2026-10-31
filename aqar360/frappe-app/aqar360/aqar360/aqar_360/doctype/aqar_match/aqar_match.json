@@ -1,0 +1,365 @@
+{
+ "doctype": "DocType",
+ "name": "Aqar Match",
+ "module": "Aqar 360",
+ "engine": "InnoDB",
+ "autoname": "format:MATCH-{#######}",
+ "in_create": 1,
+ "title_field": "supply_label",
+ "track_changes": 1,
+ "sort_field": "score",
+ "sort_order": "DESC",
+ "search_fields": "search_request,supply_label,status",
+ "field_order": [
+  "status",
+  "match_type",
+  "score",
+  "search_request",
+  "contact",
+  "col_a",
+  "supply_doctype",
+  "supply_name",
+  "supply_row",
+  "supply_label",
+  "price",
+  "budget_max",
+  "supply_section",
+  "property",
+  "project",
+  "unit_type",
+  "col_b",
+  "area",
+  "supply_verified",
+  "supply_visibility",
+  "explanation_section",
+  "reasons",
+  "warnings",
+  "col_c",
+  "score_budget",
+  "score_location",
+  "score_type",
+  "score_rooms",
+  "score_size",
+  "score_readiness",
+  "penalty",
+  "review_section",
+  "reviewed_by",
+  "approved_by",
+  "approved_on",
+  "col_d",
+  "rejection_reason",
+  "sent_channel",
+  "sent_on",
+  "staff_notes",
+  "match_key"
+ ],
+ "fields": [
+  {
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "label": "Status",
+   "read_only": 1,
+   "options": "Suggested\nTeam Reviewed\nApproved\nSent\nRejected\nWithdrawn",
+   "default": "Suggested",
+   "in_list_view": 1,
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "match_type",
+   "fieldtype": "Select",
+   "label": "Match Type",
+   "read_only": 1,
+   "options": "Within Budget\nNear Match\nCustomer Interest",
+   "in_list_view": 1,
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "score",
+   "fieldtype": "Percent",
+   "label": "Match Score",
+   "read_only": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "search_request",
+   "fieldtype": "Link",
+   "label": "Search Request",
+   "read_only": 1,
+   "options": "Aqar Search Request",
+   "reqd": 1,
+   "in_list_view": 1,
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "contact",
+   "fieldtype": "Link",
+   "label": "Customer Contact",
+   "read_only": 1,
+   "options": "Contact",
+   "fetch_from": "search_request.contact"
+  },
+  {
+   "fieldname": "col_a",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "supply_doctype",
+   "fieldtype": "Select",
+   "label": "Supply Type",
+   "read_only": 1,
+   "options": "Property Unit\nProperty\nAqar Development Project",
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "supply_name",
+   "fieldtype": "Dynamic Link",
+   "label": "Supply",
+   "read_only": 1,
+   "options": "supply_doctype"
+  },
+  {
+   "fieldname": "supply_row",
+   "fieldtype": "Data",
+   "label": "Project Unit Type Row",
+   "read_only": 1,
+   "hidden": 1
+  },
+  {
+   "fieldname": "supply_label",
+   "fieldtype": "Data",
+   "label": "Supply Description",
+   "read_only": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "price",
+   "fieldtype": "Currency",
+   "label": "Price (OMR)",
+   "read_only": 1,
+   "precision": "3"
+  },
+  {
+   "fieldname": "budget_max",
+   "fieldtype": "Currency",
+   "label": "Customer Budget (OMR)",
+   "read_only": 1,
+   "precision": "3"
+  },
+  {
+   "fieldname": "supply_section",
+   "fieldtype": "Section Break",
+   "label": "Supply"
+  },
+  {
+   "fieldname": "property",
+   "fieldtype": "Link",
+   "label": "Property",
+   "read_only": 1,
+   "options": "Property",
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "project",
+   "fieldtype": "Link",
+   "label": "Project",
+   "read_only": 1,
+   "options": "Aqar Development Project",
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "unit_type",
+   "fieldtype": "Link",
+   "label": "Unit Type",
+   "read_only": 1,
+   "options": "Aqar Unit Type"
+  },
+  {
+   "fieldname": "col_b",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "area",
+   "fieldtype": "Link",
+   "label": "Area",
+   "read_only": 1,
+   "options": "Aqar Area",
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "supply_verified",
+   "fieldtype": "Check",
+   "label": "Supply Verified",
+   "read_only": 1
+  },
+  {
+   "fieldname": "supply_visibility",
+   "fieldtype": "Data",
+   "label": "Supply Visibility",
+   "read_only": 1
+  },
+  {
+   "fieldname": "explanation_section",
+   "fieldtype": "Section Break",
+   "label": "Why This Match"
+  },
+  {
+   "fieldname": "reasons",
+   "fieldtype": "Small Text",
+   "label": "Reasons",
+   "read_only": 1
+  },
+  {
+   "fieldname": "warnings",
+   "fieldtype": "Small Text",
+   "label": "Points to Check",
+   "read_only": 1
+  },
+  {
+   "fieldname": "col_c",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "score_budget",
+   "fieldtype": "Int",
+   "label": "Budget Fit (35)",
+   "read_only": 1
+  },
+  {
+   "fieldname": "score_location",
+   "fieldtype": "Int",
+   "label": "Location Fit (25)",
+   "read_only": 1
+  },
+  {
+   "fieldname": "score_type",
+   "fieldtype": "Int",
+   "label": "Type Fit (20)",
+   "read_only": 1
+  },
+  {
+   "fieldname": "score_rooms",
+   "fieldtype": "Int",
+   "label": "Rooms (10)",
+   "read_only": 1
+  },
+  {
+   "fieldname": "score_size",
+   "fieldtype": "Int",
+   "label": "Size (5)",
+   "read_only": 1
+  },
+  {
+   "fieldname": "score_readiness",
+   "fieldtype": "Int",
+   "label": "Readiness (5)",
+   "read_only": 1
+  },
+  {
+   "fieldname": "penalty",
+   "fieldtype": "Int",
+   "label": "Deductions",
+   "read_only": 1
+  },
+  {
+   "fieldname": "review_section",
+   "fieldtype": "Section Break",
+   "label": "Team Review"
+  },
+  {
+   "fieldname": "reviewed_by",
+   "fieldtype": "Link",
+   "label": "Reviewed By",
+   "read_only": 1,
+   "options": "User"
+  },
+  {
+   "fieldname": "approved_by",
+   "fieldtype": "Link",
+   "label": "Approved By",
+   "read_only": 1,
+   "options": "User"
+  },
+  {
+   "fieldname": "approved_on",
+   "fieldtype": "Datetime",
+   "label": "Approved On",
+   "read_only": 1
+  },
+  {
+   "fieldname": "col_d",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "rejection_reason",
+   "fieldtype": "Select",
+   "label": "Rejection Reason",
+   "read_only": 1,
+   "options": "\nNot Suitable\nCustomer Not Interested\nPrice\nLocation\nAlready Offered\nOther"
+  },
+  {
+   "fieldname": "sent_channel",
+   "fieldtype": "Select",
+   "label": "Shared Via",
+   "read_only": 1,
+   "options": "\nEmail\nWhatsApp\nPhone\nIn Person"
+  },
+  {
+   "fieldname": "sent_on",
+   "fieldtype": "Datetime",
+   "label": "Shared On",
+   "read_only": 1
+  },
+  {
+   "fieldname": "staff_notes",
+   "fieldtype": "Small Text",
+   "label": "Staff Notes"
+  },
+  {
+   "fieldname": "match_key",
+   "fieldtype": "Data",
+   "label": "Match Key",
+   "read_only": 1,
+   "unique": 1,
+   "hidden": 1
+  }
+ ],
+ "permissions": [
+  {
+   "role": "System Manager",
+   "read": 1,
+   "write": 1,
+   "report": 1,
+   "export": 1
+  },
+  {
+   "role": "Aqar Admin",
+   "read": 1,
+   "write": 1,
+   "report": 1,
+   "export": 1
+  },
+  {
+   "role": "Aqar Opportunity Staff",
+   "read": 1,
+   "write": 1,
+   "report": 1
+  },
+  {
+   "role": "Aqar Team Lead",
+   "read": 1,
+   "write": 1,
+   "report": 1
+  },
+  {
+   "role": "Aqar Manager",
+   "read": 1,
+   "write": 1,
+   "report": 1
+  },
+  {
+   "role": "Aqar Business Development",
+   "read": 1,
+   "report": 1
+  }
+ ]
+}

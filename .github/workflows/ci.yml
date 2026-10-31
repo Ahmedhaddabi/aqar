@@ -1,0 +1,43 @@
+name: Phase 0 foundation
+on: [push, pull_request]
+permissions:
+  contents: read
+jobs:
+  foundation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - name: Fetch the audited Frappe Docker revision
+        shell: bash
+        run: |
+          git clone https://github.com/frappe/frappe_docker ../frappe_docker
+          git -C ../frappe_docker checkout "$(cat aqar360/infra/frappe-docker.revision)"
+      - name: Build the dependency baseline for integration tests
+        run: |
+          docker build --build-arg FRAPPE_BRANCH=version-16 --secret id=apps_json,src=aqar360/infra/apps.json --tag aqar:16 --file ../frappe_docker/images/layered/Containerfile ../frappe_docker
+      - name: Configure a disposable local test stack
+        shell: bash
+        run: |
+          echo "AQAR360_ROOT=$GITHUB_WORKSPACE/aqar360" >> "$GITHUB_ENV"
+          DB_PASSWORD="$(openssl rand -hex 24)"
+          STAGING_ADMIN_PASSWORD="$(openssl rand -hex 18)"
+          echo "::add-mask::$DB_PASSWORD"
+          echo "::add-mask::$STAGING_ADMIN_PASSWORD"
+          echo "DB_PASSWORD=$DB_PASSWORD" >> "$GITHUB_ENV"
+          echo "STAGING_ADMIN_PASSWORD=$STAGING_ADMIN_PASSWORD" >> "$GITHUB_ENV"
+          printf 'DB_PASSWORD=%s\nCUSTOM_IMAGE=aqar\nCUSTOM_TAG=16\nPULL_POLICY=never\nERPNEXT_VERSION=version-16\n' "$DB_PASSWORD" > ../frappe_docker/ci.env
+          docker compose --env-file ../frappe_docker/ci.env -f ../frappe_docker/compose.yaml -f ../frappe_docker/overrides/compose.mariadb.yaml -f ../frappe_docker/overrides/compose.redis.yaml -f ../frappe_docker/overrides/compose.noproxy.yaml config --output ../frappe_docker/compose.custom.yaml
+      - name: Start development services and run Frappe tests
+        shell: bash
+        run: |
+          docker compose -p frappe -f ../frappe_docker/compose.custom.yaml -f aqar360/infra/compose.dev.yaml up -d --wait --wait-timeout 180
+          docker compose -p frappe -f ../frappe_docker/compose.custom.yaml -f aqar360/infra/compose.dev.yaml exec -T -e DB_PASSWORD -e STAGING_ADMIN_PASSWORD dev bash /workspace/aqar360/infra/scripts/ci-foundation.sh
+      - name: Scan tracked source for credential material
+        shell: bash
+        run: |
+          if git grep -nE '(sk-[A-Za-z0-9]{24,}|BEGIN (RSA |OPENSSH |EC )?PRIVATE KEY)' -- aqar360; then exit 1; fi
+      - name: Stop disposable services
+        if: always()
+        run: docker compose -p frappe -f ../frappe_docker/compose.custom.yaml -f aqar360/infra/compose.dev.yaml down --volumes
+

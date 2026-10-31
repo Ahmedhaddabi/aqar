@@ -1,0 +1,14 @@
+frappe_docker/
+**/__pycache__/
+**/.pytest_cache/
+**/.env
+**/.env.*
+!**/.env.example
+**/credentials.local.*
+**/*.log
+**/node_modules/
+**/.next/
+**/.venv/
+**/backups/
+**/*-site_config_backup.json
+**/secrets/

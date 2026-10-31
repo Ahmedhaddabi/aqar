@@ -1,0 +1,117 @@
+{
+ "doctype": "DocType",
+ "name": "Aqar Audit Event",
+ "module": "Aqar 360",
+ "engine": "InnoDB",
+ "autoname": "format:AUD-{sequence}",
+ "in_create": 1,
+ "sort_field": "sequence",
+ "title_field": "action",
+ "permissions": [
+  {
+   "role": "System Manager",
+   "read": 1
+  },
+  {
+   "role": "Aqar Admin",
+   "read": 1
+  }
+ ],
+ "field_order": [
+  "sequence",
+  "event_time",
+  "actor",
+  "action",
+  "reference_doctype",
+  "reference_name",
+  "before_json",
+  "after_json",
+  "ip_address",
+  "previous_hash",
+  "event_hash"
+ ],
+ "fields": [
+  {
+   "fieldname": "sequence",
+   "fieldtype": "Int",
+   "label": "Sequence",
+   "reqd": 1,
+   "unique": 1,
+   "read_only": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "event_time",
+   "fieldtype": "Datetime",
+   "label": "Event Time",
+   "reqd": 1,
+   "read_only": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "actor",
+   "fieldtype": "Link",
+   "label": "Actor",
+   "options": "User",
+   "read_only": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "action",
+   "fieldtype": "Data",
+   "label": "Action",
+   "reqd": 1,
+   "read_only": 1,
+   "in_list_view": 1,
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "reference_doctype",
+   "fieldtype": "Link",
+   "label": "Reference DocType",
+   "options": "DocType",
+   "read_only": 1,
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "reference_name",
+   "fieldtype": "Dynamic Link",
+   "label": "Reference Name",
+   "options": "reference_doctype",
+   "read_only": 1
+  },
+  {
+   "fieldname": "before_json",
+   "fieldtype": "Code",
+   "label": "Before",
+   "options": "JSON",
+   "read_only": 1
+  },
+  {
+   "fieldname": "after_json",
+   "fieldtype": "Code",
+   "label": "After",
+   "options": "JSON",
+   "read_only": 1
+  },
+  {
+   "fieldname": "ip_address",
+   "fieldtype": "Data",
+   "label": "IP Address",
+   "read_only": 1
+  },
+  {
+   "fieldname": "previous_hash",
+   "fieldtype": "Data",
+   "label": "Previous Hash",
+   "read_only": 1
+  },
+  {
+   "fieldname": "event_hash",
+   "fieldtype": "Data",
+   "label": "Event Hash",
+   "read_only": 1
+  }
+ ],
+ "sort_order": "DESC"
+}

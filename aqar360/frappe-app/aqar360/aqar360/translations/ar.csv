@@ -1,0 +1,896 @@
+Aqar Contact,جهة اتصال عقار
+Aqar Owner Contact,جهة اتصال مالك العقار
+Aqar Project,مشروع عقار
+Environment,البيئة
+Local,محلية
+Staging,تجريبية
+Production,إنتاجية
+Legal Approval Status,حالة الموافقة القانونية
+Pending Legal Approval,بانتظار الموافقة القانونية
+Approved,معتمد
+Real Personal Data Allowed,السماح بالبيانات الشخصية الحقيقية
+Selected Campaigns Only,الحملات المختارة فقط
+Phase 2 Enabled,تفعيل المرحلة الثانية
+Phase 3 Enabled,تفعيل المرحلة الثالثة
+Public AI Enabled,تفعيل المساعد الذكي للجمهور
+Legal approval is required before real personal data is allowed.,تجب الموافقة القانونية قبل السماح بالبيانات الشخصية الحقيقية.
+Later phases remain disabled until their review checkpoints are approved.,تبقى المراحل اللاحقة معطلة حتى اعتماد نقاط المراجعة الخاصة بها.
+This legacy portal action is disabled. Please contact the Aqar team for assistance.,هذا الإجراء في البوابة القديمة معطل. يرجى التواصل مع فريق عقار للمساعدة.
+Aqar Platform Settings,إعدادات منصة عقار
+Aqar Admin,مدير نظام عقار
+Aqar Manager,مدير عقار
+Aqar Team Lead,قائد فريق عقار
+Aqar Opportunity Staff,موظف فرص عقار
+Aqar Content Coordinator,منسق محتوى عقار
+Aqar Marketing,تسويق عقار
+Aqar Finance,مالية عقار
+Aqar HR,الموارد البشرية في عقار
+Aqar Business Development,تطوير الأعمال في عقار
+Aqar Supplier,مورد عقار
+Aqar Customer,عميل عقار
+Aqar Viewer,مستخدم عرض عقار
+Aqar Owner Type,نوع مالك العقار
+Aqar Audit Event,سجل تدقيق عقار
+Aqar Consent Log,سجل الموافقات
+Aqar Terms Version,إصدار الشروط
+Aqar Terms Acceptance,قبول الشروط
+Aqar Secure Link,رابط آمن
+Aqar Feature Flag,مفتاح ميزة
+Aqar Governorate,المحافظة
+Aqar Wilayat,الولاية
+Aqar Area,المنطقة
+Aqar Source Observation,مصدر المعلومة
+Sequence,التسلسل
+Event Time,وقت الحدث
+Actor,المنفذ
+Action,الإجراء
+Before,قبل
+After,بعد
+IP Address,عنوان IP
+Previous Hash,البصمة السابقة
+Event Hash,بصمة الحدث
+Purpose,الغرض
+Channel,القناة
+Granted,ممنوحة
+Withdrawn,مسحوبة
+Request Updates,تحديثات الطلب
+Match Alerts,تنبيهات المطابقة
+Marketing,التسويق
+Ads Personalization,تخصيص الإعلانات
+Careers Data Retention,الاحتفاظ ببيانات التوظيف
+All Channels,جميع القنوات
+Website Form,نموذج الموقع
+Self-Update Link,رابط التحديث الذاتي
+Staff Recorded,مسجل بواسطة الموظف
+Consent Wording Version,إصدار صيغة الموافقة
+Recorded At,وقت التسجيل
+Evidence,الدليل
+Policy Type,نوع السياسة
+Language,اللغة
+Version,الإصدار
+Draft,مسودة
+Legal Review,مراجعة قانونية
+Retired,متقاعد
+Effective From,ساري من
+Body,النص
+Content Hash,بصمة المحتوى
+Approved By,اعتمد بواسطة
+Approved On,تاريخ الاعتماد
+Terms Version,إصدار الشروط
+Accepted At,وقت القبول
+User Agent,المتصفح
+Expires At,ينتهي في
+Max Uses,الحد الأقصى للاستخدام
+Use Count,عدد مرات الاستخدام
+Last Used At,آخر استخدام
+Revoked,ملغى
+Request Self-Update,تحديث الطلب ذاتيا
+Stop Alerts,إيقاف التنبيهات
+Post-Payment Form,نموذج ما بعد الدفع
+Document Download,تنزيل مستند
+Brochure Share,مشاركة الكتيب
+Flag Key,مفتاح الميزة
+Required Gate,البوابة المطلوبة
+Audience,الجمهور
+Staff Only,الموظفون فقط
+Percentage of Users,نسبة من المستخدمين
+Everyone,الجميع
+Rollout Percentage,نسبة الإطلاق
+Name (English),الاسم (إنجليزي)
+Name (Arabic),الاسم (عربي)
+Governorate,المحافظة
+Wilayat,الولاية
+Latitude,خط العرض
+Longitude,خط الطول
+Field Group,مجموعة الحقول
+Source Type,نوع المصدر
+Source Name,اسم المصدر
+Source URL,رابط المصدر
+Source File,ملف المصدر
+First Seen,أول ظهور
+Last Seen,آخر ظهور
+Last Verified,آخر تحقق
+Verified By,تحقق بواسطة
+Reverify After (Days),إعادة التحقق بعد (أيام)
+Freshness,حداثة المعلومة
+Unverified,غير متحقق
+Fresh,حديثة
+Needs Reverification,تحتاج إعادة تحقق
+Confidence,درجة الثقة
+Usage Rights / Notes,حقوق الاستخدام / ملاحظات
+{0} records are append-only.,سجلات {0} لا يمكن تعديلها أو حذفها.
+This link is invalid or has expired.,هذا الرابط غير صالح أو منتهي الصلاحية.
+{0} consent must reference the approved consent wording version.,يجب أن ترتبط موافقة {0} بإصدار معتمد من صيغة الموافقة.
+Consent can only reference an approved wording version.,يمكن ربط الموافقة بإصدار صيغة معتمد فقط.
+"Staff-recorded consent needs evidence (call note, message or form reference).",الموافقة المسجلة بواسطة الموظف تحتاج دليلا (ملاحظة مكالمة أو رسالة أو مرجع نموذج).
+Approved terms are locked. Create a new version instead.,الشروط المعتمدة مقفلة. أنشئ إصدارا جديدا بدلا من ذلك.
+Approved terms can only move to Retired.,الشروط المعتمدة يمكن نقلها إلى متقاعد فقط.
+Only draft terms can be deleted.,يمكن حذف الشروط المسودة فقط.
+A terms acceptance must identify the contact or user.,يجب أن يحدد قبول الشروط جهة الاتصال أو المستخدم.
+Only approved terms can be accepted.,يمكن قبول الشروط المعتمدة فقط.
+"Secure links can only be revoked, not edited or re-enabled.",الروابط الآمنة يمكن إلغاؤها فقط، ولا يمكن تعديلها أو إعادة تفعيلها.
+{0} cannot be enabled until the {1} gate is approved.,لا يمكن تفعيل {0} حتى اعتماد بوابة {1}.
+Rollout percentage must be between 0 and 100.,يجب أن تكون نسبة الإطلاق بين 0 و 100.
+Last seen cannot be before first seen.,لا يمكن أن يكون آخر ظهور قبل أول ظهور.
+Aqar Search Request,طلب بحث عن عقار
+Aqar Search Request Area,منطقة طلب البحث
+Aqar Opportunity Intake,طلب تسويق عقار
+Aqar Consultation Request,طلب استشارة
+Aqar Opportunity Review,مراجعة الفرص
+Active Request,طلب نشط
+Searching,جاري البحث
+Potential Match,تطابق محتمل
+Team Reviewed,راجعه الفريق
+Client Contacted,تم التواصل مع العميل
+Viewing,معاينة
+Interested,مهتم
+Not Suitable,غير مناسب
+Offer,عرض
+Closed,مغلق
+Paused,متوقف مؤقتا
+Request Kind,نوع الطلب
+Standard,عادي
+Corporate,مؤسسي
+Investment Mandate,تفويض استثماري
+Buy,شراء
+Rent,استئجار
+Property Type,نوع العقار
+Apartment,شقة
+Villa,فيلا
+Land,أرض
+Building,بناية
+Shop,محل
+Office,مكتب
+Warehouse,مخزن
+Showroom,معرض
+Project,مشروع
+Commercial,تجاري
+Other,أخرى
+Timing,التوقيت
+Immediately,فورا
+Within 1 Month,خلال شهر
+1-3 Months,1-3 أشهر
+3-6 Months,3-6 أشهر
+Not Urgent,غير مستعجل
+Preferred Channel,القناة المفضلة
+Alerts Paused,التنبيهات متوقفة
+Expires On,ينتهي في
+Next Review On,المراجعة التالية في
+Customer,العميل
+Name as Submitted,الاسم كما ورد
+Phone as Submitted,الهاتف كما ورد
+Email as Submitted,البريد كما ورد
+Possible Duplicate Of,تكرار محتمل لـ
+Duplicate Review,مراجعة التكرار
+Needs Review,تحتاج مراجعة
+Confirmed Same Person,تأكد أنه نفس الشخص
+Confirmed Different Person,تأكد أنه شخص مختلف
+Requirements,المتطلبات
+Areas,المناطق
+Budget From (OMR),الميزانية من (ر.ع)
+Budget To (OMR),الميزانية إلى (ر.ع)
+Near-Match Tolerance %,نسبة التطابق القريب %
+Bedrooms (min),غرف النوم (الحد الأدنى)
+Bathrooms (min),دورات المياه (الحد الأدنى)
+Size From (m²),المساحة من (م²)
+Size To (m²),المساحة إلى (م²)
+Furnished,مفروش
+Unfurnished,غير مفروش
+Any,أي
+Parking Required,يتطلب موقف
+Elevator Required,يتطلب مصعد
+Intended Use,الاستخدام المقصود
+Corporate / Investment,مؤسسي / استثماري
+Company,الشركة
+Units Needed,عدد الوحدات المطلوبة
+Investment Goal,الهدف الاستثماري
+Rental Yield,عائد إيجاري
+Capital Growth,نمو رأس المال
+Own Use,استخدام شخصي
+Development,تطوير
+Foreign Ownership Eligibility Required,يتطلب أهلية تملك الأجانب
+Source,المصدر
+Source Channel,قناة المصدر
+Landing Page,صفحة الوصول
+Referrer,المُحيل
+Submitted At,وقت التقديم
+Review Status,حالة المراجعة
+Submitted,مقدم
+Under Review,قيد المراجعة
+Need More Info,نحتاج معلومات إضافية
+Adjustment Suggested,اقتراح تعديل
+Accepted,مقبول
+Not Selected,لم يتم الاختيار
+Request Type,نوع الطلب
+Sell,بيع
+Let,تأجير
+Content Only,محتوى فقط
+Market Project,تسويق مشروع
+Location Details,تفاصيل الموقع
+Property Facts,بيانات العقار
+Asking Price / Rent (OMR),السعر / الإيجار المطلوب (ر.ع)
+Size (m²),المساحة (م²)
+Condition,الحالة
+Readiness,الجاهزية
+Owner Accuracy Declaration,إقرار المالك بصحة المعلومات
+Internal Review,المراجعة الداخلية
+Internal Decline Reason,سبب الرفض الداخلي
+Internal Notes,ملاحظات داخلية
+Price Far From Market,سعر بعيد عن السوق
+Area Outside Focus,منطقة خارج التركيز
+Weak Demand,طلب ضعيف
+Hard to Market,عقار صعب التسويق
+Missing Information,نقص معلومات
+Legal / Documentation Risk,مخاطر قانونية / توثيقية
+Insufficient Commercial Return,عائد تجاري غير مناسب
+Capacity Pressure,ضغط القدرة التشغيلية
+Duplicate,مكرر
+Current Demand,الطلب الحالي
+Price Realism,واقعية السعر
+Asset Quality,جودة الأصل
+Ease of Production,سهولة الإنتاج
+Expected Value,القيمة المتوقعة
+Conversion Likelihood,احتمال التحويل
+Document Completeness,اكتمال الوثائق
+Opportunity Score,تقييم الفرصة
+Start Review,بدء المراجعة
+Request Info,طلب معلومات
+Suggest Adjustment,اقتراح تعديل
+Accept,قبول
+Decline,عدم الاختيار
+Resume Review,استئناف المراجعة
+Asset Type,نوع الأصل
+Client Goal,هدف العميل
+Requested Output,المخرج المطلوب
+Map Link,رابط الخريطة
+Expected Timeline,الإطار الزمني المتوقع
+Current Situation,الوضع الحالي
+Scope Note,ملاحظة النطاق
+Scoping,تحديد النطاق
+Quoted,تم تقديم عرض سعر
+Delivered,تم التسليم
+Declined,مرفوض
+Please correct the highlighted fields.,يرجى تصحيح الحقول المحددة.
+Unknown field.,حقل غير معروف.
+This field is required.,هذا الحقل مطلوب.
+Must be at most {0} characters.,يجب ألا يتجاوز {0} حرفا.
+Enter a valid email address.,أدخل بريدا إلكترونيا صحيحا.
+Choose one of the listed options.,اختر أحد الخيارات المتاحة.
+Enter a whole number.,أدخل رقما صحيحا.
+Must be between {0} and {1}.,يجب أن يكون بين {0} و {1}.
+Enter a valid amount in OMR.,أدخل مبلغا صحيحا بالريال العماني.
+Enter a full https:// link.,أدخل رابطا كاملا يبدأ بـ https://.
+Choose between 1 and {0} areas.,اختر من منطقة واحدة إلى {0} مناطق.
+Choose areas from the list.,اختر المناطق من القائمة.
+"Enter a valid phone number, e.g. 9XXXXXXX or +9689XXXXXXX.",أدخل رقم هاتف صحيحا، مثل 9XXXXXXX أو +9689XXXXXXX.
+Online requests are not available yet. Please contact us directly.,الطلبات الإلكترونية غير متاحة حاليا. يرجى التواصل معنا مباشرة.
+This version is no longer current. Please reload the form.,هذا الإصدار لم يعد ساريا. يرجى إعادة تحميل النموذج.
+Budget From cannot be higher than Budget To.,لا يمكن أن تكون الميزانية من أعلى من الميزانية إلى.
+Please confirm the information is accurate.,يرجى تأكيد صحة المعلومات.
+Please contact our team to change this request.,يرجى التواصل مع فريقنا لتعديل هذا الطلب.
+This request is closed. Please submit a new request.,هذا الطلب مغلق. يرجى تقديم طلب جديد.
+Form protection is not configured.,حماية النموذج غير مهيأة.
+Please complete the security check and try again.,يرجى إكمال التحقق الأمني والمحاولة مرة أخرى.
+Near-match tolerance must be between 0 and 100%.,يجب أن تكون نسبة التطابق القريب بين 0 و 100%.
+Size From cannot be larger than Size To.,لا يمكن أن تكون المساحة من أكبر من المساحة إلى.
+The owner must confirm the information is accurate before submitting.,يجب أن يؤكد المالك صحة المعلومات قبل التقديم.
+The map link must be a full https:// link.,يجب أن يكون رابط الخريطة كاملا ويبدأ بـ https://.
+Aqar Development Project,مشروع تطوير عقاري
+Aqar Project Unit Type,نوع وحدة المشروع
+Aqar Unit Type,نوع الوحدة
+Aqar Price Change,تغيير السعر
+Aqar Registry,سجل عقار
+Aqar Property Type,نوع العقار (عقار)
+Listing Purpose,غرض العرض
+Sale,بيع
+Sale or Rent,بيع أو إيجار
+Asking Sale Price (OMR),سعر البيع المطلوب (ر.ع)
+Asking Rent per Month (OMR),الإيجار الشهري المطلوب (ر.ع)
+Bedrooms,غرف النوم
+Bathrooms,دورات المياه
+Parking,موقف
+Construction Status,حالة البناء
+Pre-Launch,قبل الإطلاق
+Under Construction,قيد الإنشاء
+Ready,جاهز
+Visibility,الظهور
+Internal Only,داخلي فقط
+Off-Market Confidential,سري خارج السوق
+Selected Public Page,صفحة عامة مختارة
+Source Intake,طلب المصدر
+Aqar Availability & Verification,التوفر والتحقق
+Sales Availability,توفر البيع
+Active,متاح
+Limited,محدود
+Sold Out,مباع بالكامل
+Archived,مؤرشف
+Verification Status,حالة التحقق
+Verified,متحقق
+Unit Type,نوع الوحدة
+Category,الفئة
+Residential,سكني
+Land Plots,قطع أراض
+Mixed-Use,متعدد الاستخدامات
+Price From (OMR),السعر من (ر.ع)
+Price To (OMR),السعر إلى (ر.ع)
+Available Units (if confirmed),الوحدات المتاحة (إن تأكدت)
+Availability,التوفر
+Project Name,اسم المشروع
+Project Name (Arabic),اسم المشروع (عربي)
+Developer,المطور
+Focal Point,جهة الاتصال المسؤولة
+Developer / Project Website,موقع المطور / المشروع
+Availability & Verification,التوفر والتحقق
+Expected Handover,موعد التسليم المتوقع
+Payment Plan,خطة الدفع
+Foreign Ownership,تملك الأجانب
+Unknown,غير معروف
+Eligible (Verified),مؤهل (متحقق)
+Not Eligible (Verified),غير مؤهل (متحقق)
+Foreign Ownership Note,ملاحظة تملك الأجانب
+Unit Types,أنواع الوحدات
+Primary Source Type,نوع المصدر الرئيسي
+Brochure / PDF,الكتيب / PDF
+Reference Name,المرجع
+Price Field,حقل السعر
+Old Price (OMR),السعر السابق (ر.ع)
+New Price (OMR),السعر الجديد (ر.ع)
+Direction,الاتجاه
+Set,تحديد
+Increase,ارتفاع
+Decrease,انخفاض
+Change %,نسبة التغيير %
+Changed At,وقت التغيير
+"Reactivated: units, prices and documents must be reverified before matching.",أعيد التفعيل: يجب إعادة التحقق من الوحدات والأسعار والمستندات قبل المطابقة.
+Not a registry record.,ليس سجلا في سجل العقارات.
+Changed: {0},تم تغيير: {0}
+{0} is already registered as {1} ({2}). Update or reactivate that record instead of creating a duplicate.,{0} مسجل مسبقا برقم {1} ({2}). حدّث ذلك السجل أو أعد تفعيله بدلا من إنشاء سجل مكرر.
+"Row {0}: available units must be a whole number, or blank when unknown.",السطر {0}: يجب أن يكون عدد الوحدات المتاحة رقما صحيحا، أو فارغا إذا كان غير معروف.
+Row {0}: Price From cannot be higher than Price To.,السطر {0}: لا يمكن أن يكون السعر من أعلى من السعر إلى.
+Price From cannot be higher than Price To.,لا يمكن أن يكون السعر من أعلى من السعر إلى.
+Aqar Match,مطابقة عقار
+Match Type,نوع المطابقة
+Within Budget,ضمن الميزانية
+Near Match,مطابقة قريبة
+Match Score,درجة المطابقة
+Search Request,طلب البحث
+Customer Contact,جهة اتصال العميل
+Supply Type,نوع العرض
+Supply,العرض
+Supply Description,وصف العرض
+Price (OMR),السعر (ر.ع)
+Customer Budget (OMR),ميزانية العميل (ر.ع)
+Supply Verified,العرض متحقق
+Supply Visibility,ظهور العرض
+Why This Match,لماذا هذه المطابقة
+Reasons,الأسباب
+Points to Check,نقاط للتحقق
+Budget Fit (35),ملاءمة الميزانية (35)
+Location Fit (25),ملاءمة الموقع (25)
+Type Fit (20),ملاءمة النوع (20)
+Rooms (10),الغرف (10)
+Size (5),المساحة (5)
+Readiness (5),الجاهزية (5)
+Deductions,الخصومات
+Team Review,مراجعة الفريق
+Reviewed By,راجعه
+Rejection Reason,سبب الرفض
+Customer Not Interested,العميل غير مهتم
+Price,السعر
+Location,الموقع
+Already Offered,عُرض مسبقا
+Shared Via,تمت المشاركة عبر
+Shared On,تاريخ المشاركة
+In Person,شخصيا
+Staff Notes,ملاحظات الموظفين
+Suggested,مقترحة
+Sent,تمت المشاركة
+Rejected,مرفوضة
+Matching,المطابقة
+Find Matches,البحث عن مطابقات
+Mark Reviewed,تمت المراجعة
+Approve,اعتماد
+Mark Shared,تمت المشاركة مع العميل
+Reject,رفض
+Actions,إجراءات
+"{0} new, {1} open matches",{0} جديدة، {1} مطابقات مفتوحة
+In a requested area,في منطقة مطلوبة
+Nearby: same wilayat as a requested area,قريب: نفس ولاية منطقة مطلوبة
+Property type matches,نوع العقار مطابق
+Related property type,نوع عقار قريب
+Within budget,ضمن الميزانية
+{0}% above budget (near match),أعلى من الميزانية بنسبة {0}% (مطابقة قريبة)
+Bedrooms not confirmed,عدد الغرف غير مؤكد
+{0} bedrooms,{0} غرف نوم
+Fewer bedrooms than requested ({0} of {1}),غرف أقل من المطلوب ({0} من {1})
+Size not confirmed,المساحة غير مؤكدة
+Size fits ({0} m²),المساحة مناسبة ({0} م²)
+Outside the requested size ({0} m²),خارج المساحة المطلوبة ({0} م²)
+Not ready for the requested timing,غير جاهز في التوقيت المطلوب
+Furnishing differs from the request,حالة الفرش مختلفة عن الطلب
+Parking not confirmed,الموقف غير مؤكد
+Foreign ownership eligibility not verified,أهلية تملك الأجانب غير متحقق منها
+Supply not verified yet: verify before approval,العرض غير متحقق بعد: تحقق قبل الاعتماد
+Price changed after approval: approve again,تغير السعر بعد الاعتماد: يلزم الاعتماد مجددا
+Request is no longer active,الطلب لم يعد نشطا
+No longer fits the request or the supply changed,لم يعد مناسبا للطلب أو تغير العرض
+Supply no longer available or no longer fits,العرض لم يعد متاحا أو لم يعد مناسبا
+{0} new potential matches for request {1},{0} مطابقات محتملة جديدة للطلب {1}
+{0} matches {1} active requests,{0} يطابق {1} طلبات نشطة
+Price drop: ,انخفاض سعر: 
+Only the opportunity team can review matches.,يمكن لفريق الفرص فقط مراجعة المطابقات.
+The property or project is no longer available.,العقار أو المشروع لم يعد متاحا.
+Verify the property or project (price and availability) before approving this match.,تحقق من العقار أو المشروع (السعر والتوفر) قبل اعتماد هذه المطابقة.
+Off-market opportunities need a team lead or manager to approve.,الفرص خارج السوق تحتاج اعتماد قائد فريق أو مدير.
+Choose a rejection reason.,اختر سبب الرفض.
+Choose how the opportunity was shared.,اختر طريقة مشاركة الفرصة.
+Unknown action.,إجراء غير معروف.
+This match is {0}; that action is not available.,حالة هذه المطابقة {0}؛ هذا الإجراء غير متاح.
+"Use the match actions (Review, Approve, Reject, Mark Sent) to change the status.",استخدم إجراءات المطابقة (مراجعة، اعتماد، رفض، تمت المشاركة) لتغيير الحالة.
+History,السجل
+Aqar SLA Policy,سياسة مستوى الخدمة
+Aqar SLA Timer,مؤقت مستوى الخدمة
+Aqar Viewing,معاينة
+Aqar Offer,عرض شراء / إيجار
+Aqar Offer Round,جولة تفاوض
+Aqar Approval Rule,قاعدة اعتماد
+Aqar Approval Request,طلب اعتماد
+Owner,المسؤول
+First Response At,وقت أول تواصل
+Log First Contact,تسجيل أول تواصل
+Working Hours (SLA),ساعات العمل (مستوى الخدمة)
+Work Days,أيام العمل
+Work Starts,بداية الدوام
+Work Ends,نهاية الدوام
+Holiday List,قائمة العطل
+Auto-assign New Requests,توزيع الطلبات الجديدة تلقائيا
+Title,العنوان
+Policy Key,مفتاح السياسة
+Applies To,ينطبق على
+Target Rule,قاعدة الهدف
+Business Minutes,دقائق عمل
+Calendar Minutes,دقائق تقويمية
+Same Business Day,نفس يوم العمل
+Business Days,أيام عمل
+Target Value,قيمة الهدف
+Amber At (% of target),أصفر عند (% من الهدف)
+Strategy Reference,مرجع الاستراتيجية
+SLA Policy,سياسة مستوى الخدمة
+State,الحالة
+Running,يعمل
+Completed,مكتمل
+Cancelled,ملغى
+RAG,المؤشر
+Green,أخضر
+Amber,أصفر
+Red,أحمر
+Basis,الأساس
+Business,أوقات العمل
+Calendar,تقويمي
+Started At,بدأ في
+Amber At,أصفر في
+Due At,موعد الاستحقاق
+Manager Escalation At,التصعيد للمدير في
+Result,النتيجة
+Paused At,أوقف في
+Paused Minutes,دقائق الإيقاف
+Escalation Level,مستوى التصعيد
+Completed At,اكتمل في
+Outcome,النتيجة
+On Time,في الوقت
+Late,متأخر
+Response Minutes,دقائق الاستجابة
+Scheduled,مجدولة
+Confirmed,مؤكدة
+No Show,لم يحضر
+Match,المطابقة
+Scheduled At,موعد المعاينة
+Staff,الموظف
+Meeting Point / Notes,نقطة اللقاء / ملاحظات
+Property / Unit,العقار / الوحدة
+Negotiating,قيد التفاوض
+Wants Alternatives,يريد بدائل
+Not Suitable Because,غير مناسب بسبب
+Size,المساحة
+Layout,التصميم الداخلي
+Customer Feedback,ملاحظات العميل
+Next Step,الخطوة التالية
+Follow Up On,موعد المتابعة
+Submitted to Owner,مقدم للمالك
+Countered,عرض مقابل
+Expired,منتهي
+Offer Type,نوع العرض
+Purchase,شراء
+Asking (OMR),المطلوب (ر.ع)
+Offered (OMR),المعروض (ر.ع)
+Offer Date,تاريخ العرض
+Valid Until,صالح حتى
+Negotiation,التفاوض
+Counter Offers,العروض المقابلة
+Terms / Conditions,الشروط
+Owner / Developer Response,رد المالك / المطور
+Agreed Amount (OMR),المبلغ المتفق عليه (ر.ع)
+From,من
+Amount (OMR),المبلغ (ر.ع)
+Rule,القاعدة
+Price Change,تغيير السعر
+Discount,خصم
+Refund,استرداد
+Expense,مصروف
+Media Budget,ميزانية الإعلانات
+Watched Field,الحقل المراقب
+Threshold,الحد
+Percent Decrease,نسبة انخفاض
+Percent Change,نسبة تغيير
+Amount Above,مبلغ أعلى من
+Threshold Value,قيمة الحد
+Approver Role,دور المعتمد
+Pending,بانتظار القرار
+Field,الحقل
+Current Value,القيمة الحالية
+Proposed Value,القيمة المقترحة
+Reason,السبب
+Requested By,طلبه
+Decision,القرار
+Decided By,قرره
+Decided At,وقت القرار
+Decision Note,ملاحظة القرار
+Decide,القرار
+Request Price Change Approval,طلب اعتماد تغيير السعر
+Request Approval,طلب اعتماد
+New Value,القيمة الجديدة
+Progress,التقدم
+Service Level,مستوى الخدمة
+SLA at risk: {0} is due {1},مستوى الخدمة معرض للتأخير: {0} مستحق {1}
+SLA breached: {0},تم تجاوز مستوى الخدمة: {0}
+SLA seriously overdue: {0},تأخير كبير في مستوى الخدمة: {0}
+Enter a target value greater than zero.,أدخل قيمة هدف أكبر من صفر.
+Amber must be between 1% and 99% of the target.,يجب أن يكون الأصفر بين 1% و 99% من الهدف.
+Work must end after it starts.,يجب أن تنتهي ساعات العمل بعد بدايتها.
+The match must belong to the same search request.,يجب أن تتبع المطابقة نفس طلب البحث.
+Approve and share the match with the customer first.,اعتمد المطابقة وشاركها مع العميل أولا.
+Record the viewing outcome before completing it.,سجل نتيجة المعاينة قبل إكمالها.
+Choose why the property was not suitable; it improves future matches.,اختر سبب عدم ملاءمة العقار؛ فهذا يحسن المطابقات القادمة.
+Viewing {0}: {1},معاينة {0}: {1}
+Follow up after viewing {0},متابعة بعد المعاينة {0}
+Not suitable at viewing {0}: {1},غير مناسب في المعاينة {0}: {1}
+This offer is {0} and can no longer be changed.,هذا العرض {0} ولا يمكن تعديله.
+Enter the offered amount.,أدخل المبلغ المعروض.
+Valid Until cannot be before the offer date.,لا يمكن أن يكون تاريخ الصلاحية قبل تاريخ العرض.
+{0} has no field {1}.,{0} لا يحتوي على الحقل {1}.
+Use Approve or Reject to decide this request.,استخدم اعتماد أو رفض للبت في هذا الطلب.
+Changing {0} from {1} to {2} needs approval by {3}. Use Request Approval instead.,تغيير {0} من {1} إلى {2} يحتاج اعتماد {3}. استخدم طلب اعتماد بدلا من ذلك.
+This change does not need approval; edit the record directly.,هذا التغيير لا يحتاج اعتمادا؛ عدّل السجل مباشرة.
+Approval needed: {0} {1} → {2},مطلوب اعتماد: {0} {1} → {2}
+This approval request has already been decided.,تم البت في طلب الاعتماد هذا مسبقا.
+Only {0} can decide this request.,فقط {0} يمكنه البت في هذا الطلب.
+You cannot approve your own request.,لا يمكنك اعتماد طلبك الخاص.
+Choose Approved or Rejected.,اختر معتمد أو مرفوض.
+Your approval request {0} was {1},طلب الاعتماد {0} أصبح {1}
+At a viewing the customer found {0} OMR too expensive,في المعاينة وجد العميل أن {0} ر.ع مرتفع
+At a viewing the customer rejected this area,في المعاينة رفض العميل هذه المنطقة
+{0} {1}: {2},{0} {1}: {2}
+"Work days must be a comma-separated list such as Sun,Mon,Tue,Wed,Thu.","يجب أن تكون أيام العمل قائمة مفصولة بفواصل مثل Sun,Mon,Tue,Wed,Thu."
+Aqar Content Order,طلب خدمة محتوى
+Aqar Content Order Service,خدمة طلب المحتوى
+Aqar Content Deliverable,مخرج المحتوى
+Aqar Content Revision,جولة تعديل
+Aqar Content Service,خدمة محتوى عقار
+Delivery SLA Policy,سياسة مستوى خدمة التسليم
+Included Revision Rounds,جولات التعديل المشمولة
+Pass-through (Not Revenue),مبلغ مار (ليس إيرادا)
+Shot,تم التصوير
+In Production,قيد الإنتاج
+Client Review,مراجعة العميل
+Changes Requested,مطلوب تعديلات
+Waiting on Client,بانتظار العميل
+Client,العميل
+Delivery,التسليم
+Clean Final (Content Only),ملفات نهائية نظيفة (محتوى فقط)
+Branded (Market My Property),نسخ بعلامة الشركة (سوّقوا عقاري)
+Opportunity Intake,طلب تسويق العقار
+Coordinator,المنسق
+Producer / Photographer,المنتج / المصور
+Client Language,لغة العميل
+Services,الخدمات
+Service,الخدمة
+Service Name,اسم الخدمة
+Scope,النطاق
+Qty,الكمية
+Rate (OMR),السعر (ر.ع)
+Delivery SLA,مستوى خدمة التسليم
+Included Revisions,التعديلات المشمولة
+Ready for Review,جاهز للمراجعة
+Services Total (OMR),إجمالي الخدمات (ر.ع)
+Client Media Budget (OMR),ميزانية إعلانات العميل (ر.ع)
+Shoot,التصوير
+Shoot Date & Time,موعد التصوير
+Location / Access,الموقع / الدخول
+Shot At,وقت التصوير
+Delivered At,وقت التسليم
+Deliverables & Revisions,المخرجات والتعديلات
+Deliverables,المخرجات
+Type,النوع
+File,الملف
+Client Status,حالة العميل
+Uploaded,مرفوع
+Client Approved,اعتمده العميل
+Uploaded On,تاريخ الرفع
+Photos,صور
+Floor Plan,مخطط
+Video,فيديو
+Client's Requested Changes,التعديلات التي طلبها العميل
+Revision Log,سجل التعديلات
+Requested On,تاريخ الطلب
+Requested Changes,التعديلات المطلوبة
+Beyond Included Rounds,خارج الجولات المشمولة
+Revision Rounds Used,جولات التعديل المستخدمة
+Billing,الفوترة
+Quotation,عرض السعر
+Sales Invoice,فاتورة المبيعات
+Payment Status,حالة الدفع
+Not Invoiced,لم تُصدر فاتورة
+Invoice Draft,مسودة فاتورة
+Unpaid,غير مدفوع
+Partly Paid,مدفوع جزئيا
+Paid,مدفوع
+Invoiced (OMR),المفوتر (ر.ع)
+Outstanding (OMR),المتبقي (ر.ع)
+Manager Overrides,استثناءات المدير
+Allow Scheduling and Delivery Before Full Payment,السماح بالجدولة والتسليم قبل السداد الكامل
+Allow Revisions Beyond Included Rounds,السماح بتعديلات تتجاوز الجولات المشمولة
+Create Quotation,إنشاء عرض سعر
+Create Invoice,إنشاء فاتورة
+Record Payment,تسجيل دفعة
+Mode of Payment,طريقة الدفع
+Reference No,رقم المرجع
+A content order cannot move from {0} to {1}.,لا يمكن نقل طلب المحتوى من {0} إلى {1}.
+Create the quotation first.,أنشئ عرض السعر أولا.
+The quotation must be submitted (accepted by the client) before confirming.,يجب اعتماد عرض السعر (قبول العميل) قبل التأكيد.
+Set the shoot date and time.,حدد موعد التصوير.
+Scheduling starts after payment. A manager can allow an exception.,تبدأ الجدولة بعد الدفع. يمكن للمدير السماح باستثناء.
+Upload a deliverable for: {0},ارفع مخرجا للخدمة: {0}
+Describe the client's requested changes.,صف التعديلات التي طلبها العميل.
+All {0} included revision rounds are used. Add an Additional Revision Round service or ask a manager to allow an exception.,تم استخدام جميع جولات التعديل المشمولة ({0}). أضف خدمة جولة تعديل إضافية أو اطلب من المدير السماح باستثناء.
+Every deliverable must be approved by the client before delivery.,يجب أن يعتمد العميل جميع المخرجات قبل التسليم.
+Final assets are released after full payment. A manager can allow an exception.,تُسلم الملفات النهائية بعد السداد الكامل. يمكن للمدير السماح باستثناء.
+Add at least one service before quoting.,أضف خدمة واحدة على الأقل قبل عرض السعر.
+Submit the order's invoice before recording a payment.,اعتمد فاتورة الطلب قبل تسجيل الدفعة.
+Enter a payment amount.,أدخل مبلغ الدفعة.
+Aqar Content Page,صفحة محتوى
+Aqar Content FAQ,سؤال شائع
+Page Type,نوع الصفحة
+Area Guide,دليل منطقة
+Buying Guide,دليل الشراء
+Renting Guide,دليل الاستئجار
+Owner Guide,دليل المالك
+Investor Guide,دليل المستثمر
+Project Guide,دليل المشاريع
+Marketing Guide,دليل التسويق
+Market Insight,رؤى السوق
+FAQ,أسئلة شائعة
+URL Slug,رابط الصفحة
+Published,منشور
+Last Reviewed,آخر مراجعة
+Arabic,العربية
+English,الإنجليزية
+Title (Arabic),العنوان (عربي)
+Title (English),العنوان (إنجليزي)
+Answer Summary (Arabic),ملخص الإجابة (عربي)
+Answer Summary (English),ملخص الإجابة (إنجليزي)
+Fact Block (Arabic),المعلومات الأساسية (عربي)
+Fact Block (English),المعلومات الأساسية (إنجليزي)
+Body (Arabic),النص (عربي)
+Body (English),النص (إنجليزي)
+SEO Title (Arabic),عنوان محركات البحث (عربي)
+SEO Title (English),عنوان محركات البحث (إنجليزي)
+Meta Description (Arabic),الوصف لمحركات البحث (عربي)
+Meta Description (English),الوصف لمحركات البحث (إنجليزي)
+FAQ & Sources,الأسئلة والمصادر
+FAQs,الأسئلة الشائعة
+Sources and Method,المصادر والمنهجية
+Question (Arabic),السؤال (عربي)
+Answer (Arabic),الإجابة (عربي)
+Question (English),السؤال (إنجليزي)
+Answer (English),الإجابة (إنجليزي)
+Show on Public Website,إظهار في الموقع العام
+Scope (Arabic),النطاق (عربي)
+Choose the area this guide describes.,اختر المنطقة التي يصفها هذا الدليل.
+Complete before publishing: {0},أكمل قبل النشر: {0}
+Arabic summary,الملخص العربي
+English summary,الملخص الإنجليزي
+Arabic body,النص العربي
+English body,النص الإنجليزي
+Market insights must state their sources and method before publishing.,يجب أن تذكر رؤى السوق مصادرها ومنهجيتها قبل النشر.
+Page not found.,الصفحة غير موجودة.
+"The URL slug may only contain lowercase letters, numbers and single hyphens.",يجب أن يحتوي رابط الصفحة على أحرف إنجليزية صغيرة وأرقام وشرطات مفردة فقط.
+Aqar Document,مستند الخزنة
+Classification,التصنيف
+Public,عام
+Internal,داخلي
+Confidential,سري
+Highly Restricted,مقيد للغاية
+Document Type,نوع المستند
+Identity Document,وثيقة هوية
+Ownership / Title Deed,سند ملكية
+Authorisation,تفويض
+Contract,عقد
+Invoice / Receipt,فاتورة / إيصال
+Permit,تصريح
+Report,تقرير
+Brochure,كتيب
+Customer / Person,العميل / الشخص
+Content Order,طلب المحتوى
+Retain Until,الاحتفاظ حتى
+Upload Checks,فحص الرفع
+Scan Status,حالة الفحص
+Basic Checks Passed,اجتاز الفحص الأساسي
+Clean (Antivirus),سليم (مكافحة الفيروسات)
+Size (bytes),الحجم (بايت)
+Secure Download,تنزيل آمن
+Customer 360,نظرة 360 على العميل
+Requests,الطلبات
+Work,الأعمال
+Consent,الموافقات
+Search Requests,طلبات البحث
+Viewings,المعاينات
+Offers,العروض
+Property Intakes,طلبات تسويق العقارات
+Owned Properties,العقارات المملوكة
+Consultations,الاستشارات
+Content Orders,طلبات المحتوى
+Invoices,الفواتير
+Documents,المستندات
+Timeline,السجل الزمني
+Aqar Daily Workbench,منصة العمل اليومية
+Aqar Management Summary,ملخص الإدارة
+Next Best Action,الإجراء التالي الأفضل
+Record,السجل
+Need,الاحتياج
+Budget (OMR),الميزانية (ر.ع)
+Best Match,أفضل مطابقة
+Score,الدرجة
+Open Matches,المطابقات المفتوحة
+Received,تاريخ الاستلام
+Only my records,سجلاتي فقط
+Include intakes and consultations,تضمين طلبات التسويق والاستشارات
+Call now: first response not logged,اتصل الآن: لم يُسجل أول تواصل
+Follow up the open offer,تابع العرض المفتوح
+Viewing today or overdue: confirm and record the outcome,معاينة اليوم أو متأخرة: أكدها وسجل النتيجة
+Share {0} approved match(es) with the customer,شارك {0} مطابقة معتمدة مع العميل
+Review {0} suggested match(es),راجع {0} مطابقة مقترحة
+Request expires soon: confirm the customer is still searching,الطلب ينتهي قريبا: تأكد أن العميل ما زال يبحث
+"No match for 7+ days: review budget, areas or type with the customer",لا مطابقة منذ أكثر من 7 أيام: راجع الميزانية أو المناطق أو النوع مع العميل
+Waiting for new supply (smart waiting list),بانتظار عرض جديد (قائمة الانتظار الذكية)
+Start the review,ابدأ المراجعة
+"Decide: accept, ask for info or decline",قرر: قبول أو طلب معلومات أو عدم اختيار
+Chase the owner for missing information,تابع المالك لاستكمال المعلومات
+Follow up the suggested adjustment,تابع اقتراح التعديل
+Call to scope the consultation,اتصل لتحديد نطاق الاستشارة
+Send the scope and quotation,أرسل النطاق وعرض السعر
+New search requests,طلبات بحث جديدة
+Owner intakes accepted,طلبات الملاك المقبولة
+Matches suggested,المطابقات المقترحة
+Viewings completed,المعاينات المكتملة
+Offers accepted,العروض المقبولة
+Content orders delivered,طلبات المحتوى المسلّمة
+SLA compliance %,نسبة الالتزام بمستوى الخدمة %
+Overdue now,المتأخر حاليا
+Revenue (OMR),الإيراد (ر.ع)
+Client media funds received (not revenue),أموال إعلانات العملاء المستلمة (ليست إيرادا)
+Receivables outstanding (OMR),الذمم المدينة المستحقة (ر.ع)
+Contacted,تم التواصل
+Offers Accepted,العروض المقبولة
+Request → Viewing %,نسبة الطلب ← المعاينة %
+To,إلى
+The file is larger than 25 MB.,حجم الملف أكبر من 25 ميغابايت.
+The file content does not match its extension.,محتوى الملف لا يطابق امتداده.
+Documents containing macros are not allowed.,المستندات التي تحتوي على وحدات ماكرو غير مسموحة.
+The file was rejected by the virus scanner.,رفض برنامج فحص الفيروسات هذا الملف.
+Vault documents must be uploaded as private files.,يجب رفع مستندات الخزنة كملفات خاصة.
+This document has not passed its upload checks and cannot be downloaded.,لم يجتز هذا المستند فحص الرفع ولا يمكن تنزيله.
+This document cannot be downloaded.,لا يمكن تنزيل هذا المستند.
+Please sign in with a customer account.,يرجى تسجيل الدخول بحساب عميل.
+Invoice not found.,الفاتورة غير موجودة.
+Unknown preference.,تفضيل غير معروف.
+Not signed in.,لم يتم تسجيل الدخول.
+"This file type is not allowed. Use PDF, JPG, PNG, WEBP, DOCX, XLSX or PPTX.",نوع الملف غير مسموح. استخدم PDF أو JPG أو PNG أو WEBP أو DOCX أو XLSX أو PPTX.
+A retired template cannot be re-approved; create a new version.,لا يمكن إعادة اعتماد قالب متقاعد؛ أنشئ إصدارًا جديدًا.
+Approved templates are locked. Create a new version instead.,القوالب المعتمدة مقفلة. أنشئ إصدارًا جديدًا بدلًا من ذلك.
+The template has an error: {0},يحتوي القالب على خطأ: {0}
+Approval,الاعتماد
+Aqar Message Template,قالب رسالة عقار
+Aqar Outbox,صندوق الرسائل الصادرة
+Ask 'Still Searching?' After (Days),السؤال «هل ما زلت تبحث؟» بعد (أيام)
+Attempts,المحاولات
+Available Variables,المتغيرات المتاحة
+Consent Purpose,غرض الموافقة
+Content,المحتوى
+Customer Messages,رسائل العملاء
+Email Queue,قائمة انتظار البريد
+Failed,فشل
+Follow-up,متابعة
+Follow-up and marketing messages wait until quiet hours end. Request confirmations are not delayed.,تنتظر رسائل المتابعة والتسويق حتى انتهاء ساعات الهدوء. لا يتم تأخير تأكيدات الطلبات.
+Idempotency Key,مفتاح عدم التكرار
+"Jinja variables, e.g. {{ request_number }}.",متغيرات Jinja، مثل {{ request_number }}.
+Max Follow-ups per Customer per Week,الحد الأقصى لرسائل المتابعة لكل عميل أسبوعيًا
+Queued,في الانتظار
+Quiet Hours End,نهاية ساعات الهدوء
+Quiet Hours Start,بداية ساعات الهدوء
+Recipient,المستلم
+Reference,المرجع
+Reference DocType,نوع المستند المرجعي
+"Round-robin new requests, intakes and consultations among Aqar Opportunity Staff.",توزيع الطلبات الجديدة وطلبات التسويق والاستشارات بالتناوب على موظفي الفرص.
+Scheduled For,مجدول في
+Sent At,أُرسل في
+Skipped,تم التخطي
+Staff (no consent),الموظفون (دون موافقة)
+Suppressed,محجوب
+Suppression / Error Reason,سبب الحجب / الخطأ
+Template Key,مفتاح القالب
+Template Version,إصدار القالب
+Transactional,معاملاتية
+"Plain text with Jinja variables: {{ person }}, {{ request_number }}, {{ link }}, {{ company }} …","نص عادي مع متغيرات Jinja: {{ person }}, {{ request_number }}, {{ link }}, {{ company }} …"
+Map Location,الموقع على الخريطة
+Cover Image,صورة الغلاف
+Boundary,حدود المنطقة
+"Drop a pin on the map, type the coordinates, or paste a Google Maps link above.",ضع دبوسا على الخريطة، أو اكتب الإحداثيات، أو الصق رابط خرائط جوجل في الأعلى.
+Shown on the public map when the project is a Selected Public Page. Must be a public file.,تظهر على الخريطة العامة عندما يكون المشروع صفحة عامة مختارة. يجب أن يكون الملف عاما.
+Draw the area outline (polygon tool). The centre is calculated from it when empty.,ارسم حدود المنطقة (أداة المضلع). يُحسب المركز منها إذا كان فارغا.
+Show Exact Location on Website,إظهار الموقع الدقيق على الموقع الإلكتروني
+"Off: the public map shows this property only inside its area, never as an exact pin.",عند الإيقاف: تعرض الخريطة العامة هذا العقار داخل منطقته فقط، وليس كدبوس دقيق.
+Latitude must be between -90 and 90 and longitude between -180 and 180.,يجب أن يكون خط العرض بين -90 و90 وخط الطول بين -180 و180.
+Website Slug,رابط الصفحة على الموقع
+Public page address /projects/<slug>. Filled automatically from the project name.,عنوان الصفحة العامة /projects/<slug>. يُملأ تلقائيا من اسم المشروع.
+Description (Arabic),الوصف (بالعربية)
+Website Gallery,معرض الصور على الموقع
+Gallery,معرض الصور
+Shown on the public project page when the project is a Selected Public Page.,يظهر في صفحة المشروع العامة عندما يكون المشروع صفحة عامة مختارة.
+Aqar Project Image,صورة مشروع عقار
+Public file only; private files are never shown on the website.,ملف عام فقط؛ لا تظهر الملفات الخاصة على الموقع أبدا.
+Caption (English),التعليق (بالإنجليزية)
+Caption (Arabic),التعليق (بالعربية)
+Payment Plan (Arabic),خطة الدفع (بالعربية)
+"One step per line, e.g. 10% عند الحجز. Shown on the Arabic website.",خطوة واحدة في كل سطر، مثل: 10% عند الحجز. تظهر في الموقع العربي.
+"One step per line, e.g. 10% booking. Percentages adding up to 100 are shown as a bar.",خطوة واحدة في كل سطر، مثل: 10% booking. النسب التي مجموعها 100 تظهر كشريط.
+Project not found.,المشروع غير موجود.
+Website Interest,الاهتمام من الموقع
+"Set by the website when the customer used Register interest on a project, property or unit.",يملؤه الموقع عندما يستخدم العميل «سجّل اهتمامك» في مشروع أو عقار أو وحدة.
+Listing Type,نوع العرض
+Interested In,مهتم بـ
+Interested Unit,الوحدة المطلوبة
+Source Page,صفحة المصدر
+Customer Interest,اهتمام العميل
+The customer asked about this listing on the website,سأل العميل عن هذا العرض في الموقع
+"Outside the request's budget, area or type: confirm with the customer",خارج ميزانية الطلب أو منطقته أو نوعه: تأكد مع العميل
+Asked About,سأل عن
+Call now: asked about {0},اتصل الآن: سأل عن {0}
+Aqar Website Enquiries,استفسارات الموقع
+Listing,العرض
+Enquiries,الاستفسارات
+About a Unit,عن وحدة محددة
+Still Open,ما زالت مفتوحة
+Latest Enquiry,آخر استفسار
+Top Source Page,أكثر صفحة مصدر
+Website enquiries,استفسارات الموقع
+Listings asked about,العروض المسؤول عنها

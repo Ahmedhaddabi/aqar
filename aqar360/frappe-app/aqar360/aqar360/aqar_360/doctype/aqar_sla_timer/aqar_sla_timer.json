@@ -1,0 +1,202 @@
+{
+ "doctype": "DocType",
+ "name": "Aqar SLA Timer",
+ "module": "Aqar 360",
+ "engine": "InnoDB",
+ "sort_field": "due_at",
+ "sort_order": "DESC",
+ "autoname": "hash",
+ "in_create": 1,
+ "title_field": "reference_name",
+ "permissions": [
+  {
+   "role": "System Manager",
+   "read": 1,
+   "report": 1
+  },
+  {
+   "role": "Aqar Admin",
+   "read": 1,
+   "report": 1
+  },
+  {
+   "role": "Aqar Manager",
+   "read": 1,
+   "report": 1
+  },
+  {
+   "role": "Aqar Team Lead",
+   "read": 1,
+   "report": 1
+  },
+  {
+   "role": "Aqar Opportunity Staff",
+   "read": 1,
+   "report": 1
+  },
+  {
+   "role": "Aqar Business Development",
+   "read": 1,
+   "report": 1
+  }
+ ],
+ "field_order": [
+  "reference_doctype",
+  "reference_name",
+  "policy",
+  "owner_user",
+  "state",
+  "rag",
+  "col",
+  "basis",
+  "started_at",
+  "amber_at",
+  "due_at",
+  "manager_escalation_at",
+  "result_section",
+  "paused_at",
+  "total_paused_minutes",
+  "escalation_level",
+  "col2",
+  "completed_at",
+  "outcome",
+  "response_minutes"
+ ],
+ "fields": [
+  {
+   "fieldname": "reference_doctype",
+   "fieldtype": "Link",
+   "label": "Reference DocType",
+   "read_only": 1,
+   "options": "DocType",
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "reference_name",
+   "fieldtype": "Dynamic Link",
+   "label": "Reference",
+   "read_only": 1,
+   "options": "reference_doctype",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "policy",
+   "fieldtype": "Link",
+   "label": "SLA Policy",
+   "read_only": 1,
+   "options": "Aqar SLA Policy",
+   "in_list_view": 1,
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "owner_user",
+   "fieldtype": "Link",
+   "label": "Owner",
+   "read_only": 1,
+   "options": "User",
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "state",
+   "fieldtype": "Select",
+   "label": "State",
+   "read_only": 1,
+   "options": "Running\nPaused\nCompleted\nCancelled",
+   "in_list_view": 1,
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "rag",
+   "fieldtype": "Select",
+   "label": "RAG",
+   "read_only": 1,
+   "options": "Green\nAmber\nRed",
+   "in_list_view": 1,
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "col",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "basis",
+   "fieldtype": "Select",
+   "label": "Basis",
+   "read_only": 1,
+   "options": "Business\nCalendar"
+  },
+  {
+   "fieldname": "started_at",
+   "fieldtype": "Datetime",
+   "label": "Started At",
+   "read_only": 1
+  },
+  {
+   "fieldname": "amber_at",
+   "fieldtype": "Datetime",
+   "label": "Amber At",
+   "read_only": 1
+  },
+  {
+   "fieldname": "due_at",
+   "fieldtype": "Datetime",
+   "label": "Due At",
+   "read_only": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "manager_escalation_at",
+   "fieldtype": "Datetime",
+   "label": "Manager Escalation At",
+   "read_only": 1
+  },
+  {
+   "fieldname": "result_section",
+   "fieldtype": "Section Break",
+   "label": "Result"
+  },
+  {
+   "fieldname": "paused_at",
+   "fieldtype": "Datetime",
+   "label": "Paused At",
+   "read_only": 1
+  },
+  {
+   "fieldname": "total_paused_minutes",
+   "fieldtype": "Float",
+   "label": "Paused Minutes",
+   "read_only": 1
+  },
+  {
+   "fieldname": "escalation_level",
+   "fieldtype": "Int",
+   "label": "Escalation Level",
+   "read_only": 1,
+   "description": "1 owner warned · 2 team leads (breach) · 3 managers (150% of target)"
+  },
+  {
+   "fieldname": "col2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "completed_at",
+   "fieldtype": "Datetime",
+   "label": "Completed At",
+   "read_only": 1
+  },
+  {
+   "fieldname": "outcome",
+   "fieldtype": "Select",
+   "label": "Outcome",
+   "read_only": 1,
+   "options": "\nOn Time\nLate",
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "response_minutes",
+   "fieldtype": "Float",
+   "label": "Response Minutes",
+   "read_only": 1
+  }
+ ]
+}

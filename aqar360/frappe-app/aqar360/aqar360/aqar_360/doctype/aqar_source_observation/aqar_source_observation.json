@@ -1,0 +1,165 @@
+{
+ "doctype": "DocType",
+ "name": "Aqar Source Observation",
+ "module": "Aqar 360",
+ "engine": "InnoDB",
+ "autoname": "hash",
+ "title_field": "source_name",
+ "track_changes": 1,
+ "permissions": [
+  {
+   "role": "System Manager",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 1
+  },
+  {
+   "role": "Aqar Admin",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 1
+  },
+  {
+   "role": "Aqar Manager",
+   "read": 1,
+   "write": 1,
+   "create": 1
+  },
+  {
+   "role": "Aqar Team Lead",
+   "read": 1,
+   "write": 1,
+   "create": 1
+  },
+  {
+   "role": "Aqar Opportunity Staff",
+   "read": 1,
+   "write": 1,
+   "create": 1
+  },
+  {
+   "role": "Aqar Business Development",
+   "read": 1,
+   "write": 1,
+   "create": 1
+  }
+ ],
+ "field_order": [
+  "reference_doctype",
+  "reference_name",
+  "field_group",
+  "source_type",
+  "source_name",
+  "source_url",
+  "source_file",
+  "first_seen",
+  "last_seen",
+  "last_verified",
+  "verified_by",
+  "reverify_after_days",
+  "freshness_status",
+  "confidence",
+  "usage_rights"
+ ],
+ "fields": [
+  {
+   "fieldname": "reference_doctype",
+   "fieldtype": "Link",
+   "label": "Reference DocType",
+   "options": "DocType",
+   "reqd": 1,
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "reference_name",
+   "fieldtype": "Dynamic Link",
+   "label": "Reference Name",
+   "options": "reference_doctype",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "field_group",
+   "fieldtype": "Data",
+   "label": "Field Group",
+   "description": "e.g. Price, Availability, Unit Mix",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "source_type",
+   "fieldtype": "Select",
+   "label": "Source Type",
+   "options": "First-Party / Developer Confirmed\nSigned Agreement / Official Document\nApproved Partner / API\nOfficial Public Source\nPublic Discovery Signal\nUnverified Lead",
+   "reqd": 1,
+   "in_list_view": 1,
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "source_name",
+   "fieldtype": "Data",
+   "label": "Source Name"
+  },
+  {
+   "fieldname": "source_url",
+   "fieldtype": "Data",
+   "label": "Source URL",
+   "options": "URL"
+  },
+  {
+   "fieldname": "source_file",
+   "fieldtype": "Attach",
+   "label": "Source File"
+  },
+  {
+   "fieldname": "first_seen",
+   "fieldtype": "Date",
+   "label": "First Seen"
+  },
+  {
+   "fieldname": "last_seen",
+   "fieldtype": "Date",
+   "label": "Last Seen"
+  },
+  {
+   "fieldname": "last_verified",
+   "fieldtype": "Date",
+   "label": "Last Verified"
+  },
+  {
+   "fieldname": "verified_by",
+   "fieldtype": "Link",
+   "label": "Verified By",
+   "options": "User"
+  },
+  {
+   "fieldname": "reverify_after_days",
+   "fieldtype": "Int",
+   "label": "Reverify After (Days)",
+   "default": "30"
+  },
+  {
+   "fieldname": "freshness_status",
+   "fieldtype": "Select",
+   "label": "Freshness",
+   "options": "Unverified\nFresh\nNeeds Reverification",
+   "read_only": 1,
+   "in_list_view": 1,
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "confidence",
+   "fieldtype": "Select",
+   "label": "Confidence",
+   "options": "High\nMedium\nLow"
+  },
+  {
+   "fieldname": "usage_rights",
+   "fieldtype": "Small Text",
+   "label": "Usage Rights / Notes"
+  }
+ ],
+ "sort_field": "creation",
+ "sort_order": "DESC"
+}

@@ -1,0 +1,211 @@
+{
+ "doctype": "DocType",
+ "name": "Aqar Outbox",
+ "module": "Aqar 360",
+ "engine": "InnoDB",
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "autoname": "hash",
+ "in_create": 1,
+ "title_field": "subject",
+ "search_fields": "recipient,template_key,status",
+ "permissions": [
+  {
+   "role": "System Manager",
+   "read": 1,
+   "report": 1
+  },
+  {
+   "role": "Aqar Admin",
+   "read": 1,
+   "report": 1
+  },
+  {
+   "role": "Aqar Manager",
+   "read": 1,
+   "report": 1
+  },
+  {
+   "role": "Aqar Team Lead",
+   "read": 1,
+   "report": 1
+  }
+ ],
+ "field_order": [
+  "status",
+  "template_key",
+  "template",
+  "category",
+  "consent_purpose",
+  "channel",
+  "language",
+  "col",
+  "recipient",
+  "contact",
+  "reference_doctype",
+  "reference_name",
+  "idempotency_key",
+  "delivery_section",
+  "scheduled_for",
+  "sent_at",
+  "attempts",
+  "email_queue",
+  "col2",
+  "reason",
+  "content_section",
+  "subject",
+  "message"
+ ],
+ "fields": [
+  {
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "label": "Status",
+   "read_only": 1,
+   "options": "Queued\nSent\nDelivered\nFailed\nSuppressed\nSkipped",
+   "in_list_view": 1,
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "template_key",
+   "fieldtype": "Data",
+   "label": "Template Key",
+   "read_only": 1,
+   "in_list_view": 1,
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "template",
+   "fieldtype": "Link",
+   "label": "Template Version",
+   "read_only": 1,
+   "options": "Aqar Message Template"
+  },
+  {
+   "fieldname": "category",
+   "fieldtype": "Select",
+   "label": "Category",
+   "read_only": 1,
+   "options": "Transactional\nFollow-up\nMarketing\nStaff",
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "consent_purpose",
+   "fieldtype": "Data",
+   "label": "Consent Purpose",
+   "read_only": 1
+  },
+  {
+   "fieldname": "channel",
+   "fieldtype": "Select",
+   "label": "Channel",
+   "read_only": 1,
+   "options": "Email\nWhatsApp"
+  },
+  {
+   "fieldname": "language",
+   "fieldtype": "Data",
+   "label": "Language",
+   "read_only": 1
+  },
+  {
+   "fieldname": "col",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "recipient",
+   "fieldtype": "Data",
+   "label": "Recipient",
+   "read_only": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "contact",
+   "fieldtype": "Link",
+   "label": "Contact",
+   "read_only": 1,
+   "options": "Contact",
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "reference_doctype",
+   "fieldtype": "Link",
+   "label": "Reference DocType",
+   "read_only": 1,
+   "options": "DocType"
+  },
+  {
+   "fieldname": "reference_name",
+   "fieldtype": "Dynamic Link",
+   "label": "Reference",
+   "read_only": 1,
+   "options": "reference_doctype",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "idempotency_key",
+   "fieldtype": "Data",
+   "label": "Idempotency Key",
+   "read_only": 1,
+   "unique": 1
+  },
+  {
+   "fieldname": "delivery_section",
+   "fieldtype": "Section Break",
+   "label": "Delivery"
+  },
+  {
+   "fieldname": "scheduled_for",
+   "fieldtype": "Datetime",
+   "label": "Scheduled For",
+   "read_only": 1
+  },
+  {
+   "fieldname": "sent_at",
+   "fieldtype": "Datetime",
+   "label": "Sent At",
+   "read_only": 1
+  },
+  {
+   "fieldname": "attempts",
+   "fieldtype": "Int",
+   "label": "Attempts",
+   "read_only": 1
+  },
+  {
+   "fieldname": "email_queue",
+   "fieldtype": "Link",
+   "label": "Email Queue",
+   "read_only": 1,
+   "options": "Email Queue"
+  },
+  {
+   "fieldname": "col2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "reason",
+   "fieldtype": "Small Text",
+   "label": "Suppression / Error Reason",
+   "read_only": 1
+  },
+  {
+   "fieldname": "content_section",
+   "fieldtype": "Section Break",
+   "label": "Message",
+   "collapsible": 1
+  },
+  {
+   "fieldname": "subject",
+   "fieldtype": "Data",
+   "label": "Subject",
+   "read_only": 1
+  },
+  {
+   "fieldname": "message",
+   "fieldtype": "Text Editor",
+   "label": "Message",
+   "read_only": 1
+  }
+ ]
+}

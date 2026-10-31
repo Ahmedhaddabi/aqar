@@ -1,0 +1,122 @@
+{
+ "doctype": "DocType",
+ "name": "Aqar SLA Policy",
+ "module": "Aqar 360",
+ "engine": "InnoDB",
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "autoname": "field:policy_key",
+ "title_field": "title",
+ "track_changes": 1,
+ "permissions": [
+  {
+   "role": "System Manager",
+   "read": 1,
+   "report": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 1
+  },
+  {
+   "role": "Aqar Admin",
+   "read": 1,
+   "report": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 1
+  },
+  {
+   "role": "Aqar Manager",
+   "read": 1,
+   "report": 1,
+   "write": 1
+  },
+  {
+   "role": "Aqar Team Lead",
+   "read": 1,
+   "report": 1
+  },
+  {
+   "role": "Aqar Opportunity Staff",
+   "read": 1,
+   "report": 1
+  },
+  {
+   "role": "Aqar Business Development",
+   "read": 1,
+   "report": 1
+  }
+ ],
+ "field_order": [
+  "title",
+  "policy_key",
+  "applies_to",
+  "active",
+  "col",
+  "target_rule",
+  "target_value",
+  "amber_at_pct",
+  "strategy_reference"
+ ],
+ "fields": [
+  {
+   "fieldname": "title",
+   "fieldtype": "Data",
+   "label": "Title",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "policy_key",
+   "fieldtype": "Data",
+   "label": "Policy Key",
+   "reqd": 1,
+   "unique": 1,
+   "set_only_once": 1
+  },
+  {
+   "fieldname": "applies_to",
+   "fieldtype": "Link",
+   "label": "Applies To",
+   "options": "DocType",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "active",
+   "fieldtype": "Check",
+   "label": "Active",
+   "default": "1",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "col",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "target_rule",
+   "fieldtype": "Select",
+   "label": "Target Rule",
+   "reqd": 1,
+   "in_list_view": 1,
+   "options": "Business Minutes\nCalendar Minutes\nSame Business Day\nBusiness Days"
+  },
+  {
+   "fieldname": "target_value",
+   "fieldtype": "Float",
+   "label": "Target Value",
+   "in_list_view": 1,
+   "description": "Minutes for minute rules, days for Business Days; ignored for Same Business Day."
+  },
+  {
+   "fieldname": "amber_at_pct",
+   "fieldtype": "Percent",
+   "label": "Amber At (% of target)",
+   "default": "75"
+  },
+  {
+   "fieldname": "strategy_reference",
+   "fieldtype": "Data",
+   "label": "Strategy Reference"
+  }
+ ]
+}

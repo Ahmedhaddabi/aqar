@@ -1,0 +1,49 @@
+# Overlay on frappe_docker/compose.custom.yaml; only custom source is editable.
+x-aqar-development: &aqar-development
+  environment:
+    PYTHONPATH: /home/frappe/frappe-bench/apps/aqar360
+  volumes:
+    - ${AQAR360_ROOT:?Set AQAR360_ROOT}/frappe-app/aqar360:/home/frappe/frappe-bench/apps/aqar360
+services:
+  mailpit:
+    image: public.ecr.aws/supabase/mailpit:v1.30.2
+    restart: unless-stopped
+    ports:
+      - 127.0.0.1:8025:8025
+  backend:
+    <<: *aqar-development
+  queue-short:
+    <<: *aqar-development
+  queue-long:
+    <<: *aqar-development
+  scheduler:
+    <<: *aqar-development
+  websocket:
+    <<: *aqar-development
+  frontend:
+    <<: *aqar-development
+    environment:
+      PYTHONPATH: /home/frappe/frappe-bench/apps/aqar360
+      FRAPPE_SITE_NAME_HEADER: '$$host'
+    ports: !override
+      - 127.0.0.1:8080:8080
+  configurator:
+    <<: *aqar-development
+  dev:
+    <<: *aqar-development
+    image: aqar:16
+    pull_policy: never
+    entrypoint: [bash, -lc]
+    command: [sleep infinity]
+    working_dir: /home/frappe/frappe-bench
+    environment:
+      PYTHONPATH: /home/frappe/frappe-bench/apps/aqar360
+      SHELL: /bin/bash
+    volumes:
+      - sites:/home/frappe/frappe-bench/sites
+      - ${AQAR360_ROOT:?Set AQAR360_ROOT}/frappe-app/aqar360:/home/frappe/frappe-bench/apps/aqar360
+      - ${AQAR360_ROOT:?Set AQAR360_ROOT}:/workspace/aqar360
+
+
+
+

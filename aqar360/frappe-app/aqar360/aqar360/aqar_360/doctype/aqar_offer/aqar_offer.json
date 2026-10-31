@@ -1,0 +1,228 @@
+{
+ "doctype": "DocType",
+ "name": "Aqar Offer",
+ "module": "Aqar 360",
+ "engine": "InnoDB",
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "autoname": "format:OFFER-{YYYY}-{#####}",
+ "title_field": "supply_label",
+ "track_changes": 1,
+ "permissions": [
+  {
+   "role": "System Manager",
+   "read": 1,
+   "report": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 1
+  },
+  {
+   "role": "Aqar Admin",
+   "read": 1,
+   "report": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 1
+  },
+  {
+   "role": "Aqar Manager",
+   "read": 1,
+   "report": 1,
+   "write": 1,
+   "create": 1
+  },
+  {
+   "role": "Aqar Team Lead",
+   "read": 1,
+   "report": 1,
+   "write": 1,
+   "create": 1
+  },
+  {
+   "role": "Aqar Opportunity Staff",
+   "read": 1,
+   "report": 1,
+   "write": 1,
+   "create": 1
+  },
+  {
+   "role": "Aqar Business Development",
+   "read": 1,
+   "report": 1,
+   "write": 1,
+   "create": 1
+  }
+ ],
+ "field_order": [
+  "status",
+  "search_request",
+  "match",
+  "viewing",
+  "contact",
+  "col",
+  "offer_type",
+  "asking_amount",
+  "offered_amount",
+  "offer_date",
+  "valid_until",
+  "supply_section",
+  "supply_label",
+  "property",
+  "project",
+  "area",
+  "price",
+  "negotiation_section",
+  "rounds",
+  "terms",
+  "owner_response",
+  "final_amount"
+ ],
+ "fields": [
+  {
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "label": "Status",
+   "default": "Draft",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "options": "Draft\nSubmitted to Owner\nCountered\nAccepted\nRejected\nWithdrawn\nExpired"
+  },
+  {
+   "fieldname": "search_request",
+   "fieldtype": "Link",
+   "label": "Search Request",
+   "options": "Aqar Search Request",
+   "reqd": 1,
+   "in_list_view": 1,
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "match",
+   "fieldtype": "Link",
+   "label": "Match",
+   "options": "Aqar Match",
+   "reqd": 1
+  },
+  {
+   "fieldname": "viewing",
+   "fieldtype": "Link",
+   "label": "Viewing",
+   "options": "Aqar Viewing"
+  },
+  {
+   "fieldname": "contact",
+   "fieldtype": "Link",
+   "label": "Customer",
+   "read_only": 1,
+   "options": "Contact",
+   "fetch_from": "search_request.contact"
+  },
+  {
+   "fieldname": "col",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "offer_type",
+   "fieldtype": "Select",
+   "label": "Offer Type",
+   "options": "Purchase\nRent",
+   "reqd": 1
+  },
+  {
+   "fieldname": "asking_amount",
+   "fieldtype": "Currency",
+   "label": "Asking (OMR)",
+   "read_only": 1,
+   "precision": "3"
+  },
+  {
+   "fieldname": "offered_amount",
+   "fieldtype": "Currency",
+   "label": "Offered (OMR)",
+   "reqd": 1,
+   "in_list_view": 1,
+   "precision": "3"
+  },
+  {
+   "fieldname": "offer_date",
+   "fieldtype": "Date",
+   "label": "Offer Date",
+   "default": "Today",
+   "reqd": 1
+  },
+  {
+   "fieldname": "valid_until",
+   "fieldtype": "Date",
+   "label": "Valid Until"
+  },
+  {
+   "fieldname": "supply_section",
+   "fieldtype": "Section Break",
+   "label": "Property"
+  },
+  {
+   "fieldname": "supply_label",
+   "fieldtype": "Data",
+   "label": "Property / Unit",
+   "read_only": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "property",
+   "fieldtype": "Link",
+   "label": "Property",
+   "read_only": 1,
+   "options": "Property"
+  },
+  {
+   "fieldname": "project",
+   "fieldtype": "Link",
+   "label": "Project",
+   "read_only": 1,
+   "options": "Aqar Development Project"
+  },
+  {
+   "fieldname": "area",
+   "fieldtype": "Link",
+   "label": "Area",
+   "read_only": 1,
+   "options": "Aqar Area"
+  },
+  {
+   "fieldname": "price",
+   "fieldtype": "Currency",
+   "label": "Price (OMR)",
+   "read_only": 1,
+   "precision": "3"
+  },
+  {
+   "fieldname": "negotiation_section",
+   "fieldtype": "Section Break",
+   "label": "Negotiation"
+  },
+  {
+   "fieldname": "rounds",
+   "fieldtype": "Table",
+   "label": "Counter Offers",
+   "options": "Aqar Offer Round"
+  },
+  {
+   "fieldname": "terms",
+   "fieldtype": "Small Text",
+   "label": "Terms / Conditions"
+  },
+  {
+   "fieldname": "owner_response",
+   "fieldtype": "Small Text",
+   "label": "Owner / Developer Response"
+  },
+  {
+   "fieldname": "final_amount",
+   "fieldtype": "Currency",
+   "label": "Agreed Amount (OMR)",
+   "depends_on": "eval:doc.status=='Accepted'",
+   "precision": "3"
+  }
+ ]
+}

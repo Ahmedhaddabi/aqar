@@ -1,0 +1,39 @@
+{
+ "doctype": "DocType",
+ "name": "Aqar Content Revision",
+ "module": "Aqar 360",
+ "engine": "InnoDB",
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "istable": 1,
+ "editable_grid": 1,
+ "permissions": [],
+ "field_order": [
+  "requested_on",
+  "request",
+  "beyond_included"
+ ],
+ "fields": [
+  {
+   "fieldname": "requested_on",
+   "fieldtype": "Datetime",
+   "label": "Requested On",
+   "read_only": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "request",
+   "fieldtype": "Small Text",
+   "label": "Requested Changes",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "beyond_included",
+   "fieldtype": "Check",
+   "label": "Beyond Included Rounds",
+   "read_only": 1,
+   "in_list_view": 1
+  }
+ ]
+}

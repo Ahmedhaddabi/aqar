@@ -1,0 +1,476 @@
+{
+ "doctype": "DocType",
+ "name": "Aqar Search Request",
+ "module": "Aqar 360",
+ "engine": "InnoDB",
+ "autoname": "format:REQ-{YYYY}-{#####}",
+ "title_field": "submitted_name",
+ "track_changes": 1,
+ "search_fields": "submitted_name,submitted_phone,status",
+ "permissions": [
+  {
+   "role": "System Manager",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 1,
+   "export": 1,
+   "report": 1
+  },
+  {
+   "role": "Aqar Admin",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 1,
+   "export": 1,
+   "report": 1
+  },
+  {
+   "role": "Aqar Manager",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "report": 1
+  },
+  {
+   "role": "Aqar Team Lead",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "report": 1
+  },
+  {
+   "role": "Aqar Opportunity Staff",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "report": 1
+  },
+  {
+   "role": "Aqar Business Development",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "report": 1
+  }
+ ],
+ "field_order": [
+  "status",
+  "request_kind",
+  "purpose",
+  "property_type",
+  "status_col",
+  "timing",
+  "preferred_channel",
+  "alerts_paused",
+  "expires_on",
+  "next_review_on",
+  "assigned_to",
+  "first_response_at",
+  "customer_section",
+  "contact",
+  "submitted_name",
+  "submitted_phone",
+  "submitted_email",
+  "customer_col",
+  "language",
+  "duplicate_candidate",
+  "duplicate_review",
+  "requirements_section",
+  "areas",
+  "budget_min",
+  "budget_max",
+  "budget_tolerance_pct",
+  "requirements_col",
+  "bedrooms_min",
+  "bathrooms_min",
+  "size_min_sqm",
+  "size_max_sqm",
+  "furnished",
+  "parking",
+  "elevator",
+  "usage_type",
+  "notes",
+  "special_section",
+  "company_name",
+  "units_needed",
+  "special_col",
+  "investment_goal",
+  "foreign_ownership_required",
+  "interest_section",
+  "interested_doctype",
+  "interested_in",
+  "interest_col",
+  "interested_unit",
+  "source_page",
+  "source_section",
+  "source_channel",
+  "utm_source",
+  "utm_medium",
+  "utm_campaign",
+  "source_col",
+  "utm_content",
+  "landing_page",
+  "referrer",
+  "submitted_at",
+  "idempotency_key"
+ ],
+ "fields": [
+  {
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "default": "Active Request",
+   "options": "Active Request\nSearching\nPotential Match\nTeam Reviewed\nClient Contacted\nViewing\nInterested\nNot Suitable\nOffer\nClosed\nPaused",
+   "label": "Status"
+  },
+  {
+   "fieldname": "request_kind",
+   "fieldtype": "Select",
+   "options": "Standard\nCorporate\nInvestment Mandate",
+   "default": "Standard",
+   "in_standard_filter": 1,
+   "label": "Request Kind"
+  },
+  {
+   "fieldname": "purpose",
+   "fieldtype": "Select",
+   "options": "Buy\nRent",
+   "reqd": 1,
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Purpose"
+  },
+  {
+   "fieldname": "property_type",
+   "fieldtype": "Select",
+   "options": "Apartment\nVilla\nLand\nBuilding\nShop\nOffice\nWarehouse\nShowroom\nProject\nCommercial\nOther",
+   "reqd": 1,
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Property Type"
+  },
+  {
+   "fieldname": "status_col",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "timing",
+   "fieldtype": "Select",
+   "reqd": 1,
+   "options": "Immediately\nWithin 1 Month\n1-3 Months\n3-6 Months\nNot Urgent",
+   "label": "Timing"
+  },
+  {
+   "fieldname": "preferred_channel",
+   "fieldtype": "Select",
+   "options": "Email\nWhatsApp\nPhone",
+   "default": "Email",
+   "label": "Preferred Channel"
+  },
+  {
+   "fieldname": "alerts_paused",
+   "fieldtype": "Check",
+   "label": "Alerts Paused"
+  },
+  {
+   "fieldname": "expires_on",
+   "fieldtype": "Date",
+   "label": "Expires On"
+  },
+  {
+   "fieldname": "next_review_on",
+   "fieldtype": "Date",
+   "label": "Next Review On"
+  },
+  {
+   "fieldname": "assigned_to",
+   "fieldtype": "Link",
+   "label": "Owner",
+   "options": "User",
+   "in_standard_filter": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "first_response_at",
+   "fieldtype": "Datetime",
+   "label": "First Response At",
+   "description": "Set when the customer is first contacted; completes the first-response SLA."
+  },
+  {
+   "fieldname": "customer_section",
+   "fieldtype": "Section Break",
+   "label": "Customer"
+  },
+  {
+   "fieldname": "contact",
+   "fieldtype": "Link",
+   "options": "Contact",
+   "in_standard_filter": 1,
+   "label": "Contact"
+  },
+  {
+   "fieldname": "submitted_name",
+   "fieldtype": "Data",
+   "reqd": 1,
+   "in_list_view": 1,
+   "label": "Name as Submitted"
+  },
+  {
+   "fieldname": "submitted_phone",
+   "fieldtype": "Data",
+   "options": "Phone",
+   "label": "Phone as Submitted"
+  },
+  {
+   "fieldname": "submitted_email",
+   "fieldtype": "Data",
+   "options": "Email",
+   "label": "Email as Submitted"
+  },
+  {
+   "fieldname": "customer_col",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "language",
+   "fieldtype": "Select",
+   "options": "ar\nen",
+   "default": "ar",
+   "label": "Language"
+  },
+  {
+   "fieldname": "duplicate_candidate",
+   "fieldtype": "Link",
+   "options": "Contact",
+   "read_only": 1,
+   "label": "Possible Duplicate Of"
+  },
+  {
+   "fieldname": "duplicate_review",
+   "fieldtype": "Select",
+   "options": "\nNeeds Review\nConfirmed Same Person\nConfirmed Different Person",
+   "depends_on": "duplicate_candidate",
+   "label": "Duplicate Review"
+  },
+  {
+   "fieldname": "requirements_section",
+   "fieldtype": "Section Break",
+   "label": "Requirements"
+  },
+  {
+   "fieldname": "areas",
+   "fieldtype": "Table",
+   "options": "Aqar Search Request Area",
+   "reqd": 1,
+   "label": "Areas"
+  },
+  {
+   "fieldname": "budget_min",
+   "fieldtype": "Currency",
+   "precision": "3",
+   "label": "Budget From (OMR)"
+  },
+  {
+   "fieldname": "budget_max",
+   "fieldtype": "Currency",
+   "reqd": 1,
+   "in_list_view": 1,
+   "precision": "3",
+   "label": "Budget To (OMR)"
+  },
+  {
+   "fieldname": "budget_tolerance_pct",
+   "fieldtype": "Percent",
+   "default": "20",
+   "description": "Prices up to this % above the budget appear as Near Match (§27.15). 0 = never exceed.",
+   "label": "Near-Match Tolerance %"
+  },
+  {
+   "fieldname": "requirements_col",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "bedrooms_min",
+   "fieldtype": "Int",
+   "label": "Bedrooms (min)"
+  },
+  {
+   "fieldname": "bathrooms_min",
+   "fieldtype": "Int",
+   "label": "Bathrooms (min)"
+  },
+  {
+   "fieldname": "size_min_sqm",
+   "fieldtype": "Float",
+   "label": "Size From (m²)"
+  },
+  {
+   "fieldname": "size_max_sqm",
+   "fieldtype": "Float",
+   "label": "Size To (m²)"
+  },
+  {
+   "fieldname": "furnished",
+   "fieldtype": "Select",
+   "options": "Any\nFurnished\nUnfurnished",
+   "default": "Any",
+   "label": "Furnished"
+  },
+  {
+   "fieldname": "parking",
+   "fieldtype": "Check",
+   "label": "Parking Required"
+  },
+  {
+   "fieldname": "elevator",
+   "fieldtype": "Check",
+   "label": "Elevator Required"
+  },
+  {
+   "fieldname": "usage_type",
+   "fieldtype": "Data",
+   "label": "Intended Use"
+  },
+  {
+   "fieldname": "notes",
+   "fieldtype": "Small Text",
+   "label": "Notes"
+  },
+  {
+   "fieldname": "special_section",
+   "fieldtype": "Section Break",
+   "depends_on": "eval:doc.request_kind!='Standard'",
+   "label": "Corporate / Investment"
+  },
+  {
+   "fieldname": "company_name",
+   "fieldtype": "Data",
+   "label": "Company"
+  },
+  {
+   "fieldname": "units_needed",
+   "fieldtype": "Int",
+   "label": "Units Needed"
+  },
+  {
+   "fieldname": "special_col",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "investment_goal",
+   "fieldtype": "Select",
+   "options": "\nRental Yield\nCapital Growth\nOwn Use\nDevelopment\nOther",
+   "label": "Investment Goal"
+  },
+  {
+   "fieldname": "foreign_ownership_required",
+   "fieldtype": "Check",
+   "label": "Foreign Ownership Eligibility Required"
+  },
+  {
+   "fieldname": "interest_section",
+   "fieldtype": "Section Break",
+   "label": "Website Interest",
+   "description": "Set by the website when the customer used Register interest on a project, property or unit."
+  },
+  {
+   "fieldname": "interested_doctype",
+   "fieldtype": "Link",
+   "label": "Listing Type",
+   "options": "DocType",
+   "read_only": 1
+  },
+  {
+   "fieldname": "interested_in",
+   "fieldtype": "Dynamic Link",
+   "label": "Interested In",
+   "options": "interested_doctype",
+   "read_only": 1,
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "interest_col",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "interested_unit",
+   "fieldtype": "Link",
+   "label": "Interested Unit",
+   "options": "Property Unit",
+   "read_only": 1
+  },
+  {
+   "fieldname": "source_page",
+   "fieldtype": "Data",
+   "label": "Source Page",
+   "read_only": 1
+  },
+  {
+   "fieldname": "source_section",
+   "fieldtype": "Section Break",
+   "collapsible": 1,
+   "label": "Source"
+  },
+  {
+   "fieldname": "source_channel",
+   "fieldtype": "Select",
+   "options": "Website\nInstagram\nGoogle\nMeta\nTikTok\nSnapchat\nReferral\nWhatsApp\nPhone\nWalk-in\nStaff Entry\nOther",
+   "default": "Staff Entry",
+   "in_standard_filter": 1,
+   "label": "Source Channel"
+  },
+  {
+   "fieldname": "utm_source",
+   "fieldtype": "Data",
+   "label": "UTM Source"
+  },
+  {
+   "fieldname": "utm_medium",
+   "fieldtype": "Data",
+   "label": "UTM Medium"
+  },
+  {
+   "fieldname": "utm_campaign",
+   "fieldtype": "Data",
+   "label": "UTM Campaign"
+  },
+  {
+   "fieldname": "source_col",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "utm_content",
+   "fieldtype": "Data",
+   "label": "UTM Content"
+  },
+  {
+   "fieldname": "landing_page",
+   "fieldtype": "Data",
+   "label": "Landing Page"
+  },
+  {
+   "fieldname": "referrer",
+   "fieldtype": "Data",
+   "label": "Referrer"
+  },
+  {
+   "fieldname": "submitted_at",
+   "fieldtype": "Datetime",
+   "read_only": 1,
+   "label": "Submitted At"
+  },
+  {
+   "fieldname": "idempotency_key",
+   "fieldtype": "Data",
+   "unique": 1,
+   "read_only": 1,
+   "hidden": 1,
+   "label": "Idempotency Key"
+  }
+ ],
+ "sort_field": "creation",
+ "sort_order": "DESC"
+}

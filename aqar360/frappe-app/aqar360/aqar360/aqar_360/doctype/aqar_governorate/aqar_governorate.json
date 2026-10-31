@@ -1,0 +1,57 @@
+{
+ "doctype": "DocType",
+ "name": "Aqar Governorate",
+ "module": "Aqar 360",
+ "engine": "InnoDB",
+ "autoname": "field:governorate_name_en",
+ "title_field": "governorate_name_en",
+ "permissions": [
+  {
+   "role": "System Manager",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 1
+  },
+  {
+   "role": "Aqar Admin",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 1
+  },
+  {
+   "role": "Aqar Manager",
+   "read": 1,
+   "write": 1,
+   "create": 1
+  },
+  {
+   "role": "All",
+   "read": 1
+  }
+ ],
+ "field_order": [
+  "governorate_name_en",
+  "governorate_name_ar"
+ ],
+ "fields": [
+  {
+   "fieldname": "governorate_name_en",
+   "fieldtype": "Data",
+   "label": "Name (English)",
+   "reqd": 1,
+   "unique": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "governorate_name_ar",
+   "fieldtype": "Data",
+   "label": "Name (Arabic)",
+   "reqd": 1,
+   "in_list_view": 1
+  }
+ ],
+ "sort_field": "creation",
+ "sort_order": "DESC"
+}
