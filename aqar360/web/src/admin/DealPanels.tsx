@@ -21,9 +21,9 @@ function title(m: MatchRow, lang: AdminLang) {
   return `${m.property?.kind ?? ""} · ${m.property?.code ?? ""}`;
 }
 
-export function Suggestions({ rows, t, lang, requestId, customer }: {
+export function Suggestions({ rows, t, lang, requestId, customer, saved }: {
   rows: MatchRow[]; t: T; lang: AdminLang; requestId: number;
-  customer: { name: string; phone: string | null; number: string; siteUrl: string };
+  customer: { name: string; phone: string | null; number: string; siteUrl: string }; saved?: Set<number>;
 }) {
   const visible = rows.filter((r) => r.match.status !== "withdrawn");
   const wa = whatsappLink(customer.phone);
@@ -47,6 +47,7 @@ export function Suggestions({ rows, t, lang, requestId, customer }: {
                   <strong>{name}</strong>
                   <span className={`a-score${m.match.score >= 80 ? " high" : ""}`}>{t.score} {m.match.score}</span>
                   <span className="a-tag">{t.types[m.match.matchType]}</span>
+                  {m.property && saved?.has(m.property.id) && <span className="a-tag a-saved">❤ {t.saved}</span>}
                   <span className={`a-status s-${m.match.status === "sent" ? "won" : m.match.status === "rejected" ? "closed" : "working"}`}>
                     {t.statuses[m.match.status]}</span>
                 </div>

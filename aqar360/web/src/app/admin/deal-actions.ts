@@ -11,6 +11,7 @@ import { audit, requireUser } from "@/lib/auth";
 import { matchRequest, matchSupply } from "@/lib/matching";
 import { sendMessage } from "@/lib/messages";
 import { siteUrl } from "@/lib/config";
+import { portalLink } from "@/lib/doc-link";
 
 const id = z.coerce.number().int().positive();
 const refresh = (requestId: number) => { revalidatePath(`/admin/requests/${requestId}`); revalidatePath("/admin"); };
@@ -47,7 +48,7 @@ export async function decideMatch(form: FormData) {
     }
     const label = await listingLabel(m.propertyId, m.unitTypeId);
     await sendMessage({ key: `match:${m.id}`, template: "match_sent", contactId: r.contactId, requestId: r.id, purpose: "match_alerts",
-      vars: { number: r.number, property: label.text, price: m.price ? `${m.price} OMR` : "", link: label.link } });
+      vars: { number: r.number, property: label.text, price: m.price ? `${m.price} OMR` : "", link: label.link, portal: portalLink(r.contactId) } });
   }
   await audit(`match_${parsed.data.decision}`, "match", m.id, { requestId: r.id }, user.id);
   refresh(r.id);

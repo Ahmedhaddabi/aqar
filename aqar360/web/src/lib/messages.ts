@@ -12,7 +12,7 @@ import { docLink } from "./doc-link";
 import { integrationConfig } from "./integrations";
 
 export const TEMPLATE_KEYS = ["received", "match_sent", "viewing_reminder", "still_searching", "request_expiring",
-  "invoice_sent", "payment_reminder", "job_brief", "job_review", "not_selected", "portal_link"] as const;
+  "invoice_sent", "payment_reminder", "job_brief", "job_review", "not_selected", "portal_link", "viewing_booked"] as const;
 export type TemplateKey = (typeof TEMPLATE_KEYS)[number];
 
 /** Draft wording (the customer edits it in Admin → Messages). Variables: {{name}}, {{number}}, {{link}}, … */
@@ -22,8 +22,12 @@ export const DEFAULT_TEMPLATES: Record<TemplateKey, Record<"ar" | "en", { subjec
     en: { subject: "{{company}}: we received your request {{number}}", body: "Hello {{name}},\nThank you for contacting us. Your request {{number}} has been received and our team will contact you soon.\nFollow or update your request here: {{link}}" },
   },
   match_sent: {
-    ar: { subject: "{{company}}: عقار مقترح لطلبك {{number}}", body: "مرحبا {{name}}،\nوجدنا عقارا قد يناسبك: {{property}} — {{price}}.\n{{link}}\nتواصل معنا لحجز معاينة." },
-    en: { subject: "{{company}}: a property for your request {{number}}", body: "Hello {{name}},\nWe found a property that may suit you: {{property}} — {{price}}.\n{{link}}\nContact us to book a viewing." },
+    ar: { subject: "{{company}}: عقار مقترح لطلبك {{number}}", body: "مرحبا {{name}}،\nوجدنا عقارا قد يناسبك: {{property}} — {{price}}.\n{{link}}\nاحجز موعد المعاينة أو احفظ العقار من حسابك: {{portal}}" },
+    en: { subject: "{{company}}: a property for your request {{number}}", body: "Hello {{name}},\nWe found a property that may suit you: {{property}} — {{price}}.\n{{link}}\nBook a viewing or save it from your account: {{portal}}" },
+  },
+  viewing_booked: {
+    ar: { subject: "{{company}}: تم حجز موعد المعاينة", body: "مرحبا {{name}}،\nتم تأكيد موعد معاينة {{property}} يوم {{when}}.\nيمكنك تغيير الموعد أو إلغاؤه من حسابك: {{portal}}" },
+    en: { subject: "{{company}}: your viewing is booked", body: "Hello {{name}},\nYour viewing of {{property}} is confirmed for {{when}}.\nYou can change or cancel it from your account: {{portal}}" },
   },
   viewing_reminder: {
     ar: { subject: "{{company}}: تذكير بموعد المعاينة", body: "مرحبا {{name}}،\nنذكّرك بموعد المعاينة {{when}}.\nإذا رغبت في تغيير الموعد يرجى التواصل معنا." },

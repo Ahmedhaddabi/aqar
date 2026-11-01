@@ -3,11 +3,12 @@ import Link from "next/link";
 
 import { dateTime } from "@/admin/format";
 import { adminDict, adminLang } from "@/admin/i18n";
-import { Field, Section } from "@/admin/ListingParts";
+import { Field, Section, Toggle } from "@/admin/ListingParts";
 import { db } from "@/db";
 import { auditLog, settings, users } from "@/db/schema";
 import { requireUser } from "@/lib/auth";
 import { contact } from "@/lib/config";
+import { viewingRules } from "@/lib/viewings";
 
 import { saveSettings } from "../../settings-actions";
 
@@ -33,7 +34,7 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
 type T = ReturnType<typeof adminDict>["settings"];
 
 async function General({ t, p }: { t: T; p: ReturnType<typeof adminDict>["pay"] }) {
-  const rows = await db.select().from(settings);
+  const [rows, rules] = await Promise.all([db.select().from(settings), viewingRules()]);
   const v = (key: string, fallback = "") => String(rows.find((r) => r.key === key)?.value ?? fallback);
   const text = (key: string, label: string, dir: "ltr" | "rtl" | "auto" = "auto", fallback = "", type = "text") => (
     <Field label={label}><input name={key} type={type} defaultValue={v(key, fallback)} dir={dir} maxLength={300} /></Field>
@@ -63,6 +64,27 @@ async function General({ t, p }: { t: T; p: ReturnType<typeof adminDict>["pay"] 
           <Field label={t.firstResponseHours}><input type="number" name="firstResponseHours" min={1} max={72} defaultValue={v("firstResponseHours", "2")} required /></Field>
           <Field label={t.followUpDays}><input type="number" name="followUpDays" min={1} max={90} defaultValue={v("followUpDays", "14")} required /></Field>
           <Field label={t.requestValidDays}><input type="number" name="requestValidDays" min={7} max={365} defaultValue={v("requestValidDays", "90")} required /></Field>
+        </div>
+      </Section>
+      <Section title={`📅 ${t.viewing.title}`}>
+        <p className="a-muted wide">{t.viewing.intro}</p>
+        <Toggle name="viewingSelfBooking" label={t.viewing.selfBooking} help={t.viewing.selfBookingHelp} checked={rules.selfBooking} />
+        <fieldset className="a-field wide a-days">
+          <span>{t.viewing.days}</span>
+          <div className="a-inline">
+            {[6, 0, 1, 2, 3, 4, 5].map((d) => (
+              <label key={d} className="a-check"><input type="checkbox" name="viewingDays" value={d} defaultChecked={rules.days.includes(d)} /> {t.viewing.weekdays[d]}</label>
+            ))}
+          </div>
+        </fieldset>
+        <div className="a-grid-fields">
+          <Field label={t.viewing.start}><input type="number" name="viewingStart" min={0} max={23} defaultValue={rules.start} required /></Field>
+          <Field label={t.viewing.end}><input type="number" name="viewingEnd" min={1} max={24} defaultValue={rules.end} required /></Field>
+          <Field label={t.viewing.slot}>
+            <select name="viewingSlotMinutes" defaultValue={rules.slotMinutes}>{[30, 45, 60, 90, 120].map((m) => <option key={m} value={m}>{m}</option>)}</select>
+          </Field>
+          <Field label={t.viewing.notice}><input type="number" name="viewingNoticeHours" min={0} max={168} defaultValue={rules.noticeHours} required /></Field>
+          <Field label={t.viewing.ahead}><input type="number" name="viewingDaysAhead" min={1} max={60} defaultValue={rules.daysAhead} required /></Field>
         </div>
       </Section>
       <p className="a-muted">💳 <a href="/admin/payment-methods">{p.title}</a></p>

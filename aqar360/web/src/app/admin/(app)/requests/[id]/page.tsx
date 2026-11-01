@@ -12,6 +12,7 @@ import { REQUEST_STATUSES } from "@/db/schema";
 import { optionLabel } from "@/i18n/dictionaries";
 import { requireApp } from "@/lib/auth";
 import { siteUrl } from "@/lib/config";
+import { savedByContact } from "@/lib/viewings";
 
 import { assignRequest, changeStatus } from "../../../crm-actions";
 import { acceptOpportunity, declineOpportunity } from "../../../review-actions";
@@ -129,7 +130,7 @@ export default async function RequestPage({ params, searchParams }: {
             </section>
           )}
           {r.kind === "search" && <Suggestions rows={matchRows} t={T.match} lang={lang} requestId={r.id}
-            customer={{ name: c.name, phone: c.phone, number: r.number, siteUrl }} />}
+            customer={{ name: c.name, phone: c.phone, number: r.number, siteUrl }} saved={await savedByContact(c.id)} />}
           {r.kind !== "consulting" && <Offers rows={offerRows} t={T.match} lang={lang} requestId={r.id} choices={offerChoices} />}
           <Timeline rows={timeline} t={t} lang={lang} contactId={c.id} requestId={r.id} results={T.match} />
           <Documents ownerType="request" ownerId={r.id} lang={lang} canShare={user.role !== "agent"} />

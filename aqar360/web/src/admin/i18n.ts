@@ -9,7 +9,7 @@ type IntegText = { name: string; icon: string; link: string; purpose: string; st
 
 const en = {
   appName: "Aqar 360 Admin",
-  nav: { today: "Today", requests: "Requests", customers: "Customers", listings: "Properties & projects", invoices: "Invoices", expenses: "Expenses", finance: "Finance", hr: "Team (HR)", hiring: "Hiring & suppliers", site: "Website content", messages: "Messages", reports: "Reports", settings: "Settings", crm: "CRM", erp: "ERP", hrApp: "HR", overview: "Overview", apps: "Apps", setup: "Setup", payMethods: "Payment methods", jobs: "Service jobs", people: "People", leave: "Leave", payroll: "Payroll", renewals: "Renewals", account: "My account", claims: "My expense claims", notifications: "Notifications", approvals: "Approvals", recurring: "Recurring expenses", kb: "Knowledge base", search: "Search everything…", newEntry: "New customer / request", whatsapp: "WhatsApp", market: "Market intelligence", assistant: "AI assistant", field: "Field (mobile)", users: "Staff", integrations: "Integrations", website: "Open website", signOut: "Sign out", language: "العربية" },
+  nav: { today: "Today", requests: "Requests", customers: "Customers", listings: "Properties & projects", invoices: "Invoices", expenses: "Expenses", finance: "Finance", hr: "Team (HR)", hiring: "Hiring & suppliers", site: "Website content", messages: "Messages", reports: "Reports", settings: "Settings", crm: "CRM", erp: "ERP", hrApp: "HR", overview: "Overview", apps: "Apps", setup: "Setup", payMethods: "Payment methods", jobs: "Service jobs", people: "People", leave: "Leave", payroll: "Payroll", renewals: "Renewals", account: "My account", claims: "My expense claims", notifications: "Notifications", approvals: "Approvals", recurring: "Recurring expenses", kb: "Knowledge base", search: "Search everything…", newEntry: "New customer / request", whatsapp: "WhatsApp", market: "Market intelligence", assistant: "AI assistant", field: "Field (mobile)", users: "Staff", integrations: "Integrations", calendar: "Calendar", website: "Open website", signOut: "Sign out", language: "العربية" },
   roles: { admin: "Admin", manager: "Manager", agent: "Agent" } as Record<string, string>,
   roleHelp: {
     admin: "Everything, including staff accounts and settings",
@@ -118,6 +118,7 @@ const en = {
       outside_criteria: "Outside the request's budget, area or type" } as Record<string, string>,
     bookViewing: "Book viewing", viewingAt: "Viewing date and time", toReview: "Suggestions to review",
     results: { interested: "Interested", not_suitable: "Not suitable", wants_alternatives: "Wants other options", no_show: "Did not come" } as Record<string, string>,
+    cancelled: "Cancelled by the customer", online: "Booked online", saved: "Saved by the customer",
     result: "Viewing result", saveResult: "Save result",
     offers: "Offers", addOffer: "Record an offer", amount: "Amount (OMR)", counter: "Counter offer (OMR)", property: "Property",
     offerStatuses: { submitted: "Sent to owner", countered: "Counter offer", accepted: "Accepted", rejected: "Rejected", withdrawn: "Withdrawn" } as Record<string, string>,
@@ -206,7 +207,7 @@ const en = {
     keys: { received: "Request received", match_sent: "Property suggestion sent", viewing_reminder: "Viewing reminder",
       still_searching: "Still searching? (follow-up)", request_expiring: "Request about to expire", invoice_sent: "Invoice or quote sent",
       payment_reminder: "Payment reminder", job_brief: "Job details request (after payment)", job_review: "Delivery ready for approval",
-      not_selected: "Owner opportunity not selected", portal_link: "Customer portal link" } as Record<string, string>,
+      not_selected: "Owner opportunity not selected", portal_link: "Customer portal link", viewing_booked: "Viewing booked online" } as Record<string, string>,
     subject: "Subject", body: "Message", arabic: "Arabic", english: "English", save: "Save", saved: "Saved.",
     reset: "Back to the original wording", placeholders: "Filled in automatically:",
     noProvider: "Email sending is not connected yet. Messages are logged here but not sent.",
@@ -232,6 +233,10 @@ const en = {
     website: "Contact buttons on the website", contactPhone: "Phone for customers", whatsapp: "WhatsApp number (with 968)",
     contactEmail: "Email for customers", work: "How we work", firstResponseHours: "First reply target (hours)",
     followUpDays: "Ask “still searching?” after (days)", requestValidDays: "Requests stay open for (days)",
+    viewing: { title: "Viewings booked online", intro: "Customers book a viewing of a property you suggested, from their account. A time is offered only when the agent and the property are both free.",
+      selfBooking: "Customers can book viewings online", selfBookingHelp: "When off, the Book button tells customers to contact you.", days: "Days",
+      weekdays: ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"], start: "First viewing at (hour, 0-23)", end: "Last viewing ends at (hour)",
+      slot: "Length of a viewing (minutes)", notice: "Book at least (hours ahead)", ahead: "Book up to (days ahead)" },
     save: "Save", saved: "Saved.",
     auditIntro: "Who did what, newest first. Kept for checking and security.", when: "When", who: "Who", action: "What",
     item: "Item", system: "Website / system", filter: "Show", all: "Everything",
@@ -277,7 +282,9 @@ const en = {
       job_new: "New service job", job_assigned: "Job assigned to you", job_brief: "Customer sent the job details", job_approved: "Customer approved the delivery",
       job_changes: "Customer asked for changes", job_late: "Job is late", application_new: "New application", claim_new: "Expense claim to approve",
       claim_decided: "Your expense claim was answered", refund_new: "Refund waiting for approval", refund_decided: "Refund answered",
-      request_late: "First reply is late", whatsapp_in: "WhatsApp message", quote_answered: "Customer answered a quote", opportunity_new: "Owner opportunity to review" } as Record<string, string>,
+      request_late: "First reply is late", whatsapp_in: "WhatsApp message", quote_answered: "Customer answered a quote", opportunity_new: "Owner opportunity to review",
+      viewing_booked: "Customer booked a viewing", viewing_changed: "Customer changed a viewing time", viewing_cancelled: "Customer cancelled a viewing",
+      property_saved: "Customer saved a property" } as Record<string, string>,
   },
   docs: {
     title: "Documents", upload: "Upload a document", name: "Title", category: "Type", shared: "Customer can see it in their portal",
@@ -395,6 +402,13 @@ const en = {
     fillTitle: "Fill from a message", fillIntro: "Paste the customer's WhatsApp or chat message; the form below is filled for you to check.", fillPlaceholder: "Paste the message here…",
     fill: "Fill the form", filled: "Filled. Please check every field before saving.", describe: "Write description (Arabic + English)", described: "Draft written. Edit it before saving.",
     privacy: "Questions and the records needed to answer them are sent to the AI provider (Anthropic) for processing; nothing is used to train models.",
+    draft: "Draft reply", drafted: "Draft ready: check it, then press Send.", summary: "Summary",
+  },
+  cal: {
+    title: "Calendar", intro: "The week's viewings, follow-ups and scheduled jobs. Click an item to open it.",
+    prev: "Previous week", next: "Next week", thisWeek: "This week", who: "Whose calendar", everyone: "Everyone", show: "Show",
+    summary: "{viewing} viewings this week, {online} booked online", unassigned: "Not assigned", online: "booked online",
+    kinds: { viewing: "Viewing", follow_up: "Follow-up", job: "Job" } as Record<string, string>,
   },
   integ: {
     title: "Integrations", open: "Open Integrations",
@@ -451,7 +465,7 @@ const en = {
 
 const ar: typeof en = {
   appName: "إدارة عقار 360",
-  nav: { today: "اليوم", requests: "الطلبات", customers: "العملاء", listings: "العقارات والمشاريع", invoices: "الفواتير", expenses: "المصروفات", finance: "المالية", hr: "الفريق", hiring: "التوظيف والموردون", site: "محتوى الموقع", messages: "الرسائل", reports: "التقارير", settings: "الإعدادات", crm: "CRM", erp: "ERP", hrApp: "HR", overview: "نظرة عامة", apps: "التطبيقات", setup: "الإعداد", payMethods: "طرق الدفع", jobs: "أعمال الخدمات", people: "الموظفون", leave: "الإجازات", payroll: "الرواتب", renewals: "التجديدات", account: "حسابي", claims: "مطالبات مصروفاتي", notifications: "الإشعارات", approvals: "الموافقات", recurring: "المصروفات المتكررة", kb: "دليل العمل", search: "ابحث في كل شيء…", newEntry: "عميل / طلب جديد", whatsapp: "واتساب", market: "ذكاء السوق", assistant: "المساعد الذكي", field: "الميدان (الجوال)", users: "حسابات الموظفين", integrations: "الربط بالخدمات", website: "فتح الموقع", signOut: "تسجيل الخروج", language: "English" },
+  nav: { today: "اليوم", requests: "الطلبات", customers: "العملاء", listings: "العقارات والمشاريع", invoices: "الفواتير", expenses: "المصروفات", finance: "المالية", hr: "الفريق", hiring: "التوظيف والموردون", site: "محتوى الموقع", messages: "الرسائل", reports: "التقارير", settings: "الإعدادات", crm: "CRM", erp: "ERP", hrApp: "HR", overview: "نظرة عامة", apps: "التطبيقات", setup: "الإعداد", payMethods: "طرق الدفع", jobs: "أعمال الخدمات", people: "الموظفون", leave: "الإجازات", payroll: "الرواتب", renewals: "التجديدات", account: "حسابي", claims: "مطالبات مصروفاتي", notifications: "الإشعارات", approvals: "الموافقات", recurring: "المصروفات المتكررة", kb: "دليل العمل", search: "ابحث في كل شيء…", newEntry: "عميل / طلب جديد", whatsapp: "واتساب", market: "ذكاء السوق", assistant: "المساعد الذكي", field: "الميدان (الجوال)", users: "حسابات الموظفين", integrations: "الربط بالخدمات", calendar: "التقويم", website: "فتح الموقع", signOut: "تسجيل الخروج", language: "English" },
   roles: { admin: "مدير النظام", manager: "مدير", agent: "موظف مبيعات" },
   roleHelp: {
     admin: "كل شيء، بما في ذلك حسابات الموظفين والإعدادات",
@@ -560,6 +574,7 @@ const ar: typeof en = {
       outside_criteria: "خارج ميزانية الطلب أو منطقته أو نوعه" },
     bookViewing: "حجز معاينة", viewingAt: "تاريخ ووقت المعاينة", toReview: "اقتراحات للمراجعة",
     results: { interested: "مهتم", not_suitable: "غير مناسب", wants_alternatives: "يريد خيارات أخرى", no_show: "لم يحضر" },
+    cancelled: "ألغاها العميل", online: "حُجزت عبر الإنترنت", saved: "حفظه العميل",
     result: "نتيجة المعاينة", saveResult: "حفظ النتيجة",
     offers: "العروض", addOffer: "تسجيل عرض", amount: "المبلغ (ر.ع)", counter: "عرض مقابل (ر.ع)", property: "العقار",
     offerStatuses: { submitted: "أُرسل للمالك", countered: "عرض مقابل", accepted: "مقبول", rejected: "مرفوض", withdrawn: "مسحوب" },
@@ -648,7 +663,7 @@ const ar: typeof en = {
     keys: { received: "تم استلام الطلب", match_sent: "إرسال عقار مقترح", viewing_reminder: "تذكير بالمعاينة",
       still_searching: "هل ما زلت تبحث؟ (متابعة)", request_expiring: "الطلب على وشك الانتهاء", invoice_sent: "إرسال فاتورة أو عرض سعر",
       payment_reminder: "تذكير بالدفع", job_brief: "طلب تفاصيل العمل (بعد الدفع)", job_review: "التسليم جاهز للاعتماد",
-      not_selected: "فرصة المالك غير مختارة", portal_link: "رابط بوابة العميل" },
+      not_selected: "فرصة المالك غير مختارة", portal_link: "رابط بوابة العميل", viewing_booked: "حجز معاينة عبر الإنترنت" },
     subject: "الموضوع", body: "الرسالة", arabic: "العربية", english: "الإنجليزية", save: "حفظ", saved: "تم الحفظ.",
     reset: "العودة للصياغة الأصلية", placeholders: "تُعبأ تلقائيا:",
     noProvider: "إرسال البريد غير متصل بعد. تُسجل الرسائل هنا ولكن لا تُرسل.",
@@ -674,6 +689,10 @@ const ar: typeof en = {
     website: "أزرار التواصل في الموقع", contactPhone: "هاتف العملاء", whatsapp: "رقم واتساب (مع 968)",
     contactEmail: "بريد العملاء", work: "طريقة العمل", firstResponseHours: "هدف أول رد (ساعات)",
     followUpDays: "اسأل «هل ما زلت تبحث؟» بعد (أيام)", requestValidDays: "مدة بقاء الطلب مفتوحا (أيام)",
+    viewing: { title: "حجز المعاينات عبر الإنترنت", intro: "يحجز العميل معاينة لعقار اقترحتموه من حسابه. يُعرض الوقت فقط إذا كان الوكيل والعقار متاحين.",
+      selfBooking: "السماح للعملاء بحجز المعاينات عبر الإنترنت", selfBookingHelp: "عند الإيقاف يطلب زر الحجز من العميل التواصل معكم.", days: "الأيام",
+      weekdays: ["الأحد", "الاثنين", "الثلاثاء", "الأربعاء", "الخميس", "الجمعة", "السبت"], start: "أول معاينة الساعة (0-23)", end: "آخر معاينة تنتهي الساعة",
+      slot: "مدة المعاينة (دقائق)", notice: "الحجز قبل الموعد بـ (ساعات على الأقل)", ahead: "الحجز حتى (أيام قادمة)" },
     save: "حفظ", saved: "تم الحفظ.",
     auditIntro: "من فعل ماذا، الأحدث أولا. للمراجعة والأمان.", when: "متى", who: "من", action: "ماذا",
     item: "العنصر", system: "الموقع / النظام", filter: "عرض", all: "الكل",
@@ -719,7 +738,9 @@ const ar: typeof en = {
       job_new: "عمل خدمة جديد", job_assigned: "عمل أُسند إليك", job_brief: "أرسل العميل تفاصيل العمل", job_approved: "اعتمد العميل التسليم",
       job_changes: "طلب العميل تعديلات", job_late: "عمل متأخر", application_new: "طلب توظيف/مورد جديد", claim_new: "مطالبة مصروف بانتظار الموافقة",
       claim_decided: "تم الرد على مطالبتك", refund_new: "استرداد بانتظار الموافقة", refund_decided: "تم الرد على طلب الاسترداد",
-      request_late: "الرد الأول متأخر", whatsapp_in: "رسالة واتساب", quote_answered: "رد العميل على عرض السعر", opportunity_new: "فرصة مالك للمراجعة" },
+      request_late: "الرد الأول متأخر", whatsapp_in: "رسالة واتساب", quote_answered: "رد العميل على عرض السعر", opportunity_new: "فرصة مالك للمراجعة",
+      viewing_booked: "العميل حجز موعد معاينة", viewing_changed: "العميل غيّر موعد المعاينة", viewing_cancelled: "العميل ألغى المعاينة",
+      property_saved: "العميل حفظ عقارا" },
   },
   docs: {
     title: "المستندات", upload: "رفع مستند", name: "العنوان", category: "النوع", shared: "يظهر للعميل في بوابته",
@@ -837,6 +858,13 @@ const ar: typeof en = {
     fillTitle: "تعبئة من رسالة", fillIntro: "الصق رسالة العميل من واتساب أو المحادثة؛ يُعبأ النموذج أدناه لتراجعه.", fillPlaceholder: "الصق الرسالة هنا…",
     fill: "عبّئ النموذج", filled: "تمت التعبئة. راجع كل حقل قبل الحفظ.", describe: "اكتب الوصف (عربي + إنجليزي)", described: "كُتبت مسودة. عدّلها قبل الحفظ.",
     privacy: "الأسئلة والسجلات اللازمة للإجابة تُرسل لمزود الذكاء الاصطناعي (Anthropic) للمعالجة؛ ولا تُستخدم لتدريب النماذج.",
+    draft: "اقترح ردا", drafted: "الرد جاهز: راجعه ثم اضغط إرسال.", summary: "ملخص",
+  },
+  cal: {
+    title: "التقويم", intro: "معاينات الأسبوع والمتابعات والأعمال المجدولة. اضغط على أي موعد لفتحه.",
+    prev: "الأسبوع السابق", next: "الأسبوع التالي", thisWeek: "هذا الأسبوع", who: "تقويم من", everyone: "الجميع", show: "عرض",
+    summary: "{viewing} معاينات هذا الأسبوع، منها {online} محجوزة عبر الإنترنت", unassigned: "غير مُسند", online: "حجز عبر الإنترنت",
+    kinds: { viewing: "معاينة", follow_up: "متابعة", job: "عمل" } as Record<string, string>,
   },
   integ: {
     title: "الربط بالخدمات", open: "فتح صفحة الربط",

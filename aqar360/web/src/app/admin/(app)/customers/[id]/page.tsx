@@ -2,6 +2,7 @@ import { desc, eq } from "drizzle-orm";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import { CustomerSummary } from "@/admin/AiParts";
 import { getCustomer } from "@/admin/crm";
 import { dateOnly, dateTime, whatsappLink } from "@/admin/format";
 import { adminDict, adminLang, fill } from "@/admin/i18n";
@@ -9,6 +10,7 @@ import { Documents } from "@/admin/Documents";
 import { Timeline } from "@/admin/Timeline";
 import { db } from "@/db";
 import { invoices, serviceJobs } from "@/db/schema";
+import { aiReady } from "@/lib/ai";
 import { canOpen } from "@/lib/auth";
 import { portalLink } from "@/lib/doc-link";
 import { requireApp } from "@/lib/auth";
@@ -38,6 +40,7 @@ export default async function CustomerPage({ params, searchParams }: { params: P
       <header className="a-head">
         <h1>{c.name}</h1>
         <p className="a-muted">{t.since} {dateOnly(c.createdAt, lang)}</p>
+        {(await aiReady()) && <CustomerSummary t={T2.ai} contactId={c.id} />}
         <div className="a-contact-buttons">
           {c.phone && <a className="a-btn primary" href={`tel:${c.phone}`}>📞 {t.call}</a>}
           {wa && <a className="a-btn wa" href={wa} target="_blank" rel="noreferrer">💬 {t.whatsapp}</a>}

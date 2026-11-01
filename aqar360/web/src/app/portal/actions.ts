@@ -8,10 +8,11 @@ import { z } from "zod";
 import { db } from "@/db";
 import { contacts, serviceJobs } from "@/db/schema";
 import { audit } from "@/lib/auth";
-import { jobLink, portalLink, validJobLink } from "@/lib/doc-link";
+import { jobLink, portalLink, validJobLink, validPortalLink } from "@/lib/doc-link";
 import { addEvent, setJobStatus } from "@/lib/jobs";
 import { sendMessage } from "@/lib/messages";
 import { notify } from "@/lib/notify";
+import { bookOnline, cancelOnline, toggleSaved } from "@/lib/viewings";
 
 /** Same answer whether or not the email is known (no account discovery); at most one email per hour per customer. */
 export async function requestPortalLink(form: FormData) {
@@ -78,4 +79,33 @@ export async function requestChanges(form: FormData) {
   await notify({ userIds: [job.assignedTo], app: "erp", roles: ["admin", "manager"] }, { kind: "job_changes", title: `${job.number} · ${job.title}`,
     href: `/admin/jobs/${job.id}` });
   back(job.id, "changes");
+}
+
+// ---- Viewings and saved properties: every form carries the signed portal link (c, e, s) ----------------------------
+function portalFrom(form: FormData) {
+  const p = { c: Number(form.get("c")), e: Number(form.get("e")), s: String(form.get("s") ?? "") };
+  if (!validPortalLink(p.c, p.e, p.s)) redirect("/portal?expired=1");
+  return p;
+}
+const portalQuery = (p: { c: number; e: number; s: string }) => `c=${p.c}&e=${p.e}&s=${encodeURIComponent(p.s)}`;
+
+export async function bookViewingForm(form: FormData) {
+  const p = portalFrom(form);
+  const match = Number(form.get("match"));
+  const replace = Number(form.get("replace")) || undefined;
+  const result = await bookOnline(p.c, match, String(form.get("slot") ?? ""), replace);
+  if (!result.ok) redirect(`/portal/book?${portalQuery(p)}&m=${match}${replace ? `&replace=${replace}` : ""}&error=${result.reason}`);
+  redirect(`/portal/home?${portalQuery(p)}&done=booked#viewings`);
+}
+
+export async function cancelViewingForm(form: FormData) {
+  const p = portalFrom(form);
+  const done = await cancelOnline(p.c, Number(form.get("id")));
+  redirect(`/portal/home?${portalQuery(p)}&done=${done ? "cancelled" : "none"}#viewings`);
+}
+
+export async function toggleSavedForm(form: FormData) {
+  const p = portalFrom(form);
+  const saved = await toggleSaved(p.c, Number(form.get("match")));
+  redirect(`/portal/home?${portalQuery(p)}&done=${saved === null ? "none" : saved ? "saved" : "unsaved"}#suggestions`);
 }

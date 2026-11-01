@@ -47,7 +47,8 @@ export function Timeline({ rows, t, lang, contactId, requestId, showRequest, res
               <span className="a-muted">{dateTime(a.createdAt, lang)}{author ? ` · ${author}` : ""}</span>
               {showRequest && requestNumber && a.requestId && <Link href={`/admin/requests/${a.requestId}`} className="a-muted">{requestNumber}</Link>}
             </div>
-            {a.type === "viewing" && results && (a.result ? <p className="a-tag">{results.results[a.result] ?? a.result}</p> : (
+            {a.type === "viewing" && a.source === "online" && results && <p className="a-tag">🌐 {results.online}</p>}
+            {a.type === "viewing" && results && (a.result ? <p className="a-tag">{a.result === "cancelled" ? results.cancelled : results.results[a.result] ?? a.result}</p> : (
               <form action={setViewingResult} className="a-inline">
                 <input type="hidden" name="id" value={a.id} />
                 <select name="result" aria-label={results.result}>

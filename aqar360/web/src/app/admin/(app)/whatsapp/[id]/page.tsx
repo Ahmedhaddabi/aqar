@@ -2,10 +2,12 @@ import { asc, eq } from "drizzle-orm";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import { CustomerSummary, WaComposer } from "@/admin/AiParts";
 import { dateTime, whatsappLink } from "@/admin/format";
 import { adminDict, adminLang } from "@/admin/i18n";
 import { db } from "@/db";
 import { contacts, waMessages } from "@/db/schema";
+import { aiReady } from "@/lib/ai";
 import { requireApp } from "@/lib/auth";
 import { waReady, windowOpen } from "@/lib/whatsapp";
 
@@ -21,8 +23,9 @@ export default async function WhatsAppConversation({ params, searchParams }: { p
   const id = Number((await params).id);
   const [c] = Number.isInteger(id) ? await db.select().from(contacts).where(eq(contacts.id, id)) : [];
   if (!c) notFound();
-  const [rows, open, ready] = await Promise.all([db.select().from(waMessages).where(eq(waMessages.contactId, c.id)).orderBy(asc(waMessages.createdAt)).limit(300),
-    windowOpen(c.id), waReady()]);
+  const [rows, open, ready, ai] = await Promise.all([db.select().from(waMessages).where(eq(waMessages.contactId, c.id)).orderBy(asc(waMessages.createdAt)).limit(300),
+    windowOpen(c.id), waReady(), aiReady()]);
+  const T = adminDict(lang);
   const wa = whatsappLink(c.phone);
   const closedFlag = (await searchParams).closed;
   return (
@@ -31,6 +34,7 @@ export default async function WhatsAppConversation({ params, searchParams }: { p
       <header className="a-head a-request-head">
         <div><h1>{c.name}</h1><p className="a-muted" dir="ltr">{c.phone}</p></div>
         <Link className="a-btn" href={`/admin/customers/${c.id}`}>{adminDict(lang).crm.openCustomer}</Link>
+        {ai && <CustomerSummary t={T.ai} contactId={c.id} />}
       </header>
       <section className="a-panel wa-thread">
         {rows.length === 0 && <p className="a-muted">{t.none}</p>}
@@ -44,10 +48,9 @@ export default async function WhatsAppConversation({ params, searchParams }: { p
       <section className="a-panel">
         {closedFlag && <p className="a-alert">{t.windowClosed}</p>}
         {ready && open ? (
-          <form action={replyWhatsApp} className="a-inline">
+          <form action={replyWhatsApp}>
             <input type="hidden" name="contactId" value={c.id} />
-            <textarea name="text" rows={2} required dir="auto" placeholder={t.reply} aria-label={t.reply} style={{ flex: 1, minWidth: 240 }} />
-            <button className="a-btn primary">{t.send}</button>
+            <WaComposer t={T.ai} contactId={c.id} placeholder={t.reply} sendLabel={t.send} ai={ai} />
           </form>
         ) : (
           <p className="a-muted">{ready ? t.windowClosed : t.notConnected}

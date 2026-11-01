@@ -6,6 +6,8 @@ import { contacts, documents, invoices, payments, requests, serviceJobs } from "
 import { docLink, jobLink, receiptLink, validPortalLink } from "@/lib/doc-link";
 import { customerStatus } from "@/lib/intake";
 
+import { ViewingsAndSuggestions } from "../Viewings";
+
 const KIND: Record<string, string> = { search: "أبحث عن عقار · Property search", listing: "تسويق عقاري · Market my property", consulting: "استشارة · Consulting" };
 const JOB: Record<string, string> = { new: "جديد · New", scheduled: "مجدول · Scheduled", in_progress: "قيد التنفيذ · In progress",
   waiting_client: "بانتظارك · Waiting for you", review: "بانتظار اعتمادك · Waiting for your approval", completed: "مكتمل · Completed", cancelled: "ملغى · Cancelled" };
@@ -14,7 +16,7 @@ const INV: Record<string, string> = { sent: "مستحقة · Due", partly_paid: 
 const n3 = (v: number) => v.toFixed(3);
 
 /** Customer dashboard (strategy §9.1 and the "customer dashboard" wireframe): requests, invoices, receipts, jobs, files. */
-export default async function PortalHome({ searchParams }: { searchParams: Promise<{ c?: string; e?: string; s?: string }> }) {
+export default async function PortalHome({ searchParams }: { searchParams: Promise<{ c?: string; e?: string; s?: string; done?: string }> }) {
   const q = await searchParams;
   const contactId = Number(q.c);
   const exp = Number(q.e);
@@ -53,6 +55,7 @@ export default async function PortalHome({ searchParams }: { searchParams: Promi
           </ul>
         </section>
       )}
+      <ViewingsAndSuggestions p={{ c: c.id, e: exp, s: q.s ?? "" }} done={q.done} />
       <div className="a-two-lang">
         <section className="a-panel">
           <h2>طلباتي · My requests</h2>

@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useRef, useState } from "react";
 
-import { aiAsk, aiDescribeProperty, aiExtractRequest } from "@/app/admin/ai-actions";
+import { aiAsk, aiCustomerSummary, aiDescribeProperty, aiDraftReply, aiExtractRequest } from "@/app/admin/ai-actions";
 
 import type { AdminDict } from "./i18n";
 
@@ -106,6 +106,50 @@ export function AssistantChat({ t, examples }: { t: T; examples: string[] }) {
         <input value={text} onChange={(e) => setText(e.target.value)} placeholder={t.askPlaceholder} aria-label={t.askPlaceholder} dir="auto" />
         <button className="a-btn primary" disabled={busy}>{t.send}</button>
       </form>
+    </div>
+  );
+}
+
+/** WhatsApp reply box: "✨ Draft reply" fills the text for staff to edit; the form (a server action) sends and clears it. */
+export function WaComposer({ t, contactId, placeholder, sendLabel, ai }: { t: T; contactId: number; placeholder: string; sendLabel: string; ai: boolean }) {
+  const box = useRef<HTMLTextAreaElement>(null);
+  const [state, setState] = useState<"idle" | "busy" | "done" | string>("idle");
+  const run = async () => {
+    setState("busy");
+    const r = await aiDraftReply(contactId);
+    if (!r.ok) return setState(errorText(t, r.error));
+    if (box.current) { box.current.value = r.data; box.current.focus(); }
+    setState("done");
+  };
+  return (
+    <div className="a-wa-composer">
+      <textarea ref={box} name="text" rows={3} required dir="auto" placeholder={placeholder} aria-label={placeholder} />
+      <div className="a-inline">
+        <button className="a-btn primary">{sendLabel}</button>
+        {ai && <button type="button" className="a-btn" disabled={state === "busy"} onClick={run}>{state === "busy" ? t.working : `✨ ${t.draft}`}</button>}
+        {state === "done" && <span className="a-ok-text">✓ {t.drafted}</span>}
+        {!["idle", "busy", "done"].includes(state) && <span className="a-error">{state}</span>}
+      </div>
+    </div>
+  );
+}
+
+/** "✨ Summary": one or two lines about the customer, on demand (each click is one AI call). */
+export function CustomerSummary({ t, contactId }: { t: T; contactId: number }) {
+  const [state, setState] = useState<"idle" | "busy" | string>("idle");
+  const [text, setText] = useState("");
+  const run = async () => {
+    setState("busy");
+    const r = await aiCustomerSummary(contactId);
+    if (!r.ok) return setState(errorText(t, r.error));
+    setText(r.data);
+    setState("idle");
+  };
+  return (
+    <div className="a-ai-summary">
+      <button type="button" className="a-btn small" disabled={state === "busy"} onClick={run}>{state === "busy" ? t.working : `✨ ${t.summary}`}</button>
+      {text && <p dir="auto">{text}</p>}
+      {!["idle", "busy"].includes(state) && <span className="a-error">{state}</span>}
     </div>
   );
 }

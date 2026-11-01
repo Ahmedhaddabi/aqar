@@ -1,7 +1,7 @@
 // Database schema (Postgres). Simple, flat tables; Arabic and English text side by side.
 import { sql } from "drizzle-orm";
 import {
-  bigserial, boolean, date, doublePrecision, index, integer, jsonb, numeric, pgSequence, pgTable, serial, text, timestamp,
+  bigserial, boolean, date, doublePrecision, index, integer, jsonb, numeric, pgSequence, pgTable, primaryKey, serial, text, timestamp,
 } from "drizzle-orm/pg-core";
 
 const created = () => timestamp("created_at", { withTimezone: true }).notNull().defaultNow();
@@ -269,6 +269,7 @@ export const activities = pgTable("activities", {
   done: boolean("done").notNull().default(false),
   result: text("result"), // viewing outcome: interested | not_suitable | wants_alternatives | no_show
   propertyId: integer("property_id").references(() => properties.id), // the property a viewing is for
+  source: text("source"), // "online" when the customer booked the viewing from the portal
   createdAt: created(),
 }, (t) => [index("activities_request_idx").on(t.requestId), index("activities_contact_idx").on(t.contactId),
   index("activities_due_idx").on(t.dueAt)]);
@@ -688,3 +689,10 @@ export const waMessages = pgTable("wa_messages", {
   userId: integer("user_id").references(() => users.id), // staff who replied
   createdAt: created(),
 }, (t) => [index("wa_messages_contact_idx").on(t.contactId)]);
+
+/** Properties a customer saved (❤) from the suggestions in the portal: a buying signal for the agent. */
+export const savedProperties = pgTable("saved_properties", {
+  contactId: integer("contact_id").notNull().references(() => contacts.id, { onDelete: "cascade" }),
+  propertyId: integer("property_id").notNull().references(() => properties.id, { onDelete: "cascade" }),
+  createdAt: created(),
+}, (t) => [primaryKey({ columns: [t.contactId, t.propertyId] })]);

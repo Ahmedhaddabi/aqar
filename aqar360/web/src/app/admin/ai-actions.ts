@@ -5,7 +5,7 @@ import { eq } from "drizzle-orm";
 import { adminLang } from "@/admin/i18n";
 import { db } from "@/db";
 import { areas } from "@/db/schema";
-import { aiReady, askAssistant, type ChatTurn, extractRequest, type Extracted, underLimit, writeListing } from "@/lib/ai";
+import { aiReady, askAssistant, type ChatTurn, draftReply, extractRequest, type Extracted, summarizeCustomer, underLimit, writeListing } from "@/lib/ai";
 import { audit, requireApp } from "@/lib/auth";
 
 type Result<T> = { ok: true; data: T } | { ok: false; error: "off" | "limit" | "failed" };
@@ -62,6 +62,32 @@ export async function aiAsk(history: ChatTurn[]): Promise<Result<string>> {
     return { ok: true, data: await askAssistant(turns, g.user, await adminLang(g.user.language)) };
   } catch (error) {
     console.error("ai assistant failed:", (error as Error).message);
+    return { ok: false, error: "failed" };
+  }
+}
+
+/** WhatsApp inbox: a reply draft in the customer's language; staff edit it and press Send themselves. */
+export async function aiDraftReply(contactId: number): Promise<Result<string>> {
+  const g = await guard("crm", "ai_draft_reply");
+  if (g.error) return { ok: false, error: g.error };
+  try {
+    const data = await draftReply(Number(contactId), g.user.name);
+    return data ? { ok: true, data } : { ok: false, error: "failed" };
+  } catch (error) {
+    console.error("ai draft reply failed:", (error as Error).message);
+    return { ok: false, error: "failed" };
+  }
+}
+
+/** One or two lines about the customer, in the staff member's language. */
+export async function aiCustomerSummary(contactId: number): Promise<Result<string>> {
+  const g = await guard("crm", "ai_customer_summary");
+  if (g.error) return { ok: false, error: g.error };
+  try {
+    const data = await summarizeCustomer(Number(contactId), await adminLang(g.user.language));
+    return data ? { ok: true, data } : { ok: false, error: "failed" };
+  } catch (error) {
+    console.error("ai summary failed:", (error as Error).message);
     return { ok: false, error: "failed" };
   }
 }
