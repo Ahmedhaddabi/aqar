@@ -94,6 +94,18 @@ const en = {
       note: "Estimates only, not financial advice or a loan offer. Banks in Oman set their own rates and limits; ask your bank for exact figures.",
     },
     map: {
+      extras: {
+        budget: "My budget", budgetActive: "Budget {v}/month", monthlyBudget: "What can you pay per month (OMR)?", apply: "Show what fits", clearBudget: "Clear",
+        budgetMeans: "Renting: up to {rent} a month. Buying: up to about {sale}", budgetAssumption: "Buying assumes a 25-year loan at 5.5% and a 20% down payment (see the calculators).",
+        mapOnly: "Only what's on the map", compare: "Compare", compareCount: "Compare ({n})", addCompare: "Add to compare", inCompare: "In compare",
+        compareTitle: "Compare", remove: "Remove", area: "Area", price: "Price", vsTypical: "Compared with similar", bedrooms: "Bedrooms", bathrooms: "Bathrooms",
+        size: "Size", perSqm: "Price per m²", plot: "Plot", furnished: "Furnished",
+        typicalPrice: "Typical price", belowTypical: "{n}% below similar", aboveTypical: "{n}% above similar",
+        badgeHelp: "Compared with the middle price of at least 3 similar listings (same area, type and sale/rent) on this map.",
+        typicalSale: "Typical sale price", typicalRent: "Typical rent / month", demand: "Buyer and tenant interest",
+        demandLevels: { high: "High", medium: "Medium", low: "Low" } as Record<string, string>,
+        insightsNote: "From the listings on this map; shown only with at least 3 of a kind.", alertMe: "Alert me about new listings here",
+      },
       plotArea: "Plot", nearby: {
         title: "Nearby", show: "Show on map", hide: "Hide from map", loading: "Finding places nearby…", none: "No places found nearby.",
         unavailable: "Nearby places are not available right now. Please try again later.", fromArea: "Distances from the area centre (the exact location is shared on request).",
@@ -373,6 +385,18 @@ const ar: Dictionary = {
       note: "تقديرات فقط وليست نصيحة مالية أو عرض تمويل. تحدد البنوك في عُمان نسبها وحدودها؛ اسأل بنكك عن الأرقام الدقيقة.",
     },
     map: {
+      extras: {
+        budget: "ميزانيتي", budgetActive: "الميزانية {v} شهريا", monthlyBudget: "كم تستطيع أن تدفع شهريا (ر.ع)؟", apply: "اعرض المناسب", clearBudget: "مسح",
+        budgetMeans: "للإيجار: حتى {rent} شهريا. للشراء: حتى نحو {sale}", budgetAssumption: "الشراء بافتراض قرض 25 سنة بفائدة 5.5% ودفعة أولى 20% (انظر الحاسبات).",
+        mapOnly: "ما يظهر على الخريطة فقط", compare: "مقارنة", compareCount: "مقارنة ({n})", addCompare: "أضف للمقارنة", inCompare: "في المقارنة",
+        compareTitle: "مقارنة", remove: "إزالة", area: "المنطقة", price: "السعر", vsTypical: "مقارنة بالمشابه", bedrooms: "غرف النوم", bathrooms: "دورات المياه",
+        size: "المساحة", perSqm: "سعر المتر", plot: "القطعة", furnished: "مفروش",
+        typicalPrice: "سعر معتاد", belowTypical: "أقل من المشابه بـ {n}%", aboveTypical: "أعلى من المشابه بـ {n}%",
+        badgeHelp: "مقارنة بالسعر الأوسط لثلاثة عروض مشابهة على الأقل (نفس المنطقة والنوع والبيع/الإيجار) في هذه الخريطة.",
+        typicalSale: "سعر البيع المعتاد", typicalRent: "الإيجار المعتاد شهريا", demand: "اهتمام المشترين والمستأجرين",
+        demandLevels: { high: "مرتفع", medium: "متوسط", low: "منخفض" },
+        insightsNote: "من العروض في هذه الخريطة؛ يظهر فقط مع 3 عروض على الأقل من نفس النوع.", alertMe: "نبّهني بالعروض الجديدة هنا",
+      },
       plotArea: "القطعة", nearby: {
         title: "ما حولك", show: "إظهار على الخريطة", hide: "إخفاء من الخريطة", loading: "جارٍ البحث عن الأماكن القريبة…", none: "لا توجد أماكن قريبة.",
         unavailable: "الأماكن القريبة غير متاحة حاليا. حاول لاحقا.", fromArea: "المسافات من وسط المنطقة (يُشارك الموقع الدقيق عند الطلب).",

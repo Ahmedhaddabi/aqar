@@ -1,8 +1,8 @@
 // Public website data straight from the database. Only published / public + verified + available records.
-import { and, asc, desc, eq, gte, inArray, isNull, or } from "drizzle-orm";
+import { and, asc, desc, eq, gte, inArray, isNull, or, sql } from "drizzle-orm";
 
 import { db } from "@/db";
-import { areas, images, jobs, pages, plots, projects, projectUnitTypes, properties, services, settings, wilayats } from "@/db/schema";
+import { areas, images, jobs, pages, plots, projects, projectUnitTypes, properties, requests, services, settings, wilayats } from "@/db/schema";
 
 import { contact as envContact, type Locale } from "./config";
 import type {
@@ -170,12 +170,15 @@ export async function getMapData(lang: Locale): Promise<MapData> {
     db.select().from(properties).where(and(eq(properties.public, true), eq(properties.verified, true),
       eq(properties.status, "available"), isNull(properties.projectId))),
   ]);
+  const demandRows = await db.execute(sql`select unnest(${requests.areaIds}) as id, count(*)::int as n from ${requests}
+    where ${requests.kind} = 'search' and ${requests.status} in ('new', 'contacted', 'working', 'viewing', 'offer') group by 1`) as unknown as { id: number; n: number }[];
+  const demandOf = (id: number) => { const n = demandRows.find((d) => d.id === id)?.n ?? 0; return n >= 10 ? "high" as const : n >= 4 ? "medium" as const : n > 0 ? "low" as const : null; };
   const [details, publicPlots] = await Promise.all([projectDetails(lang, projectList.map((p) => p.id)),
     props.length ? db.select().from(plots).where(and(inArray(plots.propertyId, props.map((p) => p.id)), eq(plots.public, true))) : Promise.resolve([])]);
   const plotOf = (id: number) => publicPlots.find((pl) => pl.propertyId === id);
   const mapAreas: MapArea[] = areaList.map(({ area, wilayat }) => ({ id: String(area.id), name: pick(lang, area.nameAr, area.nameEn),
     slug: area.slug, wilayat: wilayat ? pick(lang, wilayat.nameAr, wilayat.nameEn) : null, guide_slug: guides.get(area.id) ?? null,
-    center: point(area.lat, area.lng), boundary: area.boundary ?? null }));
+    center: point(area.lat, area.lng), boundary: area.boundary ?? null, demand: demandOf(area.id) }));
   const listings: MapListing[] = [
     ...projectList.map((p) => projectCard(lang, p, details)),
     // No owner names or internal titles; exact coordinates only with the owner's permission.

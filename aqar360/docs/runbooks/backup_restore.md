@@ -23,3 +23,13 @@ Restore drill (quarterly, isolated disposable site only):
 
 Do not restore over localhost or staging.localhost to test the runbook. A full database restore drill and external 3-2-1/immutable copies are outstanding release gates.
 
+## Automated copies (2026-11-01)
+
+The live database moved to a new Neon project on 2026-11-01. Neon keeps a short restore window on the free plan
+(point-in-time restore of the branch). A nightly encrypted copy outside Neon is still needed; options, in order:
+
+1. Make the GitHub repository **private** (Vercel deploys private repositories the same way), then add a nightly
+   GitHub Actions job that runs `pg_dump` (PostgreSQL 18 client), encrypts it with a passphrase and keeps it 30 days.
+   Needs two repository secrets: the direct (non-pooler) database URL and the passphrase.
+2. A paid Neon plan with a longer restore window.
+3. Until then: a manual export each week (`pg_dump` from a computer with the PostgreSQL 18 client) kept offline.

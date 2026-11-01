@@ -3,7 +3,7 @@
 import { and, eq, gte, inArray, isNotNull, lt, ne } from "drizzle-orm";
 
 import { db } from "@/db";
-import { activities, invoices, payments, requests, targets, users } from "@/db/schema";
+import { activities, commissionPayouts, invoices, payments, requests, targets, users } from "@/db/schema";
 
 const OFFSET = 4 * 3_600_000;
 
@@ -24,7 +24,7 @@ export async function performance(month: string, onlyUserId?: number) {
   const staff = people.filter((u) => u.role === "admin" || u.apps.includes("crm"));
   const ids = staff.map((u) => u.id);
   if (!ids.length) return [];
-  const [won, viewings, paid, goals] = await Promise.all([
+  const [won, viewings, paid, goals, payouts] = await Promise.all([
     db.select({ userId: requests.assignedTo }).from(requests)
       .where(and(eq(requests.status, "won"), inArray(requests.assignedTo, ids), gte(requests.updatedAt, from), lt(requests.updatedAt, to))),
     db.select({ userId: activities.userId }).from(activities)
@@ -34,16 +34,19 @@ export async function performance(month: string, onlyUserId?: number) {
       .innerJoin(invoices, eq(payments.invoiceId, invoices.id)).innerJoin(requests, eq(invoices.requestId, requests.id))
       .where(and(inArray(requests.assignedTo, ids), gte(payments.paidOn, fromDay), lt(payments.paidOn, toDay))),
     db.select().from(targets).where(and(eq(targets.month, month), inArray(targets.userId, ids))),
+    db.select().from(commissionPayouts).where(and(eq(commissionPayouts.month, month), inArray(commissionPayouts.userId, ids))),
   ]);
   return staff.map((u) => {
     const income = paid.filter((p) => p.userId === u.id).reduce((a, p) => a + p.amount * (1 - (p.total ? (p.media ?? 0) / p.total : 0)), 0);
     const goal = goals.find((g) => g.userId === u.id);
+    const commission = Math.round(income * (u.pct / 100) * 1000) / 1000;
+    const paidOut = Math.round(payouts.filter((p) => p.userId === u.id).reduce((a, p) => a + p.amount, 0) * 1000) / 1000;
     return {
       id: u.id, name: u.name, pct: u.pct,
       won: won.filter((w) => w.userId === u.id).length,
       viewings: viewings.filter((v) => v.userId === u.id).length,
       income: Math.round(income * 1000) / 1000,
-      commission: Math.round(income * (u.pct / 100) * 1000) / 1000,
+      commission, paidOut, due: Math.max(0, Math.round((commission - paidOut) * 1000) / 1000),
       target: { won: goal?.won ?? null, viewings: goal?.viewings ?? null, income: goal?.income ?? null },
     };
   }).sort((a, b) => b.income - a.income || b.won - a.won || b.viewings - a.viewings);

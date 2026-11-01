@@ -15,21 +15,27 @@ const EVENT = "aqar-field-queue";
 
 function idb(): Promise<IDBDatabase> {
   return new Promise((resolve, reject) => {
-    const req = indexedDB.open(DB, 1);
-    req.onupgradeneeded = () => req.result.createObjectStore("ops", { keyPath: "id" });
+    const req = indexedDB.open(DB, 2);
+    req.onupgradeneeded = () => {
+      if (!req.result.objectStoreNames.contains("ops")) req.result.createObjectStore("ops", { keyPath: "id" });
+      if (!req.result.objectStoreNames.contains("photos")) req.result.createObjectStore("photos", { keyPath: "id" });
+    };
     req.onsuccess = () => resolve(req.result);
     req.onerror = () => reject(req.error);
   });
 }
-async function store<T>(mode: IDBTransactionMode, run: (s: IDBObjectStore) => IDBRequest<T>): Promise<T> {
+async function store<T>(mode: IDBTransactionMode, run: (s: IDBObjectStore) => IDBRequest<T>, name: "ops" | "photos" = "ops"): Promise<T> {
   const db = await idb();
   return new Promise((resolve, reject) => {
-    const req = run(db.transaction("ops", mode).objectStore("ops"));
+    const req = run(db.transaction(name, mode).objectStore(name));
     req.onsuccess = () => resolve(req.result);
     req.onerror = () => reject(req.error);
   });
 }
 const queued = () => store<Op[]>("readonly", (s) => s.getAll() as IDBRequest<Op[]>).then((ops) => ops.sort((a, b) => a.at.localeCompare(b.at)));
+type QueuedPhoto = { id: string; activityId: number; at: string; blob: Blob };
+const queuedPhotos = () => store<QueuedPhoto[]>("readonly", (s) => s.getAll() as IDBRequest<QueuedPhoto[]>, "photos");
+const waitingCount = async () => (await queued()).length + (await queuedPhotos()).length;
 const newId = () => `f${Date.now().toString(36)}${Math.random().toString(36).slice(2, 10)}`;
 
 let flushing: Promise<"sent" | "offline" | "signin"> | null = null;
@@ -38,13 +44,28 @@ export function flush(): Promise<"sent" | "offline" | "signin"> {
   flushing ??= (async () => {
     try {
       const ops = await queued();
-      if (!ops.length) return "sent" as const;
+      const photos = await queuedPhotos();
+      if (!ops.length && !photos.length) return "sent" as const;
       if (!navigator.onLine) return "offline" as const;
-      const res = await fetch("/api/field/sync", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ops: ops.slice(0, 50) }) });
-      if (res.status === 401) return "signin" as const;
-      if (!res.ok) return "offline" as const;
-      const results: Record<string, string> = (await res.json()).data.results;
-      for (const id of Object.keys(results)) await store("readwrite", (s) => s.delete(id));
+      if (ops.length) {
+        const res = await fetch("/api/field/sync", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ops: ops.slice(0, 50) }) });
+        if (res.status === 401) return "signin" as const;
+        if (!res.ok) return "offline" as const;
+        const results: Record<string, string> = (await res.json()).data.results;
+        for (const id of Object.keys(results)) await store("readwrite", (s) => s.delete(id));
+      }
+      // Photos one by one (each under the upload limit); a failure keeps the rest for next time.
+      for (const p of photos) {
+        const data = new FormData();
+        data.append("id", p.id);
+        data.append("activityId", String(p.activityId));
+        data.append("at", p.at);
+        data.append("file", new File([p.blob], `${p.id}.jpg`, { type: "image/jpeg" }));
+        const res = await fetch("/api/field/photo", { method: "POST", body: data });
+        if (res.status === 401) return "signin" as const;
+        if (!res.ok) return "offline" as const;
+        await store("readwrite", (s) => s.delete(p.id), "photos");
+      }
       return "sent" as const;
     } catch {
       return "offline" as const;
@@ -70,7 +91,7 @@ export function FieldSync({ t }: { t: { offline: string; waiting: string; signin
   const [signin, setSignin] = useState(false);
   useEffect(() => {
     if ("serviceWorker" in navigator) navigator.serviceWorker.register("/field-sw.js", { scope: "/admin/field" }).catch(() => undefined);
-    const count = () => queued().then((ops) => setWaiting(ops.length)).catch(() => undefined);
+    const count = () => waitingCount().then(setWaiting).catch(() => undefined);
     const send = () => flush().then((r) => { setSignin(r === "signin"); if (r === "sent") router.refresh(); });
     const up = () => { setOnline(true); void send(); };
     const down = () => setOnline(false);
@@ -116,6 +137,35 @@ export function ResultButtons({ activityId, labels, saved }: { activityId: numbe
         <button key={r} type="button" className="a-btn small" onClick={() => { setChosen(r); void record({ type: "result", activityId, result: r }); }}>{labels[r]}</button>
       ))}
     </>
+  );
+}
+
+/** Phone photos are large: shrink to at most 1600 px JPEG before keeping them on the phone. */
+async function shrinkPhoto(file: File): Promise<Blob> {
+  const bitmap = await createImageBitmap(file);
+  const scale = Math.min(1, 1600 / Math.max(bitmap.width, bitmap.height));
+  const canvas = document.createElement("canvas");
+  canvas.width = Math.round(bitmap.width * scale);
+  canvas.height = Math.round(bitmap.height * scale);
+  canvas.getContext("2d")!.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+  return new Promise((resolve) => canvas.toBlob((b) => resolve(b ?? file), "image/jpeg", 0.85));
+}
+
+/** Photos at the visit (offline too): kept on the phone, then saved in the request's documents. */
+export function PhotoButton({ activityId, label, saved }: { activityId: number; label: string; saved: string }) {
+  const [n, setN] = useState(0);
+  const add = async (files: FileList | null) => {
+    for (const file of Array.from(files ?? []).slice(0, 10)) {
+      const blob = await shrinkPhoto(file).catch(() => file);
+      await store("readwrite", (s) => s.put({ id: newId(), activityId, at: new Date().toISOString(), blob }), "photos");
+      setN((x) => x + 1);
+    }
+    window.dispatchEvent(new Event(EVENT));
+    void flush();
+  };
+  return (
+    <label className="a-btn f-btn">📷 {label}{n > 0 && ` · ${n} ${saved}`}
+      <input type="file" accept="image/*" capture="environment" multiple hidden onChange={(e) => { void add(e.target.files); e.target.value = ""; }} /></label>
   );
 }
 

@@ -15,11 +15,16 @@ export async function assignRules() {
   return { auto: get("assignAuto") === true, reassignHours: Number(get("reassignHours")) || 0 };
 }
 
-/** The next person for a new request, or null when the rotation is empty. */
-export async function pickAgent(exclude: number[] = []) {
-  const pool = await db.select({ id: users.id, name: users.name, role: users.role, apps: users.apps }).from(users)
+/**
+ * The next person for a new request, or null when the rotation is empty. People who cover one of the request's areas
+ * (Staff page) come first; when nobody covers them, everyone in the rotation is considered.
+ */
+export async function pickAgent(exclude: number[] = [], requestAreas: number[] = []) {
+  const pool = await db.select({ id: users.id, name: users.name, role: users.role, apps: users.apps, areaIds: users.areaIds }).from(users)
     .where(and(eq(users.active, true), eq(users.receivesRequests, true), ...(exclude.length ? [notInArray(users.id, exclude)] : [])));
-  const people = pool.filter((u) => u.role === "admin" || u.apps.includes("crm"));
+  const all = pool.filter((u) => u.role === "admin" || u.apps.includes("crm"));
+  const local = all.filter((u) => u.areaIds.some((a) => requestAreas.includes(a)));
+  const people = local.length ? local : all;
   if (!people.length) return null;
   const ids = people.map((u) => u.id);
   const [load, last] = await Promise.all([
@@ -36,7 +41,8 @@ export async function pickAgent(exclude: number[] = []) {
 export async function autoAssign(requestId: number) {
   const rules = await assignRules();
   if (!rules.auto) return null;
-  const agent = await pickAgent();
+  const [req] = await db.select({ areaIds: requests.areaIds }).from(requests).where(eq(requests.id, requestId));
+  const agent = await pickAgent([], req?.areaIds ?? []);
   if (!agent) return null;
   const [r] = await db.update(requests).set({ assignedTo: agent.id, updatedAt: new Date() })
     .where(and(eq(requests.id, requestId), isNull(requests.assignedTo), eq(requests.kind, "search"))).returning();
@@ -58,7 +64,7 @@ export async function reassignOverdue(now = new Date()) {
     .where(and(inArray(activities.requestId, late.map((r) => r.id)), like(activities.body, "auto_reassigned:%")));
   let done = 0;
   for (const r of late.filter((x) => !moved.some((m) => m.id === x.id))) {
-    const agent = await pickAgent([r.assignedTo!]);
+    const agent = await pickAgent([r.assignedTo!], r.areaIds);
     if (!agent) continue;
     const [changed] = await db.update(requests).set({ assignedTo: agent.id, updatedAt: new Date() })
       .where(and(eq(requests.id, r.id), eq(requests.assignedTo, r.assignedTo!), isNull(requests.firstResponseAt))).returning();

@@ -1,9 +1,9 @@
-import { asc } from "drizzle-orm";
+import { asc, eq } from "drizzle-orm";
 
 import { AddUserForm, ResetPasswordForm } from "@/admin/forms";
 import { adminDict, adminLang } from "@/admin/i18n";
 import { db } from "@/db";
-import { APPS, ROLES, users } from "@/db/schema";
+import { APPS, areas, ROLES, users } from "@/db/schema";
 import { requireUser } from "@/lib/auth";
 
 import { changeRole, resetMfa, setApps, setReceivesRequests, toggleUser } from "../../actions";
@@ -13,7 +13,8 @@ export default async function UsersPage({ searchParams }: { searchParams: Promis
   const lang = await adminLang(me.language);
   const t = adminDict(lang);
   const { error } = await searchParams;
-  const rows = await db.select().from(users).orderBy(asc(users.name));
+  const [rows, areaRows] = await Promise.all([db.select().from(users).orderBy(asc(users.name)),
+    db.select({ id: areas.id, en: areas.nameEn, ar: areas.nameAr }).from(areas).where(eq(areas.active, true)).orderBy(asc(areas.nameEn))]);
   const appNames = { crm: t.nav.crm, erp: t.nav.erp, hr: t.nav.hrApp };
   const when = new Intl.DateTimeFormat(lang === "ar" ? "ar-OM-u-nu-latn" : "en-GB", { dateStyle: "medium", timeStyle: "short" });
   return (
@@ -64,6 +65,11 @@ export default async function UsersPage({ searchParams }: { searchParams: Promis
                     <form action={setReceivesRequests} className="a-inline">
                       <input type="hidden" name="id" value={u.id} />
                       <label className="a-check" title={t.users.receivesHelp}><input type="checkbox" name="receives" defaultChecked={u.receivesRequests} /> {t.users.receives}</label>
+                      {areaRows.length > 0 && (
+                        <details className="a-areas-pick"><summary>{t.users.areas}{u.areaIds.length ? ` (${u.areaIds.length})` : ""}</summary>
+                          {areaRows.map((a) => <label key={a.id} className="a-check"><input type="checkbox" name="areas" value={a.id} defaultChecked={u.areaIds.includes(a.id)} /> {lang === "ar" ? a.ar : a.en}</label>)}
+                        </details>
+                      )}
                       <button className="a-btn small">{t.users.saveRotation}</button>
                     </form>
                   )}

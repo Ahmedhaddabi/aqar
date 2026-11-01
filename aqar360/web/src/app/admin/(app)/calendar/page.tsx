@@ -1,14 +1,24 @@
 import { and, asc, eq, gte, inArray, lt, notInArray, or } from "drizzle-orm";
+import { revalidatePath } from "next/cache";
 import Link from "next/link";
 
 import { adminDict, adminLang, fill } from "@/admin/i18n";
 import { db } from "@/db";
 import { activities, contacts, properties, requests, serviceJobs, users } from "@/db/schema";
-import { canOpen, requireApp } from "@/lib/auth";
+import { audit, canOpen, requireApp } from "@/lib/auth";
+import { calendarKey, calendarUrl } from "@/lib/ics";
 import { muscatDay, muscatTime } from "@/lib/viewings";
 
 const DAY = 86_400_000;
 const OFFSET = 4 * 3_600_000;
+
+async function newCalendarLink() {
+  "use server";
+  const user = await requireApp("crm");
+  await calendarKey(user.id, true);
+  await audit("calendar_link_renewed", "user", user.id, {}, user.id);
+  revalidatePath("/admin/calendar");
+}
 
 type Item = { id: string; at: Date; kind: "viewing" | "follow_up" | "job"; title: string; sub: string; href: string; agent: string | null;
   online: boolean; done: boolean; result: string | null };
@@ -54,6 +64,7 @@ export default async function CalendarPage({ searchParams }: { searchParams: Pro
   ].sort((x, y) => x.at.getTime() - y.at.getTime());
 
   const today = muscatDay(new Date());
+  const feed = calendarUrl(await calendarKey(user.id));
   const days = Array.from({ length: 7 }, (_, i) => iso(new Date(sunday.getTime() + i * DAY)));
   const label = (day: string) => new Intl.DateTimeFormat(lang === "ar" ? "ar-OM" : "en-GB", { weekday: "short", day: "numeric", month: "short", timeZone: "UTC" })
     .format(new Date(`${day}T00:00:00Z`));
@@ -99,6 +110,16 @@ export default async function CalendarPage({ searchParams }: { searchParams: Pro
           );
         })}
       </div>
+      <section className="a-panel">
+        <h2>📲 {t.subscribeTitle}</h2>
+        <p className="a-muted">{t.subscribeIntro}</p>
+        <code className="a-code" dir="ltr">{feed}</code>
+        <div className="a-inline" style={{ marginTop: 8 }}>
+          <a className="a-btn small primary" href={feed.replace(/^https?:/, "webcal:")}>{t.subscribeOpen}</a>
+          <form action={newCalendarLink}><button className="a-btn small">{t.subscribeRenew}</button></form>
+        </div>
+        <p className="a-muted"><small>{t.subscribeHelp}</small></p>
+      </section>
     </>
   );
 }

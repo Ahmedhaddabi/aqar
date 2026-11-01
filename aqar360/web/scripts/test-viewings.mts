@@ -1,6 +1,7 @@
 // Online viewings, saved properties and the portal pages, end to end against the database. Creates a test customer,
 // request, property and sent suggestion, then removes everything it made. No messages leave the system (the test
 // customer has no email and WhatsApp is not used). Run: npm run test:viewings [-- http://localhost:3000]
+import "./test-guard.mts";
 import { and, eq, inArray, like, or } from "drizzle-orm";
 
 import { db } from "@/db";

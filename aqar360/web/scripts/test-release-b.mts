@@ -1,6 +1,7 @@
 // ID fields, commission and targets, marketing kit data, offline field sync — end to end against the database, with
 // page checks when a site address is given. Temporary rows only; everything is removed at the end.
 // Run: npm run test:release-b [-- http://localhost:3000]
+import "./test-guard.mts";
 import { and, eq, inArray, like } from "drizzle-orm";
 
 import { db } from "@/db";

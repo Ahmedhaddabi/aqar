@@ -1,6 +1,7 @@
 // Calculators, website chat (limits, lead path), reviews and referrals, online agreements — end to end against the
 // database, with page checks when a site address is given. Temporary rows only; everything is removed at the end.
 // Run: npm run test:release-a [-- http://localhost:3000]
+import "./test-guard.mts";
 import { and, eq, inArray, like, or, sql } from "drizzle-orm";
 
 import { loanFor, monthlyPayment } from "@/components/Calculators";

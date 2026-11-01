@@ -2,7 +2,7 @@ import { and, asc, eq, gte, inArray, lt, or } from "drizzle-orm";
 import Link from "next/link";
 
 import { visibleTo } from "@/admin/crm";
-import { CheckInButton, FieldSync, InstallHint, QuickNote, ResultButtons } from "@/admin/FieldParts";
+import { CheckInButton, FieldSync, InstallHint, PhotoButton, QuickNote, ResultButtons } from "@/admin/FieldParts";
 import { whatsappLink } from "@/admin/format";
 import { adminDict, adminLang } from "@/admin/i18n";
 import { db } from "@/db";
@@ -62,6 +62,7 @@ export default async function FieldPage() {
                 {wa && <a className="a-btn f-btn wa" href={wa} target="_blank" rel="noreferrer">💬 WhatsApp</a>}
                 {map && <a className="a-btn f-btn" href={map} target="_blank" rel="noreferrer">🗺 {t.directions}</a>}
                 {a.type === "viewing" && <CheckInButton activityId={a.id} label={t.checkIn} done={t.checkedIn} saved={t.savedOffline} />}
+                <PhotoButton activityId={a.id} label={t.photo} saved={t.savedOffline} />
               </div>
               {a.type === "viewing" && (
                 <div className="f-actions"><ResultButtons activityId={a.id} labels={T.match.results} saved={t.savedOffline} /></div>

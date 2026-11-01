@@ -1,6 +1,7 @@
 // Checks Admin → Integrations end to end against the database: encryption at rest, keep/clear of secrets, on/off,
 // the modules reading the saved keys, webhook signatures, and each provider rejecting fake keys.
 // Writes temporary integration:* rows and removes them at the end. Run: npm run test:integrations
+import "./test-guard.mts";
 import { createHmac } from "node:crypto";
 
 import { eq } from "drizzle-orm";

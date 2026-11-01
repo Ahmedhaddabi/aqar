@@ -75,6 +75,8 @@ export type Point = [number, number];
 export type MapArea = {
   id: string; name: string; slug: string; wilayat: string | null; guide_slug: string | null;
   center: Point | null; boundary: GeoJSON.Polygon | GeoJSON.MultiPolygon | null;
+  /** How many people are searching there, as a level only (open search requests). */
+  demand?: "high" | "medium" | "low" | null;
 };
 export type MapUnit = {
   type: string; bedrooms: number | null; size_from: number | null; size_to: number | null;

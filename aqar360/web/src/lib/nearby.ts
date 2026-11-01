@@ -1,10 +1,10 @@
 // Places around a listing (schools, hospitals, shops, mosques, beaches, parks) from OpenStreetMap via the public Overpass
 // API. Results are cached for 30 days per ~1 km grid cell, so the free service is asked about each cell rarely, and only
 // points inside Oman are accepted. Data © OpenStreetMap contributors (ODbL), credited where it is shown.
-import { eq } from "drizzle-orm";
+import { and, eq, inArray, isNotNull } from "drizzle-orm";
 
 import { db } from "@/db";
-import { nearbyCache } from "@/db/schema";
+import { areas, nearbyCache, projects, properties } from "@/db/schema";
 
 export const NEARBY_CATEGORIES = ["school", "health", "pharmacy", "shop", "mosque", "park", "beach"] as const;
 export type NearbyCategory = (typeof NEARBY_CATEGORIES)[number];
@@ -83,4 +83,37 @@ export async function nearbyPlaces(lat: number, lng: number): Promise<NearbyPlac
     console.error("nearby places failed:", (error as Error).message);
     return hit ? (hit.data as NearbyPlace[]) : null;
   }
+}
+
+/**
+ * Daily warm-up (cron): fetches a few grid cells that visitors are likely to open (area centres, public listings and
+ * projects) when they are missing or older than 25 days, so the free servers are asked quietly instead of on a click.
+ */
+export async function warmNearby(limit = 4) {
+  const [areaRows, propRows, projectRows] = await Promise.all([
+    db.select({ lat: areas.lat, lng: areas.lng }).from(areas).where(and(eq(areas.active, true), isNotNull(areas.lat))),
+    db.select({ lat: properties.lat, lng: properties.lng }).from(properties)
+      .where(and(eq(properties.public, true), eq(properties.verified, true), isNotNull(properties.lat))),
+    db.select({ lat: projects.lat, lng: projects.lng }).from(projects).where(and(eq(projects.public, true), isNotNull(projects.lat))),
+  ]);
+  const keys = new Map<string, { lat: number; lng: number }>();
+  for (const p of [...areaRows, ...propRows, ...projectRows]) {
+    if (p.lat == null || p.lng == null || !inOman(p.lat, p.lng)) continue;
+    const c = cellOf(p.lat, p.lng);
+    keys.set(`${c.lat.toFixed(2)},${c.lng.toFixed(2)}`, c);
+  }
+  if (!keys.size) return { cells: 0, fetched: 0 };
+  const cached = await db.select({ key: nearbyCache.key, at: nearbyCache.fetchedAt }).from(nearbyCache).where(inArray(nearbyCache.key, [...keys.keys()]));
+  const fresh = new Set(cached.filter((c) => Date.now() - c.at.getTime() < 25 * 86_400_000).map((c) => c.key));
+  let fetched = 0;
+  for (const [key, c] of keys) {
+    if (fetched >= limit) break;
+    if (fresh.has(key)) continue;
+    const places = await fetchOverpass(c.lat, c.lng).catch(() => null);
+    if (!places) break; // servers busy: try again tomorrow
+    await db.insert(nearbyCache).values({ key, data: places, fetchedAt: new Date() })
+      .onConflictDoUpdate({ target: nearbyCache.key, set: { data: places, fetchedAt: new Date() } });
+    fetched++;
+  }
+  return { cells: keys.size, fetched };
 }

@@ -1,5 +1,6 @@
 // Croquis plots and the map: coordinate conversion against PROJ, plot geometry, publishing rules, nearby places
 // (parsing, cache, API). Temporary rows only; everything is removed at the end. Run: npm run test:map [-- http://localhost:3000]
+import "./test-guard.mts";
 import { readFileSync } from "node:fs";
 
 import { eq, inArray, like } from "drizzle-orm";

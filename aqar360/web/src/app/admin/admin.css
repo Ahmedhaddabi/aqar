@@ -478,3 +478,5 @@ body.a-busy { cursor: progress; }
 .f-note input { flex: 1; min-width: 160px; }
 .a-plot-map { width: 100%; border-radius: 10px; overflow: hidden; border: 1px solid var(--line); margin-top: 10px; }
 .a-points input { width: 100%; min-width: 90px; }
+.a-areas-pick { display: inline-block; } .a-areas-pick[open] { display: grid; gap: 4px; padding: 6px 0; }
+.a-payout summary { cursor: pointer; font-size: 0.85rem; color: var(--teal); } .a-payout form { margin-top: 6px; } .a-payout input { width: 120px; }

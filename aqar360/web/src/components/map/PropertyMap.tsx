@@ -13,6 +13,7 @@ import type { MapArea, MapData, MapListing, MapUnit, Point } from "@/lib/content
 import { fill, formatters, interestHref as requestHref, loadMapLibre, unitTypeLabel } from "@/lib/format";
 import type { NearbyPlace } from "@/lib/nearby";
 
+import { AreaInsights, BudgetFilter, CompareTable, listingPrice, PriceBadge, priceBadge } from "./MapExtras";
 import { NEARBY_ICONS, NearbyPlaces } from "./NearbyPlaces";
 
 type Purpose = "all" | "Sale" | "Rent";
@@ -87,6 +88,11 @@ export function PropertyMap({ lang, dict, data }: { lang: Locale; dict: Dictiona
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [threeD, setThreeD] = useState(false);
   const [mapState, setMapState] = useState<"loading" | "ready" | "error">("loading");
+  const [budget, setBudget] = useState<{ monthly: number; maxSale: number } | null>(null);
+  const [compare, setCompare] = useState<string[]>([]);
+  const [showCompare, setShowCompare] = useState(false);
+  const [mapOnly, setMapOnly] = useState(false);
+  const [box, setBox] = useState<[number, number, number, number] | null>(null);
 
   const container = useRef<HTMLDivElement>(null);
   const mapRef = useRef<MlMap | null>(null);
@@ -96,8 +102,23 @@ export function PropertyMap({ lang, dict, data }: { lang: Locale; dict: Dictiona
   const initialLink = useRef<string | null>(null);
   const linkApplied = useRef(false);
 
-  const filtered = useMemo(() => data.listings.filter((l) => matches(l, purpose, kind)), [data.listings, purpose, kind]);
-  const inScope = areaId ? filtered.filter((l) => l.area === areaId) : filtered;
+  // Budget: rent up to the monthly amount, buying up to the price that amount could carry (MapExtras.BudgetFilter).
+  const affordable = useCallback((l: MapListing) => {
+    if (!budget) return true;
+    const p = listingPrice(l, purpose);
+    if (!p.value) return true;
+    return p.rent ? p.value <= budget.monthly : p.value <= budget.maxSale;
+  }, [budget, purpose]);
+  const filtered = useMemo(() => data.listings.filter((l) => matches(l, purpose, kind) && affordable(l)), [data.listings, purpose, kind, affordable]);
+  // "Only what's on the map": listings whose pin (or area centre) is inside the visible map.
+  const onMap = useCallback((l: MapListing) => {
+    if (!box) return true;
+    const at = l.point ?? (l.area ? areasById[l.area]?.center : null);
+    return !!at && at[0] >= box[0] && at[0] <= box[2] && at[1] >= box[1] && at[1] <= box[3];
+  }, [box, areasById]);
+  const inScope = (areaId ? filtered.filter((l) => l.area === areaId) : filtered).filter((l) => !mapOnly || onMap(l));
+  const compared = compare.map((id) => data.listings.find((l) => l.id === id)).filter((l): l is MapListing => !!l);
+  const toggleCompare = (id: string) => setCompare((c) => (c.includes(id) ? c.filter((x) => x !== id) : c.length >= 3 ? c : [...c, id]));
   const selected = data.listings.find((l) => l.id === selectedId) || null;
   const [nearby, setNearby] = useState<NearbyPlace[] | null>(null);
   const nearbyMarkers = useRef<Marker[]>([]);
@@ -201,6 +222,9 @@ export function PropertyMap({ lang, dict, data }: { lang: Locale; dict: Dictiona
             hovered = null;
             if (map) map.getCanvas().style.cursor = "";
           });
+          const keepBox = () => { const b = map?.getBounds(); if (b) setBox([b.getWest(), b.getSouth(), b.getEast(), b.getNorth()]); };
+          map.on("moveend", keepBox);
+          keepBox();
           map.on("zoom", () => {
             const zoom = map?.getZoom() ?? 0;
             container.current?.classList.toggle("zoomed-in", zoom >= 14);
@@ -350,7 +374,7 @@ export function PropertyMap({ lang, dict, data }: { lang: Locale; dict: Dictiona
           <span className="tag">{purposeTag(l)}</span>
           <strong>{title(l)}</strong>
           <span className="muted">{(l.area && areasById[l.area]?.name) || ""}</span>
-          <span className="map-card-price">{price(l)}</span>
+          <span className="map-card-price">{price(l)} <PriceBadge badge={priceBadge(l, data.listings, purpose)} t={t.extras} /></span>
           <span className="muted">{[
             l.bedrooms ? count(t.bedroomsCount, l.bedrooms) : null,
             l.size_sqm ? `${fmt.amount(l.size_sqm)} ${t.sizeUnit}` : null,
@@ -358,6 +382,10 @@ export function PropertyMap({ lang, dict, data }: { lang: Locale; dict: Dictiona
           ].filter(Boolean).join(" · ")}</span>
         </span>
       </button>
+      {l.type === "property" && (
+        <label className="map-compare-pick"><input type="checkbox" checked={compare.includes(l.id)} disabled={!compare.includes(l.id) && compare.length >= 3}
+          onChange={() => toggleCompare(l.id)} /> {t.extras.compare}</label>
+      )}
     </li>
   );
 
@@ -379,6 +407,11 @@ export function PropertyMap({ lang, dict, data }: { lang: Locale; dict: Dictiona
           <option value="">{t.clear}</option>
           {data.areas.map((a) => <option key={a.id} value={a.id}>{a.name}{a.wilayat ? ` — ${a.wilayat}` : ""}</option>)}
         </select>
+        <BudgetFilter t={t.extras} fmt={fmt} currency={t.currency} value={budget} onChange={setBudget} />
+        <button type="button" className="tool" aria-pressed={mapOnly} onClick={() => setMapOnly(!mapOnly)}>🗺 {t.extras.mapOnly}</button>
+        {compared.length > 0 && (
+          <button type="button" className="tool map-compare-btn" onClick={() => setShowCompare(true)}>⚖ {t.extras.compareCount.replace("{n}", String(compared.length))}</button>
+        )}
         <div className="segmented" role="group">
           <button type="button" aria-pressed={view === "map"} onClick={() => setView("map")}>{t.mapView}</button>
           <button type="button" aria-pressed={view === "list"} onClick={() => setView("list")}>{t.listView}</button>
@@ -401,7 +434,11 @@ export function PropertyMap({ lang, dict, data }: { lang: Locale; dict: Dictiona
               <h2>{title(selected)}</h2>
               <p className="muted">{[selected.area && areasById[selected.area]?.name, selected.area && areasById[selected.area]?.wilayat]
                 .filter(Boolean).join(lang === "ar" ? "، " : ", ")}</p>
-              <p className="price">{price(selected)}</p>
+              <p className="price">{price(selected)} <PriceBadge badge={priceBadge(selected, data.listings, purpose)} t={t.extras} /></p>
+              {selected.type === "property" && (
+                <button type="button" className="tool" aria-pressed={compare.includes(selected.id)} disabled={!compare.includes(selected.id) && compare.length >= 3}
+                  onClick={() => toggleCompare(selected.id)}>⚖ {compare.includes(selected.id) ? t.extras.inCompare : t.extras.addCompare}</button>
+              )}
               {!selected.exact && <p className="map-approx">{t.approx}</p>}
               <dl className="map-facts">
                 {selected.bedrooms ? <><dt>{t.bedrooms}</dt><dd>{selected.bedrooms}</dd></> : null}
@@ -451,9 +488,10 @@ export function PropertyMap({ lang, dict, data }: { lang: Locale; dict: Dictiona
                   <button type="button" className="map-back" onClick={() => selectArea(null)}>{t.clear}</button>
                   <h2>{area.name}</h2>
                   {area.wilayat && <p className="muted">{area.wilayat}</p>}
+                  <AreaInsights listings={data.listings.filter((l) => l.area === area.id)} demand={area.demand} t={t.extras} fmt={fmt} currency={t.currency} />
                   <div className="actions">
                     {area.guide_slug && <Link className="btn secondary" href={`/${lang}/areas/${area.guide_slug}`}>{t.readGuide}</Link>}
-                    <Link className="btn secondary" href={`/${lang}/find-me-a-property?areas=${encodeURIComponent(area.id)}`}>{t.searchHere}</Link>
+                    <Link className="btn secondary" href={`/${lang}/find-me-a-property?areas=${encodeURIComponent(area.id)}${purpose !== "all" ? `&purpose=${purpose === "Rent" ? "Rent" : "Buy"}` : ""}${budget ? `&budget_max=${purpose === "Rent" ? budget.monthly : budget.maxSale}` : ""}`}>🔔 {t.extras.alertMe}</Link>
                   </div>
                   <p className="map-count">{count(t.areaResults, inScope.length)}</p>
                 </header>
@@ -471,6 +509,10 @@ export function PropertyMap({ lang, dict, data }: { lang: Locale; dict: Dictiona
           )}
         </aside>
         <div className="map-stage">
+          {showCompare && compared.length > 0 && (
+            <CompareTable items={compared} t={t.extras} fmt={fmt} currency={t.currency} title={title} all={data.listings} purpose={purpose}
+              areaName={(l) => (l.area && areasById[l.area]?.name) || ""} onRemove={(id) => toggleCompare(id)} onClose={() => setShowCompare(false)} />
+          )}
           <div ref={container} className="map-canvas" role="region" aria-label={t.mapLabel} />
           {mapState !== "ready" && <p className={`map-status ${mapState}`}>{mapState === "error" ? t.unavailable : t.loading}</p>}
         </div>

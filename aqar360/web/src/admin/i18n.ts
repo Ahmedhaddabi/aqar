@@ -43,7 +43,7 @@ const en = {
     disable: "Disable", enable: "Enable", you: "you", resetPassword: "Set new password", newPassword: "New password",
     saved: "Saved.", emailTaken: "This email already has an account.", cannotDisableSelf: "You cannot disable your own account.",
     apps: "Apps", saveApps: "Save apps", mfa: "Two-step", resetMfa: "Reset two-step",
-    receives: "Gets new requests", saveRotation: "Save", receivesHelp: "In the fair rotation for new website requests (Settings → New requests).",
+    receives: "Gets new requests", saveRotation: "Save", areas: "Areas covered", receivesHelp: "In the fair rotation for new website requests (Settings → New requests).",
   },
   crm: {
     requests: "Requests", customers: "Customers", inbox: "Requests inbox",
@@ -397,7 +397,7 @@ const en = {
     checkIn: "I have arrived", checkedIn: "Arrival recorded", uploadPhotos: "Photos / files",
     offline: "No signal: today's list is the last one loaded; what you record is kept on the phone.", waiting: "{n} waiting to be sent.",
     signin: "Please sign in again to send what is waiting (it stays on the phone).", sent: "Sent.", savedOffline: "saved",
-    notePlaceholder: "Quick note about this visit…", noteButton: "Save note",
+    notePlaceholder: "Quick note about this visit…", noteButton: "Save note", photo: "Photo",
   },
   wa: {
     title: "WhatsApp", intro: "Customer conversations from your WhatsApp Business number. Replies go from the same number.",
@@ -454,6 +454,7 @@ const en = {
     title: "Performance", intro: "Deals won, viewings done and income on each person's deals this month, with targets and commission.",
     person: "Person", won: "Deals won", viewings: "Viewings", income: "Income", commission: "Commission", pct: "Commission %", none: "No staff yet.",
     how: "Income = payments received this month on invoices linked to the person's requests, our share only (client media money excluded). Commission = income × the person's %.",
+    paidDue: "Paid / still due", recordPayout: "Record payout", amount: "Amount", paidOn: "Paid on", note: "Note (e.g. bank transfer)",
     setTitle: "Targets and commission", setIntro: "Targets are for the month shown above; leave a box empty for no target. The commission % applies from now on.", save: "Save",
   },
   agr: {
@@ -487,6 +488,9 @@ const en = {
     prev: "Previous week", next: "Next week", thisWeek: "This week", who: "Whose calendar", everyone: "Everyone", show: "Show",
     summary: "{viewing} viewings this week, {online} booked online", unassigned: "Not assigned", online: "booked online",
     kinds: { viewing: "Viewing", follow_up: "Follow-up", job: "Job" } as Record<string, string>,
+    subscribeTitle: "Add to my phone calendar", subscribeIntro: "Your viewings, follow-ups and jobs appear in Google Calendar, Apple Calendar or Outlook and update by themselves.",
+    subscribeOpen: "Open in my calendar app", subscribeRenew: "Make a new link",
+    subscribeHelp: "Google Calendar on a computer: Other calendars → + → From URL → paste the link. Keep the link private; a new link stops the old one.",
   },
   integ: {
     title: "Integrations", open: "Open Integrations",
@@ -577,7 +581,7 @@ const ar: typeof en = {
     disable: "تعطيل", enable: "تفعيل", you: "أنت", resetPassword: "تعيين كلمة مرور جديدة", newPassword: "كلمة المرور الجديدة",
     saved: "تم الحفظ.", emailTaken: "يوجد حساب بهذا البريد مسبقا.", cannotDisableSelf: "لا يمكنك تعطيل حسابك.",
     apps: "التطبيقات", saveApps: "حفظ التطبيقات", mfa: "التحقق بخطوتين", resetMfa: "إعادة ضبط التحقق",
-    receives: "يستلم الطلبات الجديدة", saveRotation: "حفظ", receivesHelp: "ضمن التوزيع العادل لطلبات الموقع الجديدة (الإعدادات ← الطلبات الجديدة).",
+    receives: "يستلم الطلبات الجديدة", saveRotation: "حفظ", areas: "المناطق التي يغطيها", receivesHelp: "ضمن التوزيع العادل لطلبات الموقع الجديدة (الإعدادات ← الطلبات الجديدة).",
   },
   crm: {
     requests: "الطلبات", customers: "العملاء", inbox: "صندوق الطلبات",
@@ -930,7 +934,7 @@ const ar: typeof en = {
     checkIn: "وصلت", checkedIn: "تم تسجيل الوصول", uploadPhotos: "الصور / الملفات",
     offline: "لا توجد تغطية: قائمة اليوم هي آخر نسخة محمّلة، وما تسجله يُحفظ في الهاتف.", waiting: "{n} بانتظار الإرسال.",
     signin: "يرجى تسجيل الدخول مرة أخرى لإرسال ما ينتظر (يبقى محفوظا في الهاتف).", sent: "تم الإرسال.", savedOffline: "تم الحفظ",
-    notePlaceholder: "ملاحظة سريعة عن الزيارة…", noteButton: "حفظ الملاحظة",
+    notePlaceholder: "ملاحظة سريعة عن الزيارة…", noteButton: "حفظ الملاحظة", photo: "صورة",
   },
   wa: {
     title: "واتساب", intro: "محادثات العملاء من رقم واتساب للأعمال. الردود تخرج من نفس الرقم.",
@@ -987,6 +991,7 @@ const ar: typeof en = {
     title: "الأداء", intro: "الصفقات الناجحة والمعاينات والدخل من صفقات كل شخص هذا الشهر، مع الأهداف والعمولة.",
     person: "الموظف", won: "صفقات ناجحة", viewings: "معاينات", income: "الدخل", commission: "العمولة", pct: "نسبة العمولة %", none: "لا يوجد موظفون بعد.",
     how: "الدخل = الدفعات المستلمة هذا الشهر على فواتير مرتبطة بطلبات الموظف، حصتنا فقط (دون أموال إعلانات العميل). العمولة = الدخل × نسبة الموظف.",
+    paidDue: "المدفوع / المتبقي", recordPayout: "تسجيل دفعة", amount: "المبلغ", paidOn: "تاريخ الدفع", note: "ملاحظة (مثل تحويل بنكي)",
     setTitle: "الأهداف والعمولة", setIntro: "الأهداف للشهر المعروض أعلاه؛ اترك الخانة فارغة إن لم يوجد هدف. نسبة العمولة تُطبق من الآن.", save: "حفظ",
   },
   agr: {
@@ -1019,6 +1024,9 @@ const ar: typeof en = {
     prev: "الأسبوع السابق", next: "الأسبوع التالي", thisWeek: "هذا الأسبوع", who: "تقويم من", everyone: "الجميع", show: "عرض",
     summary: "{viewing} معاينات هذا الأسبوع، منها {online} محجوزة عبر الإنترنت", unassigned: "غير مُسند", online: "حجز عبر الإنترنت",
     kinds: { viewing: "معاينة", follow_up: "متابعة", job: "عمل" } as Record<string, string>,
+    subscribeTitle: "إضافة إلى تقويم هاتفي", subscribeIntro: "تظهر معايناتك ومتابعاتك وأعمالك في تقويم Google أو Apple أو Outlook وتتحدث تلقائيا.",
+    subscribeOpen: "فتح في تطبيق التقويم", subscribeRenew: "إنشاء رابط جديد",
+    subscribeHelp: "تقويم Google على الحاسوب: تقاويم أخرى ← + ← من رابط ← الصق الرابط. أبقِ الرابط خاصا؛ الرابط الجديد يوقف القديم.",
   },
   integ: {
     title: "الربط بالخدمات", open: "فتح صفحة الربط",

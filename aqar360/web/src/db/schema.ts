@@ -30,6 +30,8 @@ export const users = pgTable("users", {
   lastLoginAt: timestamp("last_login_at", { withTimezone: true }),
   receivesRequests: boolean("receives_requests").notNull().default(false), // in the fair rotation for new website requests
   commissionPct: doublePrecision("commission_pct").notNull().default(0), // share of our income on their deals (Performance page)
+  areaIds: integer("area_ids").array().notNull().default(sql`'{}'::int[]`), // areas they cover (fair rotation prefers them)
+  calendarKey: text("calendar_key").unique(), // private calendar subscription link (/api/calendar/<key>.ics); reset to revoke
   createdAt: created(),
 });
 
@@ -798,3 +800,15 @@ export const nearbyCache = pgTable("nearby_cache", {
   data: jsonb("data").notNull(),
   fetchedAt: timestamp("fetched_at", { withTimezone: true }).notNull().defaultNow(),
 });
+
+/** Commission paid out to a person for a month (Performance page: earned − paid = still due). */
+export const commissionPayouts = pgTable("commission_payouts", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  month: text("month").notNull(), // YYYY-MM the commission was earned
+  amount: money("amount").notNull(),
+  paidOn: date("paid_on").notNull(),
+  note: text("note").notNull().default(""),
+  createdBy: integer("created_by").references(() => users.id),
+  createdAt: created(),
+}, (t) => [index("commission_payouts_user_idx").on(t.userId, t.month)]);

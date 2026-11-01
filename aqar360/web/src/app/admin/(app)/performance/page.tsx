@@ -5,7 +5,7 @@ import { z } from "zod";
 
 import { adminDict, adminLang } from "@/admin/i18n";
 import { db } from "@/db";
-import { targets, users } from "@/db/schema";
+import { commissionPayouts, targets, users } from "@/db/schema";
 import { audit, requireApp } from "@/lib/auth";
 import { currentMonth, performance } from "@/lib/performance";
 
@@ -22,6 +22,17 @@ async function saveGoals(form: FormData) {
   await db.insert(targets).values({ userId, month, ...value }).onConflictDoUpdate({ target: [targets.userId, targets.month], set: value });
   await db.update(users).set({ commissionPct: pct }).where(eq(users.id, userId));
   await audit("targets_saved", "user", userId, { month, ...value, commissionPct: pct }, admin.id);
+  revalidatePath("/admin/performance");
+}
+
+async function recordPayout(form: FormData) {
+  "use server";
+  const admin = await requireApp("crm", ["admin", "manager"]);
+  const parsed = z.object({ userId: z.coerce.number().int().positive(), month: z.string().regex(/^\d{4}-\d{2}$/), amount: z.coerce.number().positive().max(1e7),
+    paidOn: z.string().regex(/^\d{4}-\d{2}-\d{2}$/), note: z.string().trim().max(300).default("") }).safeParse(Object.fromEntries(form));
+  if (!parsed.success) return;
+  const [row] = await db.insert(commissionPayouts).values({ ...parsed.data, createdBy: admin.id }).returning();
+  await audit("commission_paid", "user", parsed.data.userId, { payout: row.id, month: parsed.data.month, amount: parsed.data.amount }, admin.id);
   revalidatePath("/admin/performance");
 }
 
@@ -53,6 +64,7 @@ export default async function PerformancePage({ searchParams }: { searchParams: 
   };
   const label = new Intl.DateTimeFormat(lang === "ar" ? "ar-OM" : "en-GB", { month: "long", year: "numeric", timeZone: "UTC" }).format(new Date(`${month}-01T00:00:00Z`));
   const omr = " OMR";
+  const today = new Date(Date.now() + 4 * 3_600_000).toISOString().slice(0, 10);
   return (
     <>
       <header className="a-head"><h1>🏆 {t.title}</h1><p className="a-muted">{t.intro}</p></header>
@@ -66,7 +78,7 @@ export default async function PerformancePage({ searchParams }: { searchParams: 
       <section className="a-panel">
         {rows.length === 0 ? <p className="a-muted">{t.none}</p> : (
           <table className="a-table">
-            <thead><tr><th>#</th><th>{t.person}</th><th>{t.won}</th><th>{t.viewings}</th><th>{t.income}</th><th>{t.commission}</th></tr></thead>
+            <thead><tr><th>#</th><th>{t.person}</th><th>{t.won}</th><th>{t.viewings}</th><th>{t.income}</th><th>{t.commission}</th><th>{t.paidDue}</th></tr></thead>
             <tbody>
               {rows.map((r, i) => (
                 <tr key={r.id}>
@@ -76,6 +88,18 @@ export default async function PerformancePage({ searchParams }: { searchParams: 
                   <td data-label={t.viewings}><Bar value={r.viewings} goal={r.target.viewings} /></td>
                   <td data-label={t.income}><Bar value={r.income} goal={r.target.income} unit={omr} /></td>
                   <td data-label={t.commission}><strong dir="ltr">{r.commission.toFixed(3)}{omr}</strong><div className="a-muted">{r.pct}%</div></td>
+                  <td data-label={t.paidDue}><span dir="ltr">{r.paidOut.toFixed(3)}</span> / <strong dir="ltr" className={r.due > 0 ? "a-warn" : ""}>{r.due.toFixed(3)}{omr}</strong>
+                    {manager && r.due > 0 && (
+                      <details className="a-payout"><summary>{t.recordPayout}</summary>
+                        <form action={recordPayout} className="a-inline">
+                          <input type="hidden" name="userId" value={r.id} /><input type="hidden" name="month" value={month} />
+                          <input name="amount" type="number" step="0.001" min="0.001" defaultValue={r.due} aria-label={t.amount} />
+                          <input name="paidOn" type="date" defaultValue={today} aria-label={t.paidOn} />
+                          <input name="note" placeholder={t.note} maxLength={300} />
+                          <button className="a-btn small primary">{t.save}</button>
+                        </form>
+                      </details>
+                    )}</td>
                 </tr>
               ))}
             </tbody>

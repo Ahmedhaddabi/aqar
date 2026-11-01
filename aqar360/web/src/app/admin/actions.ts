@@ -125,8 +125,9 @@ export async function setReceivesRequests(form: FormData) {
   const id = Number(form.get("id"));
   if (!Number.isInteger(id)) return;
   const on = form.get("receives") === "on";
-  await db.update(users).set({ receivesRequests: on }).where(eq(users.id, id));
-  await audit("user_rotation_changed", "user", id, { receivesRequests: on }, admin.id);
+  const areaIds = form.getAll("areas").map(Number).filter((n) => Number.isInteger(n) && n > 0).slice(0, 50);
+  await db.update(users).set({ receivesRequests: on, areaIds }).where(eq(users.id, id));
+  await audit("user_rotation_changed", "user", id, { receivesRequests: on, areaIds }, admin.id);
   revalidatePath("/admin/users");
 }
 

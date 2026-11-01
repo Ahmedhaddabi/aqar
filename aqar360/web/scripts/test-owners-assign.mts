@@ -1,6 +1,7 @@
 // Owner dashboard, fair auto-assignment and the weekly report, end to end against the database. Uses temporary staff,
 // customers, requests and properties, restores the settings it changes, and removes everything it made.
 // Run: npm run test:owners [-- http://localhost:3000]
+import "./test-guard.mts";
 import { and, eq, inArray, like, or } from "drizzle-orm";
 
 import { db } from "@/db";
