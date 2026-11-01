@@ -70,10 +70,11 @@ export async function logout() {
   redirect("/admin/login");
 }
 
+/** Spaces around a pasted code (or in the server setting) are ignored; the code itself must match exactly. */
 function sameSecret(given: string, expected: string | undefined) {
-  if (!expected) return false;
-  const a = Buffer.from(given);
-  const b = Buffer.from(expected);
+  if (!expected?.trim()) return false;
+  const a = Buffer.from(given.trim());
+  const b = Buffer.from(expected.trim());
   return a.length === b.length && timingSafeEqual(a, b);
 }
 
