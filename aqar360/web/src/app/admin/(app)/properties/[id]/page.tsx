@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import { DescribeButton } from "@/admin/AiParts";
 import { Documents } from "@/admin/Documents";
 import { siteDict } from "@/admin/format";
 import { adminDict, adminLang } from "@/admin/i18n";
@@ -9,6 +10,7 @@ import { ListingForm, MapPicker } from "@/admin/listing-ui";
 import { areaChoices, getPropertyForEdit } from "@/admin/listings";
 import { PROPERTY_STATUS } from "@/db/schema";
 import { optionLabel } from "@/i18n/dictionaries";
+import { aiReady } from "@/lib/ai";
 import { requireApp } from "@/lib/auth";
 import { htmlToText } from "@/lib/text";
 
@@ -75,6 +77,7 @@ export default async function PropertyEditor({ params, searchParams }: {
           <Toggle name="showExactLocation" label={t.showExact} help={t.showExactHelp} checked={p?.showExactLocation ?? false} />
         </Section>
         <Section title={t.sections.texts}>
+          {(await aiReady()) && <div className="a-grid-fields wide"><DescribeButton t={T.ai} /></div>}
           <Field label={t.descriptionAr} wide><textarea name="descriptionAr" rows={4} defaultValue={htmlToText(p?.descriptionAr ?? "")} dir="rtl" /></Field>
           <Field label={t.descriptionEn} wide><textarea name="descriptionEn" rows={4} defaultValue={htmlToText(p?.descriptionEn ?? "")} dir="ltr" /></Field>
         </Section>

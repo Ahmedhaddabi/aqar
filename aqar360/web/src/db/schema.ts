@@ -404,8 +404,9 @@ export const outbox = pgTable("outbox", {
   recipient: text("recipient"),
   subject: text("subject").notNull().default(""),
   body: text("body").notNull().default(""),
-  status: text("status").$type<"sent" | "failed" | "skipped">().notNull(),
+  status: text("status").$type<"sent" | "failed" | "skipped" | "delivered" | "read">().notNull(),
   reason: text("reason"),
+  providerId: text("provider_id"), // e.g. the WhatsApp message id, to follow delivered / read
   contactId: integer("contact_id").references(() => contacts.id, { onDelete: "set null" }),
   requestId: integer("request_id").references(() => requests.id, { onDelete: "set null" }),
   createdAt: created(),
@@ -664,3 +665,26 @@ export const kbArticles = pgTable("kb_articles", {
   updatedAt: updated(),
   createdAt: created(),
 });
+
+// ---- WhatsApp (Meta Cloud API): template mapping and the conversation history per customer ---------------------
+/** Our message (template key) → the template approved in WhatsApp Manager, with the variables in Meta's {{1}}, {{2}} order. */
+export const waTemplates = pgTable("wa_templates", {
+  key: text("key").primaryKey(), // received, match_sent, viewing_reminder, ...
+  name: text("name").notNull(), // template name in WhatsApp Manager
+  params: text("params").array().$type<string[]>().notNull().default(sql`'{}'::text[]`), // e.g. {name,number,link}
+  enabled: boolean("enabled").notNull().default(false),
+  updatedAt: updated(),
+});
+
+export const waMessages = pgTable("wa_messages", {
+  id: serial("id").primaryKey(),
+  contactId: integer("contact_id").references(() => contacts.id, { onDelete: "cascade" }),
+  direction: text("direction").$type<"in" | "out">().notNull(),
+  waId: text("wa_id").unique(), // WhatsApp message id
+  phone: text("phone").notNull(),
+  body: text("body").notNull().default(""),
+  status: text("status").notNull().default("received"), // out: sent | delivered | read | failed; in: received
+  error: text("error"),
+  userId: integer("user_id").references(() => users.id), // staff who replied
+  createdAt: created(),
+}, (t) => [index("wa_messages_contact_idx").on(t.contactId)]);

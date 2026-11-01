@@ -13,17 +13,18 @@ import { notify } from "@/lib/notify";
 import { createPaymobIntention, paymobConfig, paymobReady } from "./paymob";
 import { createThawaniSession, thawaniConfig, thawaniReady } from "./thawani";
 
-/** Gateways the customer can use: keys present on the server and not switched off in Admin → Settings. */
+/** Gateways the customer can use: connected in Admin → Integrations and not hidden in Admin → Payment methods. */
 export async function enabledGateways(): Promise<PaymentProvider[]> {
   const rows = await db.select().from(settings).where(inArray(settings.key, ["payThawani", "payPaymob"]));
   const off = (key: string) => rows.find((r) => r.key === key)?.value === false;
-  return [...(thawaniReady() && !off("payThawani") ? ["thawani" as const] : []), ...(paymobReady() && !off("payPaymob") ? ["paymob" as const] : [])];
+  const [thawani, paymob] = await Promise.all([thawaniReady(), paymobReady()]);
+  return [...(thawani && !off("payThawani") ? ["thawani" as const] : []), ...(paymob && !off("payPaymob") ? ["paymob" as const] : [])];
 }
 
-export const gatewayStatus = () => ({
-  thawani: { ready: thawaniReady(), live: thawaniConfig().live, webhook: !!thawaniConfig().webhookSecret },
-  paymob: { ready: paymobReady(), live: paymobConfig().live, factor: paymobConfig().factor },
-});
+export async function gatewayStatus() {
+  const [t, p, thawani, paymob] = await Promise.all([thawaniConfig(), paymobConfig(), thawaniReady(), paymobReady()]);
+  return { thawani: { ready: thawani, live: t.live, webhook: !!t.webhookSecret }, paymob: { ready: paymob, live: p.live, factor: p.factor } };
+}
 
 export type StartResult = { ok: true; url: string } | { ok: false; reason: "not_payable" | "unavailable" | "provider_error" };
 
@@ -44,7 +45,7 @@ export async function startPayment(invoiceId: number, provider: PaymentProvider,
   const reference = `${row.inv.number}-${randomBytes(4).toString("hex")}`;
   const title = `${row.inv.number} Aqar 360`;
   const back = (state: string) => `${siteUrl}/api/pay/return/${provider}?ref=${encodeURIComponent(reference)}&state=${state}`;
-  const live = provider === "thawani" ? thawaniConfig().live : paymobConfig().live;
+  const live = provider === "thawani" ? (await thawaniConfig()).live : (await paymobConfig()).live;
   const [attempt] = await db.insert(onlinePayments).values({ invoiceId, provider, reference, amount: balance, live }).returning();
   try {
     const started = provider === "thawani"

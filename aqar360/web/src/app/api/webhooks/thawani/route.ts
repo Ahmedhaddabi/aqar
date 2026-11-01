@@ -14,7 +14,7 @@ const find = (value: unknown, key: string): string | undefined => {
 /** Thawani webhook: signature checked on the raw body, then the session status is fetched from Thawani (source of truth). */
 export async function POST(request: NextRequest) {
   const raw = await request.text();
-  if (!validThawaniSignature(raw, request.headers.get("thawani-signature"), request.headers.get("thawani-timestamp"))) {
+  if (!(await validThawaniSignature(raw, request.headers.get("thawani-signature"), request.headers.get("thawani-timestamp")))) {
     return NextResponse.json({ ok: false }, { status: 401 });
   }
   let payload: unknown;

@@ -4,6 +4,9 @@ Customers pay an invoice from its private link (`/doc/<id>?s=…`, sent by email
 The page shows a button for each gateway that is connected and switched on. Each payment is recorded once, as
 method "Online", and the invoice becomes Partly paid or Paid automatically. Nothing needs to be built; only keys.
 
+**Recommended:** an admin pastes the keys in **Admin → Integrations** (🔌 in the menu) and presses **Save and test**;
+the card also shows the webhook and return addresses to copy. The environment variables below remain a fallback.
+
 Where things live:
 
 | What | Where |

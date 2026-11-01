@@ -50,6 +50,13 @@
       "when": 1793471289780,
       "tag": "0006_approvals_recurring_kb",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1793476442965,
+      "tag": "0007_whatsapp",
+      "breakpoints": true
     }
   ]
 }

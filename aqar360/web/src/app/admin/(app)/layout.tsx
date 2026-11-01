@@ -17,12 +17,15 @@ export default async function AdminAppLayout({ children }: { children: ReactNode
     { href: "/admin", label: n.today, icon: "◉" },
     { href: "/admin/requests/new", label: n.newEntry, icon: "➕" },
     { href: "/admin/requests", label: n.requests, icon: "📥" },
+    { href: "/admin/whatsapp", label: n.whatsapp, icon: "💬" },
     { href: "/admin/customers", label: n.customers, icon: "🧑" },
+    { href: "/admin/assistant", label: n.assistant, icon: "✨" },
     ...(office ? [
       { href: "/admin/listings", label: n.listings, icon: "🏢" },
       { href: "/admin/site", label: n.site, icon: "🌐" },
       { href: "/admin/messages", label: n.messages, icon: "✉️" },
       { href: "/admin/reports", label: n.reports, icon: "📈" },
+      { href: "/admin/market", label: n.market, icon: "🗺" },
     ] : []),
   ] });
   // ERP: money and operations.
@@ -45,10 +48,12 @@ export default async function AdminAppLayout({ children }: { children: ReactNode
     { href: "/admin/hiring", label: n.hiring, icon: "🤝" },
   ] });
   const personal: NavItem[] = [
+    { href: "/admin/field", label: n.field, icon: "📱" },
     { href: "/admin/kb", label: n.kb, icon: "📘" },
     { href: "/admin/claims", label: n.claims, icon: "🧾" },
     { href: "/admin/account", label: n.account, icon: "👤" },
-    ...(user.role === "admin" ? [{ href: "/admin/settings", label: n.settings, icon: "⚙️" }, { href: "/admin/users", label: n.users, icon: "👥" }] : []),
+    ...(user.role === "admin" ? [{ href: "/admin/settings", label: n.settings, icon: "⚙️" }, { href: "/admin/integrations", label: n.integrations, icon: "🔌" },
+      { href: "/admin/users", label: n.users, icon: "👥" }] : []),
   ];
   return (
     <div className="a-shell">

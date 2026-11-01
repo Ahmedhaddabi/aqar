@@ -1,5 +1,5 @@
 // Customer messages: editable templates, one outbox row per message (never sent twice), consent checked first.
-// Email goes through Resend when RESEND_API_KEY and MAIL_FROM are set; otherwise messages are logged as "skipped".
+// Email goes through Resend once it is connected in Admin → Integrations; otherwise messages are logged as "skipped".
 import { and, desc, eq, gte, inArray, lt, lte } from "drizzle-orm";
 
 import { db } from "@/db";
@@ -9,6 +9,7 @@ import {
 
 import { siteUrl } from "./config";
 import { docLink } from "./doc-link";
+import { integrationConfig } from "./integrations";
 
 export const TEMPLATE_KEYS = ["received", "match_sent", "viewing_reminder", "still_searching", "request_expiring",
   "invoice_sent", "payment_reminder", "job_brief", "job_review", "not_selected", "portal_link"] as const;
@@ -84,9 +85,9 @@ export async function hasConsent(contactId: number, purpose: "request_updates" |
 }
 
 async function deliver(to: string, subject: string, body: string) {
-  const key = process.env.RESEND_API_KEY;
-  const from = process.env.MAIL_FROM;
-  if (!key || !from) return { status: "skipped" as const, reason: "no_provider" };
+  const resend = await integrationConfig("resend");
+  if (!resend) return { status: "skipped" as const, reason: "no_provider" };
+  const { apiKey: key, from } = resend;
   const html = `<div dir="auto" style="font-family:Arial,sans-serif;line-height:1.6">${escapeHtml(body).replace(/\n/g, "<br>")}</div>`;
   const res = await fetch("https://api.resend.com/emails", { method: "POST",
     headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
@@ -95,8 +96,15 @@ async function deliver(to: string, subject: string, body: string) {
 }
 
 /** Queue-and-send one message. The same key never sends twice; missing consent or address is recorded, not an error. */
-export async function sendMessage(opts: { key: string; template: TemplateKey; contactId: number; requestId?: number | null;
-  purpose: "request_updates" | "match_alerts" | "transactional"; vars: Record<string, string> }) {
+type SendOpts = { key: string; template: TemplateKey; contactId: number; requestId?: number | null;
+  purpose: "request_updates" | "match_alerts" | "transactional"; vars: Record<string, string> };
+
+/** One customer message on every channel the customer agreed to: email always, WhatsApp when set up (strategy §8.2). */
+export async function sendMessage(opts: SendOpts) {
+  await Promise.all([sendEmail(opts), sendWhatsApp(opts).catch((e) => console.error("whatsapp send failed:", (e as Error).message))]);
+}
+
+async function sendEmail(opts: SendOpts) {
   const [existing] = await db.select({ id: outbox.id }).from(outbox).where(eq(outbox.key, opts.key));
   if (existing) return;
   const [contact] = await db.select().from(contacts).where(eq(contacts.id, opts.contactId));
@@ -178,3 +186,35 @@ export async function propertyLabel(propertyId: number | null) {
   return p ? `${p.kind}${p.unitNumber ? ` ${p.unitNumber}` : ""} (${p.code})` : "";
 }
 
+
+/**
+ * WhatsApp copy of the same message through the approved template (business-initiated messages must use templates).
+ * Needs WhatsApp consent even for service messages; nothing is logged while WhatsApp is not connected.
+ */
+async function sendWhatsApp(opts: SendOpts) {
+  const { waReady, sendTemplate, recordOut } = await import("./whatsapp");
+  if (!(await waReady())) return;
+  const key = `${opts.key}:wa`;
+  const [existing] = await db.select({ id: outbox.id }).from(outbox).where(eq(outbox.key, key));
+  if (existing) return;
+  const [contact] = await db.select().from(contacts).where(eq(contacts.id, opts.contactId));
+  if (!contact?.phone) return;
+  const purpose = opts.purpose === "transactional" ? "request_updates" : opts.purpose;
+  const lang = contact.language === "en" ? "en" : "ar";
+  const vars = { company: await companyName(lang), name: contact.name, ...opts.vars };
+  const template = await getTemplate(opts.template, lang);
+  const base = { key, templateKey: opts.template, channel: "whatsapp", recipient: contact.phone, subject: fillTemplate(template.subject, vars),
+    body: fillTemplate(template.body, vars), contactId: contact.id, requestId: opts.requestId ?? null };
+  if (!(await hasConsent(contact.id, purpose, "whatsapp"))) {
+    return void (await db.insert(outbox).values({ ...base, status: "skipped", reason: "no_consent" }).onConflictDoNothing());
+  }
+  const [claimed] = await db.insert(outbox).values({ ...base, status: "skipped", reason: "sending" }).onConflictDoNothing().returning();
+  if (!claimed) return;
+  const result = await sendTemplate(contact.phone, opts.template, lang, vars);
+  if (!result.ok && result.error === "no_template") {
+    return void (await db.update(outbox).set({ reason: "no_template" }).where(eq(outbox.id, claimed.id)));
+  }
+  await db.update(outbox).set({ status: result.ok ? "sent" : "failed", reason: result.ok ? null : result.error, providerId: result.ok ? result.id : null })
+    .where(eq(outbox.id, claimed.id));
+  await recordOut(contact.id, contact.phone, base.body, result);
+}

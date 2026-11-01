@@ -4,24 +4,30 @@
 // Callbacks (POST notification and GET redirection) carry `hmac` = HMAC-SHA512(HMAC secret, 20 ordered fields).
 import { createHmac, timingSafeEqual } from "node:crypto";
 
-export const paymobConfig = () => ({
-  secretKey: process.env.PAYMOB_SECRET_KEY ?? "",
-  publicKey: process.env.PAYMOB_PUBLIC_KEY ?? "",
-  hmacSecret: process.env.PAYMOB_HMAC_SECRET ?? "",
-  integrationIds: (process.env.PAYMOB_INTEGRATION_IDS ?? "").split(",").map((v) => v.trim()).filter(Boolean)
-    .map((v) => (/^\d+$/.test(v) ? Number(v) : v)),
-  base: (process.env.PAYMOB_BASE_URL || "https://oman.paymob.com").replace(/\/$/, ""),
-  checkout: (process.env.PAYMOB_CHECKOUT_URL || "https://om.checkout.paymob.com").replace(/\/$/, ""),
-  factor: Number(process.env.PAYMOB_AMOUNT_FACTOR) || 1000,
-  currency: process.env.PAYMOB_CURRENCY || "OMR",
-  live: (process.env.PAYMOB_SECRET_KEY ?? "").includes("_live_"),
-});
+import { integrationConfig } from "../integrations";
 
-export const paymobReady = () => { const c = paymobConfig(); return !!(c.secretKey && c.publicKey && c.hmacSecret && c.integrationIds.length); };
+/** Keys from Admin → Integrations (or the server environment); empty while Paymob is off. */
+export async function paymobConfig() {
+  const c = await integrationConfig("paymob");
+  return {
+    secretKey: c?.secretKey ?? "",
+    publicKey: c?.publicKey ?? "",
+    hmacSecret: c?.hmacSecret ?? "",
+    integrationIds: (c?.integrationIds ?? "").split(",").map((v) => v.trim()).filter(Boolean)
+      .map((v) => (/^\d+$/.test(v) ? Number(v) : v)),
+    base: (c?.baseUrl || "https://oman.paymob.com").replace(/\/$/, ""),
+    checkout: (c?.checkoutUrl || "https://om.checkout.paymob.com").replace(/\/$/, ""),
+    factor: Number(c?.amountFactor) || 1000,
+    currency: c?.currency || "OMR",
+    live: (c?.secretKey ?? "").includes("_live_"),
+  };
+}
+
+export const paymobReady = async () => { const c = await paymobConfig(); return !!(c.secretKey && c.publicKey && c.hmacSecret && c.integrationIds.length); };
 
 export async function createPaymobIntention(opts: { reference: string; title: string; amount: number; customer: { name: string;
   phone: string | null; email: string | null }; notificationUrl: string; redirectionUrl: string; extras: Record<string, string> }) {
-  const c = paymobConfig();
+  const c = await paymobConfig();
   const cents = Math.round(opts.amount * c.factor);
   const [first, ...rest] = opts.customer.name.trim().split(/\s+/);
   const body = {
@@ -47,8 +53,8 @@ const FIELDS = ["amount_cents", "created_at", "currency", "error_occured", "has_
 
 const str = (v: unknown) => (v === undefined || v === null ? "" : typeof v === "boolean" ? String(v) : String(v));
 
-function matches(concatenated: string, hmac: string | null) {
-  const { hmacSecret } = paymobConfig();
+async function matches(concatenated: string, hmac: string | null) {
+  const { hmacSecret } = await paymobConfig();
   if (!hmacSecret || !hmac) return false;
   const expected = Buffer.from(createHmac("sha512", hmacSecret).update(concatenated).digest("hex"));
   const given = Buffer.from(hmac.trim().toLowerCase());
@@ -58,20 +64,20 @@ function matches(concatenated: string, hmac: string | null) {
 export type PaymobTxn = { id: string; success: boolean; pending: boolean; amountCents: number; currency: string; reference: string };
 
 /** POST notification: body { type: "TRANSACTION", obj: {...} }, hmac in the query string. */
-export function verifyPaymobProcessed(body: { type?: string; obj?: Record<string, unknown> }, hmac: string | null): PaymobTxn | null {
+export async function verifyPaymobProcessed(body: { type?: string; obj?: Record<string, unknown> }, hmac: string | null): Promise<PaymobTxn | null> {
   const obj = body?.obj;
   if (!obj || (body.type && body.type !== "TRANSACTION")) return null;
   const get = (path: string) => path.split(".").reduce<unknown>((o, k) => (o && typeof o === "object" ? (o as Record<string, unknown>)[k] : undefined), obj);
-  if (!matches(FIELDS.map((f) => str(get(f))).join(""), hmac)) return null;
+  if (!(await matches(FIELDS.map((f) => str(get(f))).join(""), hmac))) return null;
   const order = (obj.order ?? {}) as Record<string, unknown>;
   return { id: str(obj.id), success: obj.success === true, pending: obj.pending === true, amountCents: Number(obj.amount_cents),
     currency: str(obj.currency), reference: str(order.merchant_order_id) };
 }
 
 /** GET redirection: the same fields arrive flattened as query parameters. */
-export function verifyPaymobRedirect(q: URLSearchParams): PaymobTxn | null {
+export async function verifyPaymobRedirect(q: URLSearchParams): Promise<PaymobTxn | null> {
   const get = (f: string) => (f === "order.id" ? q.get("order") ?? q.get("order_id") : q.get(f)) ?? "";
-  if (!matches(FIELDS.map(get).join(""), q.get("hmac"))) return null;
+  if (!(await matches(FIELDS.map(get).join(""), q.get("hmac")))) return null;
   return { id: get("id"), success: get("success") === "true", pending: get("pending") === "true", amountCents: Number(get("amount_cents")),
     currency: get("currency"), reference: q.get("merchant_order_id") ?? "" };
 }

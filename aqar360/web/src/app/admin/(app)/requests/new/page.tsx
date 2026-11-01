@@ -1,11 +1,13 @@
 import { asc, eq } from "drizzle-orm";
 import Link from "next/link";
 
+import { FillFromMessage } from "@/admin/AiParts";
 import { siteDict } from "@/admin/format";
 import { adminDict, adminLang } from "@/admin/i18n";
 import { db } from "@/db";
 import { areas } from "@/db/schema";
 import { optionLabel } from "@/i18n/dictionaries";
+import { aiReady } from "@/lib/ai";
 import { requireApp } from "@/lib/auth";
 import { FORM_OPTIONS } from "@/lib/intake";
 
@@ -27,6 +29,7 @@ export default async function NewEntryPage({ searchParams }: { searchParams: Pro
       <p><Link href="/admin/requests">← {T.crm.inbox}</Link></p>
       <header className="a-head"><h1>{t.title}</h1><p className="a-muted">{t.intro}</p></header>
       {q.error && <p className="a-alert">{t.invalid}</p>}
+      {(await aiReady()) && <FillFromMessage t={T.ai} />}
       <form action={createEntry} className="a-form a-listing-form">
         <section className="a-panel">
           <h2>{t.customer}</h2>

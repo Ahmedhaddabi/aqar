@@ -34,10 +34,10 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
       return back(session.payment_status === "cancelled" ? "cancelled" : "pending");
     }
     if (provider === "paymob") {
-      const txn = verifyPaymobRedirect(q);
+      const txn = await verifyPaymobRedirect(q);
       if (!txn) return back("pending"); // not verifiable here: the signed webhook decides
       if (txn.success && !txn.pending) {
-        const done = await markPaid(reference, { transactionId: txn.id, amount: txn.amountCents / paymobConfig().factor, raw: { id: txn.id, via: "redirect" } });
+        const done = await markPaid(reference, { transactionId: txn.id, amount: txn.amountCents / (await paymobConfig()).factor, raw: { id: txn.id, via: "redirect" } });
         return back(done.ok ? "paid" : "check");
       }
       if (!txn.pending) await markFailed(reference, "failed", { id: txn.id, via: "redirect" });

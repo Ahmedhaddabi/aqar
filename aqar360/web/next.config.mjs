@@ -28,7 +28,12 @@ const nextConfig = {
   async headers() {
     return [
       {
-        source: "/:path*",
+        // Staff pages may use the phone's location (check-in at viewings); the public website may not.
+        source: "/admin/:path*",
+        headers: [{ key: "Permissions-Policy", value: "camera=(self), microphone=(), geolocation=(self)" }],
+      },
+      {
+        source: "/((?!admin).*)",
         headers: [
           { key: "Content-Security-Policy", value: csp },
           { key: "X-Content-Type-Options", value: "nosniff" },

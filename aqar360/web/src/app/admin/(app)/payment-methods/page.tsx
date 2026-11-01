@@ -1,5 +1,6 @@
 import { sql } from "drizzle-orm";
 import { revalidatePath, revalidateTag } from "next/cache";
+import Link from "next/link";
 import { redirect } from "next/navigation";
 
 import { adminDict, adminLang } from "@/admin/i18n";
@@ -37,7 +38,7 @@ export default async function PaymentMethodsPage({ searchParams }: { searchParam
   const t = T.payMethods;
   const p = T.pay;
   const [m, { saved }] = await Promise.all([payMethods(), searchParams]);
-  const status = gatewayStatus();
+  const status = await gatewayStatus();
   return (
     <>
       <header className="a-head"><h1>{t.title}</h1><p className="a-muted">{t.intro}</p></header>
@@ -64,7 +65,7 @@ export default async function PaymentMethodsPage({ searchParams }: { searchParam
           </div>
         </Section>
         <Section title={`💳 ${t.online}`}>
-          <p className="a-muted">{p.intro}</p>
+          <p className="a-muted">{p.intro} {user.role === "admin" && <Link href="/admin/integrations#thawani">{T.integ.open} →</Link>}</p>
           <div className="a-gateways">
             {(["thawani", "paymob"] as const).map((g) => (
               <div key={g} className="a-gateway">
