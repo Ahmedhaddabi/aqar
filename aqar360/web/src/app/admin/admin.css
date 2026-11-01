@@ -476,3 +476,5 @@ body.a-busy { cursor: progress; }
 .f-sync { position: sticky; top: 0; z-index: 10; margin: 0 0 10px; padding: 10px 14px; border-radius: 8px; }
 .f-note { display: flex; gap: 6px; align-items: center; margin-top: 8px; flex-wrap: wrap; }
 .f-note input { flex: 1; min-width: 160px; }
+.a-plot-map { width: 100%; border-radius: 10px; overflow: hidden; border: 1px solid var(--line); margin-top: 10px; }
+.a-points input { width: 100%; min-width: 90px; }

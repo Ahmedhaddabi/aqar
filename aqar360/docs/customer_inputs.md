@@ -42,3 +42,5 @@ The platform is built with editable placeholders wherever the information belong
 | 36 | Agreement texts (exclusive marketing, marketing, reservation) and the fee wording | Draft bilingual templates with ____ blanks (lib/agreements.ts) | Customer's lawyer approves the text; staff edit each agreement before sending (Admin → Agreements) |
 | 37 | Google review link shown to happy customers after their review | None | Admin → Settings → Google review link |
 | 38 | Website chat assistant: switch on and daily message cap | Off; cap 300 messages a day | Admin → Settings → Website chat assistant (needs the AI connection) |
+| 39 | A sample croquis (personal details blurred) to confirm reading and placement | Not tested with a real croquis | Send one to the developer; staff then upload croquis on each land property (Plot section) |
+| 40 | First admin account on the new database | None (database replaced on 2026-11-01) | /admin/setup with ADMIN_SETUP_TOKEN, then add staff on the Staff page |

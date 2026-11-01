@@ -4,7 +4,7 @@
 import { and, eq, inArray, like, or } from "drizzle-orm";
 
 import { db } from "@/db";
-import { activities, auditLog, contacts, matches, notifications, outbox, properties, requests, savedProperties } from "@/db/schema";
+import { activities, auditLog, contacts, matches, notifications, outbox, properties, requests, savedProperties, users } from "@/db/schema";
 import { portalLink } from "@/lib/doc-link";
 import { bookOnline, cancelOnline, DEFAULT_RULES, freeSlots, muscatDay, muscatTime, slotsForMatch, suggestionsFor, toggleSaved } from "@/lib/viewings";
 
@@ -16,6 +16,8 @@ const check = (name: string, ok: boolean, detail = "") => {
 };
 
 const tag = `T${Date.now().toString(36)}`;
+// A manager to receive notifications, so the checks do not depend on the database's real staff.
+const [manager] = await db.insert(users).values({ name: `Manager ${tag}`, email: `m-${tag}@test.invalid`, passwordHash: "x", role: "manager", apps: ["crm"] }).returning();
 const [contact] = await db.insert(contacts).values({ name: `Viewing Test ${tag}`, source: "Test" }).returning();
 const [other] = await db.insert(contacts).values({ name: `Other Test ${tag}`, source: "Test" }).returning();
 const [prop] = await db.insert(properties).values({ code: `TEST-${tag}`, kind: "Apartment", purpose: "rent", rentPrice: 450, bedrooms: 2,
@@ -113,6 +115,8 @@ try {
   await db.delete(requests).where(eq(requests.id, req.id));
   await db.delete(properties).where(eq(properties.id, prop.id));
   await db.delete(contacts).where(inArray(contacts.id, [contact.id, other.id]));
+  await db.delete(notifications).where(eq(notifications.userId, manager.id));
+  await db.delete(users).where(eq(users.id, manager.id));
 }
 const [left] = await db.select({ id: contacts.id }).from(contacts).where(eq(contacts.id, contact.id));
 check("test data removed", !left);

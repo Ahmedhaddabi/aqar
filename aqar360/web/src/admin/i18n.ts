@@ -9,7 +9,7 @@ type IntegText = { name: string; icon: string; link: string; purpose: string; st
 
 const en = {
   appName: "Aqar 360 Admin",
-  nav: { today: "Today", requests: "Requests", customers: "Customers", listings: "Properties & projects", invoices: "Invoices", expenses: "Expenses", finance: "Finance", hr: "Team (HR)", hiring: "Hiring & suppliers", site: "Website content", messages: "Messages", reports: "Reports", settings: "Settings", crm: "CRM", erp: "ERP", hrApp: "HR", overview: "Overview", apps: "Apps", setup: "Setup", payMethods: "Payment methods", jobs: "Service jobs", people: "People", leave: "Leave", payroll: "Payroll", renewals: "Renewals", account: "My account", claims: "My expense claims", notifications: "Notifications", approvals: "Approvals", recurring: "Recurring expenses", kb: "Knowledge base", search: "Search everything…", newEntry: "New customer / request", whatsapp: "WhatsApp", market: "Market intelligence", assistant: "AI assistant", field: "Field (mobile)", users: "Staff", integrations: "Integrations", calendar: "Calendar", reviews: "Reviews & referrals", agreements: "Agreements", performance: "Performance", website: "Open website", signOut: "Sign out", language: "العربية" },
+  nav: { today: "Today", requests: "Requests", customers: "Customers", listings: "Properties & projects", invoices: "Invoices", expenses: "Expenses", finance: "Finance", hr: "Team (HR)", hiring: "Hiring & suppliers", site: "Website content", messages: "Messages", reports: "Reports", settings: "Settings", crm: "CRM", erp: "ERP", hrApp: "HR", overview: "Overview", apps: "Apps", setup: "Setup", payMethods: "Payment methods", jobs: "Service jobs", people: "People", leave: "Leave", payroll: "Payroll", renewals: "Renewals", account: "My account", claims: "My expense claims", notifications: "Notifications", approvals: "Approvals", recurring: "Recurring expenses", kb: "Knowledge base", search: "Search everything…", newEntry: "New customer / request", whatsapp: "WhatsApp", market: "Market intelligence", assistant: "AI assistant", field: "Field (mobile)", users: "Staff", integrations: "Integrations", calendar: "Calendar", reviews: "Reviews & referrals", agreements: "Agreements", performance: "Performance", plots: "Plots map", website: "Open website", signOut: "Sign out", language: "العربية" },
   roles: { admin: "Admin", manager: "Manager", agent: "Agent" } as Record<string, string>,
   roleHelp: {
     admin: "Everything, including staff accounts and settings",
@@ -422,6 +422,27 @@ const en = {
     idPrivacy: "The photo is read once and not kept. To keep a copy, upload it to the customer's documents.",
     idNumber: "ID / passport number", nationality: "Nationality", idExpiry: "ID expiry date",
   },
+  plot: {
+    title: "Plot (croquis)", intro: "Upload the croquis (PDF or photo): the plot details and corner coordinates are read for you. Check the outline on the map before saving.",
+    upload: "Upload croquis", reading: "Reading the croquis…", read: "Read from the croquis. Check every number and the outline.",
+    readCheckDatum: "Read. The croquis does not say WGS 84 or PSD93: the dashed outline shows the other system. Pick the one that sits on the right plot.",
+    notRead: "Saved to the documents, but the coordinates could not be read. Type them from the croquis.", savedNoAi: "Saved to the documents. Type the coordinates from the croquis (AI is not connected).",
+    uploadFailed: "Could not upload the file (PDF or image, up to 4 MB).",
+    plotNumber: "Plot number", block: "Block / square", location: "Location (as on the croquis)", landUse: "Land use", statedArea: "Area on the croquis (m²)",
+    crs: "Coordinate system", crsNames: { wgs84_utm40: "WGS 84 · UTM 40N (most of Oman)", psd93_utm40: "PSD93 · UTM 40N (older croquis)",
+      wgs84_utm39: "WGS 84 · UTM 39N (west Dhofar)", psd93_utm39: "PSD93 · UTM 39N" } as Record<string, string>,
+    point: "Point", easting: "Easting (E)", northing: "Northing (N)", addPoint: "Add point", removePoint: "Remove point",
+    computed: "Area from the points", vsStated: "vs croquis", areaWarning: "check the numbers and the order of the points",
+    sides: "Sides", needPoints: "Enter at least 3 corner points to see the plot.",
+    ghostHelp: "Solid red = the system selected above; dashed = the other system. They are about 400 m apart.",
+    public: "Show the plot outline on the public map", publicHelp: "Only when the property itself is on the website. This shows its exact location; the plot number and owner are never shown.",
+    shownPublic: "Public", staffOnly: "Staff only",
+    useAsLocation: "Use the plot centre as the property's map location", useAsLocationHelp: "Moves the property's pin to the middle of the plot.",
+    notes: "Notes", save: "Save plot", saved: "Plot saved.", invalid: "Please check the fields.", badPoints: "Some points are not valid Omani UTM coordinates.",
+    remove: "Remove plot", removeConfirm: "Remove the plot outline from this property? The croquis file stays in the documents.",
+    mapTitle: "Plots map", mapIntro: "Every plot entered from a croquis. Red = on the public map, grey = staff only. Click a plot to open the property.",
+    none: "No plots yet. Add one from a property page (Plot section).", count: "{n} plots",
+  },
   kit: {
     title: "Marketing kit", intro: "Ready-to-post texts and a shareable image with the photo, price and a QR code to the listing.",
     notPublic: "This property is not on the website yet: the QR code will only work once it is shown and checked.",
@@ -522,7 +543,7 @@ const en = {
 
 const ar: typeof en = {
   appName: "إدارة عقار 360",
-  nav: { today: "اليوم", requests: "الطلبات", customers: "العملاء", listings: "العقارات والمشاريع", invoices: "الفواتير", expenses: "المصروفات", finance: "المالية", hr: "الفريق", hiring: "التوظيف والموردون", site: "محتوى الموقع", messages: "الرسائل", reports: "التقارير", settings: "الإعدادات", crm: "CRM", erp: "ERP", hrApp: "HR", overview: "نظرة عامة", apps: "التطبيقات", setup: "الإعداد", payMethods: "طرق الدفع", jobs: "أعمال الخدمات", people: "الموظفون", leave: "الإجازات", payroll: "الرواتب", renewals: "التجديدات", account: "حسابي", claims: "مطالبات مصروفاتي", notifications: "الإشعارات", approvals: "الموافقات", recurring: "المصروفات المتكررة", kb: "دليل العمل", search: "ابحث في كل شيء…", newEntry: "عميل / طلب جديد", whatsapp: "واتساب", market: "ذكاء السوق", assistant: "المساعد الذكي", field: "الميدان (الجوال)", users: "حسابات الموظفين", integrations: "الربط بالخدمات", calendar: "التقويم", reviews: "التقييمات والإحالات", agreements: "الاتفاقيات", performance: "الأداء", website: "فتح الموقع", signOut: "تسجيل الخروج", language: "English" },
+  nav: { today: "اليوم", requests: "الطلبات", customers: "العملاء", listings: "العقارات والمشاريع", invoices: "الفواتير", expenses: "المصروفات", finance: "المالية", hr: "الفريق", hiring: "التوظيف والموردون", site: "محتوى الموقع", messages: "الرسائل", reports: "التقارير", settings: "الإعدادات", crm: "CRM", erp: "ERP", hrApp: "HR", overview: "نظرة عامة", apps: "التطبيقات", setup: "الإعداد", payMethods: "طرق الدفع", jobs: "أعمال الخدمات", people: "الموظفون", leave: "الإجازات", payroll: "الرواتب", renewals: "التجديدات", account: "حسابي", claims: "مطالبات مصروفاتي", notifications: "الإشعارات", approvals: "الموافقات", recurring: "المصروفات المتكررة", kb: "دليل العمل", search: "ابحث في كل شيء…", newEntry: "عميل / طلب جديد", whatsapp: "واتساب", market: "ذكاء السوق", assistant: "المساعد الذكي", field: "الميدان (الجوال)", users: "حسابات الموظفين", integrations: "الربط بالخدمات", calendar: "التقويم", reviews: "التقييمات والإحالات", agreements: "الاتفاقيات", performance: "الأداء", plots: "خريطة القطع", website: "فتح الموقع", signOut: "تسجيل الخروج", language: "English" },
   roles: { admin: "مدير النظام", manager: "مدير", agent: "موظف مبيعات" },
   roleHelp: {
     admin: "كل شيء، بما في ذلك حسابات الموظفين والإعدادات",
@@ -933,6 +954,27 @@ const ar: typeof en = {
     readId: "قراءة البطاقة / الجواز", idRead: "تمت التعبئة من الوثيقة. يرجى مراجعة كل الحقول.", idFailed: "تعذرت قراءة الوثيقة. جرّب صورة أوضح أو اكتب البيانات.",
     idPrivacy: "تُقرأ الصورة مرة واحدة ولا تُحفظ. لحفظ نسخة ارفعها في مستندات العميل.",
     idNumber: "رقم البطاقة / الجواز", nationality: "الجنسية", idExpiry: "تاريخ انتهاء البطاقة",
+  },
+  plot: {
+    title: "قطعة الأرض (الكروكي)", intro: "ارفع الكروكي (PDF أو صورة) فتُقرأ بيانات القطعة وإحداثيات الأركان تلقائيا. تحقق من حدود القطعة على الخريطة قبل الحفظ.",
+    upload: "رفع الكروكي", reading: "جارٍ قراءة الكروكي…", read: "تمت القراءة من الكروكي. راجع كل رقم وحدود القطعة.",
+    readCheckDatum: "تمت القراءة. الكروكي لا يذكر WGS 84 أو PSD93: الخط المتقطع يعرض النظام الآخر. اختر النظام الذي يقع على القطعة الصحيحة.",
+    notRead: "حُفظ في المستندات لكن تعذرت قراءة الإحداثيات. اكتبها من الكروكي.", savedNoAi: "حُفظ في المستندات. اكتب الإحداثيات من الكروكي (الذكاء الاصطناعي غير مربوط).",
+    uploadFailed: "تعذر رفع الملف (PDF أو صورة حتى 4 ميغابايت).",
+    plotNumber: "رقم القطعة", block: "رقم المربع / المجمع", location: "الموقع (كما في الكروكي)", landUse: "الاستعمال", statedArea: "المساحة في الكروكي (م²)",
+    crs: "نظام الإحداثيات", crsNames: { wgs84_utm40: "WGS 84 · UTM 40N (معظم عُمان)", psd93_utm40: "PSD93 · UTM 40N (كروكيات قديمة)",
+      wgs84_utm39: "WGS 84 · UTM 39N (غرب ظفار)", psd93_utm39: "PSD93 · UTM 39N" },
+    point: "النقطة", easting: "الشرقيات (E)", northing: "الشماليات (N)", addPoint: "إضافة نقطة", removePoint: "حذف النقطة",
+    computed: "المساحة من النقاط", vsStated: "مقارنة بالكروكي", areaWarning: "راجع الأرقام وترتيب النقاط",
+    sides: "الأضلاع", needPoints: "أدخل 3 نقاط على الأقل لعرض القطعة.",
+    ghostHelp: "الأحمر = النظام المختار أعلاه؛ المتقطع = النظام الآخر. الفرق بينهما نحو 400 متر.",
+    public: "إظهار حدود القطعة في الخريطة العامة", publicHelp: "فقط عندما يكون العقار نفسه معروضا في الموقع. هذا يُظهر موقعه الدقيق؛ ولا يظهر رقم القطعة ولا المالك.",
+    shownPublic: "عام", staffOnly: "للموظفين فقط",
+    useAsLocation: "استخدام منتصف القطعة كموقع العقار في الخريطة", useAsLocationHelp: "ينقل دبوس العقار إلى منتصف القطعة.",
+    notes: "ملاحظات", save: "حفظ القطعة", saved: "تم حفظ القطعة.", invalid: "يرجى مراجعة الحقول.", badPoints: "بعض النقاط ليست إحداثيات UTM عُمانية صحيحة.",
+    remove: "حذف القطعة", removeConfirm: "حذف حدود القطعة من هذا العقار؟ يبقى ملف الكروكي في المستندات.",
+    mapTitle: "خريطة القطع", mapIntro: "كل القطع المدخلة من الكروكي. الأحمر = في الخريطة العامة، الرمادي = للموظفين فقط. اضغط على القطعة لفتح العقار.",
+    none: "لا توجد قطع بعد. أضفها من صفحة العقار (قسم القطعة).", count: "{n} قطع",
   },
   kit: {
     title: "حزمة التسويق", intro: "نصوص جاهزة للنشر وصورة للمشاركة فيها الصورة والسعر ورمز QR يفتح العقار.",

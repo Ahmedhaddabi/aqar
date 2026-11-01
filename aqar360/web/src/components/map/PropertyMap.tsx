@@ -11,6 +11,9 @@ import { track } from "@/lib/analytics";
 import { type Locale, mapStyleUrl } from "@/lib/config";
 import type { MapArea, MapData, MapListing, MapUnit, Point } from "@/lib/content";
 import { fill, formatters, interestHref as requestHref, loadMapLibre, unitTypeLabel } from "@/lib/format";
+import type { NearbyPlace } from "@/lib/nearby";
+
+import { NEARBY_ICONS, NearbyPlaces } from "./NearbyPlaces";
 
 type Purpose = "all" | "Sale" | "Rent";
 type MapText = Dictionary["pages"]["map"];
@@ -96,6 +99,8 @@ export function PropertyMap({ lang, dict, data }: { lang: Locale; dict: Dictiona
   const filtered = useMemo(() => data.listings.filter((l) => matches(l, purpose, kind)), [data.listings, purpose, kind]);
   const inScope = areaId ? filtered.filter((l) => l.area === areaId) : filtered;
   const selected = data.listings.find((l) => l.id === selectedId) || null;
+  const [nearby, setNearby] = useState<NearbyPlace[] | null>(null);
+  const nearbyMarkers = useRef<Marker[]>([]);
   const counts = useMemo(() => {
     const result: Record<string, number> = {};
     for (const l of filtered) if (l.area) result[l.area] = (result[l.area] || 0) + 1;
@@ -171,7 +176,13 @@ export function PropertyMap({ lang, dict, data }: { lang: Locale; dict: Dictiona
           if (!map) return;
           localizeLabels(map, lang);
           addAreaLayers(map, data.areas, colors);
+          addPlotLayers(map, data.listings);
           add3dBuildings(map);
+          map.on("click", "aqar-plots-fill", (e) => {
+            const code = e.features?.[0]?.properties?.id;
+            const hit = data.listings.find((l) => l.id === code);
+            if (hit) { e.originalEvent.stopPropagation(); selectListing(hit); }
+          });
           map.on("click", "aqar-areas-fill", (e) => {
             const id = e.features?.[0]?.properties?.id;
             if (typeof id === "string") selectArea(id);
@@ -292,6 +303,23 @@ export function PropertyMap({ lang, dict, data }: { lang: Locale; dict: Dictiona
     }
   }, [mapState, filtered, selectedId, counts]);
 
+  // Nearby places chosen in the listing panel, as small markers (cleared when the listing changes).
+  useEffect(() => {
+    const map = mapRef.current;
+    const ml = libRef.current;
+    nearbyMarkers.current.forEach((m) => m.remove());
+    nearbyMarkers.current = [];
+    if (mapState !== "ready" || !map || !ml || !nearby) return;
+    for (const p of nearby) {
+      const el = document.createElement("span");
+      el.className = "map-nearby-pin";
+      el.textContent = NEARBY_ICONS[p.cat];
+      el.title = (lang === "ar" ? p.nameAr || p.name : p.name || p.nameAr) ?? "";
+      nearbyMarkers.current.push(new ml.Marker({ element: el }).setLngLat([p.lng, p.lat]).addTo(map));
+    }
+  }, [nearby, mapState, lang]);
+  useEffect(() => { if (!selectedId) setNearby(null); }, [selectedId]);
+
   useEffect(() => {
     const map = mapRef.current;
     if (mapState !== "ready" || !map) return;
@@ -378,6 +406,7 @@ export function PropertyMap({ lang, dict, data }: { lang: Locale; dict: Dictiona
               <dl className="map-facts">
                 {selected.bedrooms ? <><dt>{t.bedrooms}</dt><dd>{selected.bedrooms}</dd></> : null}
                 {selected.size_sqm ? <><dt>{t.size}</dt><dd>{fmt.amount(selected.size_sqm)} {t.sizeUnit}</dd></> : null}
+                {selected.plot ? <><dt>{t.plotArea}</dt><dd>{fmt.amount(selected.plot.area_sqm)} {t.sizeUnit}{selected.plot.land_use ? ` · ${selected.plot.land_use}` : ""}</dd></> : null}
                 {selected.construction_status ? <><dt>{t.status}</dt>
                   <dd>{t.statuses[selected.construction_status] || optionLabel(dict, selected.construction_status)}</dd></> : null}
                 {selected.handover ? <><dt>{t.handover}</dt><dd>{selected.handover}</dd></> : null}
@@ -406,6 +435,10 @@ export function PropertyMap({ lang, dict, data }: { lang: Locale; dict: Dictiona
                 </section>
               )}
               {selected.summary && <p>{selected.summary}</p>}
+              {(selected.point || (selected.area && areasById[selected.area]?.center)) && (
+                <NearbyPlaces lang={lang} t={t.nearby} from={(selected.point ?? areasById[selected.area!]!.center)!} exact={!!selected.point && selected.exact}
+                  onShow={setNearby} />
+              )}
               <div className="actions">
                 <Link className="btn primary" href={interestHref(selected)}>{t.registerInterest}</Link>
                 {selected.slug && <Link className="btn secondary" href={`/${lang}/projects/${selected.slug}`}>{t.projectPage}</Link>}
@@ -476,6 +509,15 @@ function addAreaLayers(map: MlMap, areas: MapArea[], colors: Record<string, stri
     "line-color": ["get", "color"], "line-opacity": 0.9,
     "line-width": ["case", ["boolean", ["feature-state", "selected"], false], 3, 1.5],
   } }, firstLabel);
+}
+
+/** Plot outlines from croquis that staff published; they appear once the map is zoomed in to street level. */
+function addPlotLayers(map: MlMap, listings: MapListing[]) {
+  const features: GeoJSON.Feature[] = listings.filter((l) => l.plot).map((l) => ({ type: "Feature" as const, properties: { id: l.id },
+    geometry: { type: "Polygon" as const, coordinates: [l.plot!.polygon] } }));
+  map.addSource("aqar-plots", { type: "geojson", data: { type: "FeatureCollection", features } });
+  map.addLayer({ id: "aqar-plots-fill", type: "fill", source: "aqar-plots", minzoom: 12, paint: { "fill-color": "#e3a33b", "fill-opacity": 0.35 } });
+  map.addLayer({ id: "aqar-plots-line", type: "line", source: "aqar-plots", minzoom: 12, paint: { "line-color": "#b42318", "line-width": 2 } });
 }
 
 function add3dBuildings(map: MlMap) {

@@ -765,3 +765,36 @@ export const targets = pgTable("targets", {
   viewings: integer("viewings"),
   income: money("income"),
 }, (t) => [primaryKey({ columns: [t.userId, t.month] })]);
+
+/**
+ * A land plot from its croquis (كروكي): the corner points as written (UTM, WGS 84 or PSD93) and the outline converted
+ * to WGS 84 for the map. Staff choose whether it shows on the public map.
+ */
+export const plots = pgTable("plots", {
+  id: serial("id").primaryKey(),
+  propertyId: integer("property_id").unique().references(() => properties.id, { onDelete: "cascade" }),
+  plotNumber: text("plot_number"),
+  block: text("block"), // square / block number on the croquis
+  location: text("location"), // wilayat / village as written
+  landUse: text("land_use"), // residential, commercial, agricultural, ...
+  statedAreaSqm: doublePrecision("stated_area_sqm"), // area printed on the croquis
+  crs: text("crs").notNull().default("wgs84_utm40"),
+  points: jsonb("points").$type<{ label?: string; e: number; n: number }[]>().notNull(),
+  polygon: jsonb("polygon").$type<[number, number][]>().notNull(), // [lng, lat] ring, WGS 84
+  centerLat: doublePrecision("center_lat").notNull(),
+  centerLng: doublePrecision("center_lng").notNull(),
+  areaSqm: doublePrecision("area_sqm").notNull(), // from the corner points
+  public: boolean("public").notNull().default(false),
+  documentId: integer("document_id").references(() => documents.id, { onDelete: "set null" }), // the croquis file (private)
+  notes: text("notes").notNull().default(""),
+  createdBy: integer("created_by").references(() => users.id),
+  createdAt: created(),
+  updatedAt: updated(),
+});
+
+/** OpenStreetMap places around a point (schools, hospitals, …), cached per ~1 km grid cell to respect the free API. */
+export const nearbyCache = pgTable("nearby_cache", {
+  key: text("key").primaryKey(), // "lat,lng" rounded to 2 decimals
+  data: jsonb("data").notNull(),
+  fetchedAt: timestamp("fetched_at", { withTimezone: true }).notNull().defaultNow(),
+});

@@ -139,6 +139,8 @@ try {
   }
 
   // ---- Weekly report -------------------------------------------------------------------------------------------------
+  const [manager] = await db.insert(users).values({ name: `Manager ${tag}`, email: `m-${tag}@test.invalid`, passwordHash: "x", role: "manager", apps: ["crm"] }).returning();
+  made.users.push(manager.id);
   const report = await weeklyReport();
   const en = reportText(report, "en");
   const ar = reportText(report, "ar");

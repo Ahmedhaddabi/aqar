@@ -29,6 +29,7 @@ export default async function AdminAppLayout({ children }: { children: ReactNode
     { href: "/admin/assistant", label: n.assistant, icon: "✨" },
     ...(office ? [
       { href: "/admin/listings", label: n.listings, icon: "🏢" },
+      { href: "/admin/plots", label: n.plots, icon: "🗺" },
       { href: "/admin/site", label: n.site, icon: "🌐" },
       { href: "/admin/messages", label: n.messages, icon: "✉️" },
       { href: "/admin/reports", label: n.reports, icon: "📈" },

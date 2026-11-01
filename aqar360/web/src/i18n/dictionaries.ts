@@ -94,6 +94,13 @@ const en = {
       note: "Estimates only, not financial advice or a loan offer. Banks in Oman set their own rates and limits; ask your bank for exact figures.",
     },
     map: {
+      plotArea: "Plot", nearby: {
+        title: "Nearby", show: "Show on map", hide: "Hide from map", loading: "Finding places nearby…", none: "No places found nearby.",
+        unavailable: "Nearby places are not available right now. Please try again later.", fromArea: "Distances from the area centre (the exact location is shared on request).",
+        nearest: "nearest", m: "m", km: "km", credit: "Places and distances (straight line) from", categories: { school: "Schools", health: "Hospitals & clinics",
+          pharmacy: "Pharmacies", shop: "Supermarkets & malls", mosque: "Mosques", park: "Parks", beach: "Beaches" },
+        unnamed: { school: "School", health: "Clinic", pharmacy: "Pharmacy", shop: "Shop", mosque: "Mosque", park: "Park", beach: "Beach" },
+      },
       title: "Property map", description: "Explore areas, projects and available properties in Oman on an interactive map.",
       summary: "Explore the areas we work in and the projects and properties open to the public. Owner properties are shown by area only.",
       all: "All", sale: "For sale", rent: "For rent", allTypes: "All types", searchArea: "Search for an area",
@@ -366,6 +373,13 @@ const ar: Dictionary = {
       note: "تقديرات فقط وليست نصيحة مالية أو عرض تمويل. تحدد البنوك في عُمان نسبها وحدودها؛ اسأل بنكك عن الأرقام الدقيقة.",
     },
     map: {
+      plotArea: "القطعة", nearby: {
+        title: "ما حولك", show: "إظهار على الخريطة", hide: "إخفاء من الخريطة", loading: "جارٍ البحث عن الأماكن القريبة…", none: "لا توجد أماكن قريبة.",
+        unavailable: "الأماكن القريبة غير متاحة حاليا. حاول لاحقا.", fromArea: "المسافات من وسط المنطقة (يُشارك الموقع الدقيق عند الطلب).",
+        nearest: "الأقرب", m: "م", km: "كم", credit: "الأماكن والمسافات (خط مستقيم) من", categories: { school: "المدارس", health: "المستشفيات والعيادات",
+          pharmacy: "الصيدليات", shop: "الأسواق والمجمعات", mosque: "المساجد", park: "الحدائق", beach: "الشواطئ" },
+        unnamed: { school: "مدرسة", health: "عيادة", pharmacy: "صيدلية", shop: "متجر", mosque: "مسجد", park: "حديقة", beach: "شاطئ" },
+      },
       title: "خريطة العقارات", description: "استكشف المناطق والمشاريع والعقارات المتاحة في عُمان على خريطة تفاعلية.",
       summary: "استكشف المناطق التي نعمل فيها والمشاريع والعقارات المتاحة للعرض العام. عقارات الملاك تظهر على مستوى المنطقة فقط.",
       all: "الكل", sale: "للبيع", rent: "للإيجار", allTypes: "كل الأنواع", searchArea: "ابحث عن منطقة",

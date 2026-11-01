@@ -85,6 +85,13 @@
       "when": 1793532399561,
       "tag": "0011_performance",
       "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "7",
+      "when": 1793534608943,
+      "tag": "0012_plots_nearby",
+      "breakpoints": true
     }
   ]
 }

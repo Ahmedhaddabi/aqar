@@ -1,15 +1,18 @@
+import { eq } from "drizzle-orm";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { DescribeButton } from "@/admin/AiParts";
-import { MarketingKit } from "@/admin/MarketingKit";
 import { Documents } from "@/admin/Documents";
 import { siteDict } from "@/admin/format";
 import { adminDict, adminLang } from "@/admin/i18n";
 import { Field, Photos, Section, Toggle } from "@/admin/ListingParts";
 import { ListingForm, MapPicker } from "@/admin/listing-ui";
 import { areaChoices, getPropertyForEdit } from "@/admin/listings";
-import { PROPERTY_STATUS } from "@/db/schema";
+import { MarketingKit } from "@/admin/MarketingKit";
+import { PlotEditor } from "@/admin/PlotEditor";
+import { db } from "@/db";
+import { plots, PROPERTY_STATUS } from "@/db/schema";
 import { optionLabel } from "@/i18n/dictionaries";
 import { aiReady } from "@/lib/ai";
 import { requireApp } from "@/lib/auth";
@@ -33,7 +36,8 @@ export default async function PropertyEditor({ params, searchParams }: {
   const data = isNew ? null : await getPropertyForEdit(Number(rawId));
   if (!isNew && !data) notFound();
   const p = data?.property;
-  const [ai, card] = await Promise.all([aiReady(), p ? listingCard(p.id) : Promise.resolve(null)]);
+  const [ai, card, [plot]] = await Promise.all([aiReady(), p ? listingCard(p.id) : Promise.resolve(null),
+    p ? db.select().from(plots).where(eq(plots.propertyId, p.id)) : Promise.resolve([])]);
   const areas = await areaChoices(lang);
   return (
     <>
@@ -95,6 +99,7 @@ export default async function PropertyEditor({ params, searchParams }: {
       </ListingForm>
       {p && data && <Photos ownerType="property" ownerId={p.id} photos={data.photos} cover={p.coverImage} t={t} photoError={photo} />}
       {p && <Documents ownerType="property" ownerId={p.id} lang={lang} canShare />}
+      {p && <PlotEditor t={T.plot} propertyId={p.id} initial={plot ?? null} ai={ai} />}
       {p && card && <MarketingKit t={T.kit} card={card} ai={ai} />}
     </>
   );

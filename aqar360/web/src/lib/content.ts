@@ -87,6 +87,8 @@ export type MapListing = {
   bedrooms?: number | null; bathrooms?: number | null; size_sqm?: number | null; furnished?: string | null;
   construction_status?: string | null; handover?: string | null; payment_plan?: string | null; summary?: string | null;
   available_units?: number | null; developer?: string | null; category?: string | null; units?: MapUnit[];
+  /** Plot outline from the croquis, only when staff chose to show it publicly. */
+  plot?: { polygon: Point[]; area_sqm: number; land_use: string | null } | null;
 };
 export type MapData = { areas: MapArea[]; listings: MapListing[] };
 

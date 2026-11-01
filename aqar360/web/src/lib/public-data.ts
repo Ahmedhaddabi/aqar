@@ -2,7 +2,7 @@
 import { and, asc, desc, eq, gte, inArray, isNull, or } from "drizzle-orm";
 
 import { db } from "@/db";
-import { areas, images, jobs, pages, projects, projectUnitTypes, properties, services, settings, wilayats } from "@/db/schema";
+import { areas, images, jobs, pages, plots, projects, projectUnitTypes, properties, services, settings, wilayats } from "@/db/schema";
 
 import { contact as envContact, type Locale } from "./config";
 import type {
@@ -170,20 +170,27 @@ export async function getMapData(lang: Locale): Promise<MapData> {
     db.select().from(properties).where(and(eq(properties.public, true), eq(properties.verified, true),
       eq(properties.status, "available"), isNull(properties.projectId))),
   ]);
-  const details = await projectDetails(lang, projectList.map((p) => p.id));
+  const [details, publicPlots] = await Promise.all([projectDetails(lang, projectList.map((p) => p.id)),
+    props.length ? db.select().from(plots).where(and(inArray(plots.propertyId, props.map((p) => p.id)), eq(plots.public, true))) : Promise.resolve([])]);
+  const plotOf = (id: number) => publicPlots.find((pl) => pl.propertyId === id);
   const mapAreas: MapArea[] = areaList.map(({ area, wilayat }) => ({ id: String(area.id), name: pick(lang, area.nameAr, area.nameEn),
     slug: area.slug, wilayat: wilayat ? pick(lang, wilayat.nameAr, wilayat.nameEn) : null, guide_slug: guides.get(area.id) ?? null,
     center: point(area.lat, area.lng), boundary: area.boundary ?? null }));
   const listings: MapListing[] = [
     ...projectList.map((p) => projectCard(lang, p, details)),
     // No owner names or internal titles; exact coordinates only with the owner's permission.
-    ...props.map((p): MapListing => ({
-      id: p.code, type: "property", kind: p.kind, title: null, area: p.areaId ? String(p.areaId) : null,
-      purpose: p.purpose === "rent" ? "Rent" : p.purpose === "sale" ? "Sale" : "Sale or Rent",
-      sale_price: p.salePrice, rent_price: p.rentPrice, bedrooms: p.bedrooms, bathrooms: p.bathrooms, size_sqm: p.sizeSqm,
-      furnished: p.furnished, image: p.coverImage, exact: p.showExactLocation && !!point(p.lat, p.lng),
-      point: p.showExactLocation ? point(p.lat, p.lng) : null,
-    })),
+    // A plot staff chose to publish shows the exact place, so its centre becomes the pin too.
+    ...props.map((p): MapListing => {
+      const pl = plotOf(p.id);
+      return {
+        id: p.code, type: "property", kind: p.kind, title: null, area: p.areaId ? String(p.areaId) : null,
+        purpose: p.purpose === "rent" ? "Rent" : p.purpose === "sale" ? "Sale" : "Sale or Rent",
+        sale_price: p.salePrice, rent_price: p.rentPrice, bedrooms: p.bedrooms, bathrooms: p.bathrooms, size_sqm: p.sizeSqm,
+        furnished: p.furnished, image: p.coverImage, exact: !!pl || (p.showExactLocation && !!point(p.lat, p.lng)),
+        point: pl ? [pl.centerLng, pl.centerLat] : p.showExactLocation ? point(p.lat, p.lng) : null,
+        plot: pl ? { polygon: pl.polygon, area_sqm: pl.areaSqm, land_use: pl.landUse } : null,
+      };
+    }),
   ];
   return { areas: mapAreas, listings };
 }
