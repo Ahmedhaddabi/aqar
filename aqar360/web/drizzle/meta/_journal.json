@@ -78,6 +78,13 @@
       "when": 1793517588746,
       "tag": "0010_release_a",
       "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1793532399561,
+      "tag": "0011_performance",
+      "breakpoints": true
     }
   ]
 }

@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useRef, useState } from "react";
 
-import { aiAsk, aiCustomerSummary, aiDescribeProperty, aiDraftReply, aiExtractRequest } from "@/app/admin/ai-actions";
+import { aiAsk, aiCustomerSummary, aiDescribeProperty, aiDraftReply, aiExtractRequest, aiReadId } from "@/app/admin/ai-actions";
 
 import type { AdminDict } from "./i18n";
 
@@ -150,6 +150,51 @@ export function CustomerSummary({ t, contactId }: { t: T; contactId: number }) {
       <button type="button" className="a-btn small" disabled={state === "busy"} onClick={run}>{state === "busy" ? t.working : `✨ ${t.summary}`}</button>
       {text && <p dir="auto">{text}</p>}
       {!["idle", "busy"].includes(state) && <span className="a-error">{state}</span>}
+    </div>
+  );
+}
+
+/** Phone photos are large: shrink to at most 1600 px as JPEG before upload (faster, cheaper, enough to read). */
+async function shrink(file: File): Promise<Blob> {
+  const bitmap = await createImageBitmap(file);
+  const scale = Math.min(1, 1600 / Math.max(bitmap.width, bitmap.height));
+  const canvas = document.createElement("canvas");
+  canvas.width = Math.round(bitmap.width * scale);
+  canvas.height = Math.round(bitmap.height * scale);
+  canvas.getContext("2d")!.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+  return new Promise((resolve) => canvas.toBlob((b) => resolve(b ?? file), "image/jpeg", 0.85));
+}
+
+/** "Read ID card / passport": takes or picks a photo, fills name, ID number, nationality and expiry in the form around it. */
+export function IdScan({ t }: { t: T }) {
+  const box = useRef<HTMLDivElement>(null);
+  const [state, setState] = useState<"idle" | "busy" | "done" | string>("idle");
+  const run = async (file: File | undefined) => {
+    if (!file) return;
+    setState("busy");
+    try {
+      const data = new FormData();
+      data.append("photo", new File([await shrink(file)], "id.jpg", { type: "image/jpeg" }));
+      const r = await aiReadId(data);
+      if (!r.ok) return setState(r.error === "failed" ? t.idFailed : errorText(t, r.error));
+      const form = box.current?.closest("form");
+      if (!form) return setState(t.failed);
+      setField(form, "name", r.data.fullName); setField(form, "idNumber", r.data.idNumber);
+      setField(form, "nationality", r.data.nationality); setField(form, "idExpiry", r.data.expiryDate);
+      setState("done");
+    } catch {
+      setState(t.idFailed);
+    }
+  };
+  return (
+    <div ref={box} className="a-inline a-idscan">
+      <label className="a-btn small">
+        {state === "busy" ? t.working : `🪪 ${t.readId}`}
+        <input type="file" accept="image/*" capture="environment" hidden disabled={state === "busy"} onChange={(e) => { void run(e.target.files?.[0]); e.target.value = ""; }} />
+      </label>
+      {state === "done" && <span className="a-ok-text">✓ {t.idRead}</span>}
+      {!["idle", "busy", "done"].includes(state) && <span className="a-error">{state}</span>}
+      <small className="a-muted">{t.idPrivacy}</small>
     </div>
   );
 }

@@ -460,3 +460,19 @@ body.a-busy { cursor: progress; }
 .sig-canvas { width: 100%; height: 180px; border: 2px dashed var(--line); border-radius: 10px; background: #fff; touch-action: none; cursor: crosshair; }
 .sig-image { max-width: 320px; max-height: 140px; display: block; border-bottom: 1px solid var(--line); }
 @media print { .agreement-sign, .agreement details, .a-btn, .a-ok, .a-alert { display: none !important; } .a-doc.agreement { border: 0; padding: 0; } }
+.a-idscan { grid-column: 1 / -1; }
+.a-idscan label.a-btn { cursor: pointer; }
+.a-goal { display: grid; gap: 3px; min-width: 120px; }
+.a-goal-bar { display: block; height: 8px; background: var(--line); border-radius: 999px; overflow: hidden; }
+.a-goal-bar span { display: block; height: 100%; background: var(--teal); }
+.a-goal-bar span.done { background: var(--ok); }
+.a-goal-form { padding: 8px 0; border-bottom: 1px solid var(--line); }
+.a-goal-form label { display: inline-flex; gap: 6px; align-items: center; font-size: 0.85rem; }
+.a-goal-form input { width: 90px; }
+.a-kit-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 12px; margin-top: 12px; }
+.a-kit-text { display: grid; gap: 6px; }
+.a-kit-text textarea { width: 100%; font: inherit; }
+.a-kit-card { width: min(100%, 360px); height: auto; aspect-ratio: 1080 / 1350; border-radius: 12px; margin-top: 12px; display: block; }
+.f-sync { position: sticky; top: 0; z-index: 10; margin: 0 0 10px; padding: 10px 14px; border-radius: 8px; }
+.f-note { display: flex; gap: 6px; align-items: center; margin-top: 8px; flex-wrap: wrap; }
+.f-note input { flex: 1; min-width: 160px; }

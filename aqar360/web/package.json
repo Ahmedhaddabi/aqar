@@ -14,6 +14,7 @@
     "test:viewings": "tsx --env-file=.env.local scripts/test-viewings.mts",
     "test:owners": "tsx --env-file=.env.local scripts/test-owners-assign.mts",
     "test:release-a": "tsx --env-file=.env.local scripts/test-release-a.mts",
+    "test:release-b": "tsx --env-file=.env.local scripts/test-release-b.mts",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "tsx --env-file=.env.local scripts/migrate.mts",
     "db:seed": "tsx --env-file=.env.local scripts/seed.mts",

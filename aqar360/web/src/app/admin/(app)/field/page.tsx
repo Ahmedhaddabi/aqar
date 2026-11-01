@@ -2,14 +2,13 @@ import { and, asc, eq, gte, inArray, lt, or } from "drizzle-orm";
 import Link from "next/link";
 
 import { visibleTo } from "@/admin/crm";
-import { CheckInButton, InstallHint } from "@/admin/FieldParts";
+import { CheckInButton, FieldSync, InstallHint, QuickNote, ResultButtons } from "@/admin/FieldParts";
 import { whatsappLink } from "@/admin/format";
 import { adminDict, adminLang } from "@/admin/i18n";
 import { db } from "@/db";
 import { activities, contacts, properties, requests, serviceJobs } from "@/db/schema";
 import { canOpen, requireApp } from "@/lib/auth";
 
-import { setViewingResult } from "../../deal-actions";
 
 const time = (d: Date | null) => (d ? new Intl.DateTimeFormat("en-GB", { timeStyle: "short", timeZone: "Asia/Muscat" }).format(d) : "");
 
@@ -35,6 +34,7 @@ export default async function FieldPage() {
   return (
     <div className="f-page">
       <header className="a-head"><h1>📱 {t.title}</h1><p className="a-muted">{t.intro}</p></header>
+      <FieldSync t={{ offline: t.offline, waiting: t.waiting, signin: t.signin, sent: t.sent }} />
       <InstallHint text={t.install} button={t.installButton} />
       <nav className="f-quick">
         <Link className="f-tile" href="/admin/requests/new">➕<span>{T.nav.newEntry}</span></Link>
@@ -61,16 +61,12 @@ export default async function FieldPage() {
                 {c.phone && <a className="a-btn f-btn" href={`tel:${c.phone}`}>📞 {T.crm.call}</a>}
                 {wa && <a className="a-btn f-btn wa" href={wa} target="_blank" rel="noreferrer">💬 WhatsApp</a>}
                 {map && <a className="a-btn f-btn" href={map} target="_blank" rel="noreferrer">🗺 {t.directions}</a>}
-                {a.type === "viewing" && <CheckInButton activityId={a.id} label={t.checkIn} done={t.checkedIn} />}
+                {a.type === "viewing" && <CheckInButton activityId={a.id} label={t.checkIn} done={t.checkedIn} saved={t.savedOffline} />}
               </div>
               {a.type === "viewing" && (
-                <div className="f-actions">
-                  {(["interested", "not_suitable", "wants_alternatives", "no_show"] as const).map((res) => (
-                    <form key={res} action={setViewingResult}><input type="hidden" name="id" value={a.id} /><input type="hidden" name="result" value={res} />
-                      <button className="a-btn small">{T.match.results[res]}</button></form>
-                  ))}
-                </div>
+                <div className="f-actions"><ResultButtons activityId={a.id} labels={T.match.results} saved={t.savedOffline} /></div>
               )}
+              <QuickNote activityId={a.id} placeholder={t.notePlaceholder} button={t.noteButton} saved={t.savedOffline} />
             </li>
           );
         })}

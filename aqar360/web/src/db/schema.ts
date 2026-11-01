@@ -29,6 +29,7 @@ export const users = pgTable("users", {
   mfaEnabled: boolean("mfa_enabled").notNull().default(false),
   lastLoginAt: timestamp("last_login_at", { withTimezone: true }),
   receivesRequests: boolean("receives_requests").notNull().default(false), // in the fair rotation for new website requests
+  commissionPct: doublePrecision("commission_pct").notNull().default(0), // share of our income on their deals (Performance page)
   createdAt: created(),
 });
 
@@ -755,3 +756,12 @@ export const agreements = pgTable("agreements", {
   createdAt: created(),
   updatedAt: updated(),
 }, (t) => [index("agreements_contact_idx").on(t.contactId)]);
+
+/** Monthly targets per person (Performance page); empty means no target for that measure. */
+export const targets = pgTable("targets", {
+  userId: integer("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  month: text("month").notNull(), // YYYY-MM (Muscat)
+  won: integer("won"),
+  viewings: integer("viewings"),
+  income: money("income"),
+}, (t) => [primaryKey({ columns: [t.userId, t.month] })]);

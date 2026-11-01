@@ -322,3 +322,53 @@ Use only the data; say "unknown" rather than guessing. Plain text, no markdown. 
   if (msg.stop_reason === "refusal") return null;
   return textOf(msg) || null;
 }
+
+// ---- 5. ID card / passport photo → customer fields (the photo is read once and never stored) ---------------------
+export const IdFields = z.object({
+  documentType: z.enum(["civil_id", "resident_card", "passport", "other"]), fullName: z.string().nullable(), idNumber: z.string().nullable(),
+  nationality: z.string().nullable(), dateOfBirth: z.string().nullable(), expiryDate: z.string().nullable(),
+});
+export type IdFields = z.infer<typeof IdFields>;
+
+export async function readIdDocument(imageBase64: string, mediaType: "image/jpeg" | "image/png" | "image/webp"): Promise<IdFields | null> {
+  const nullable = (schema: object) => ({ anyOf: [schema, { type: "null" }] });
+  const schema = { type: "object", additionalProperties: false, required: ["documentType", "fullName", "idNumber", "nationality", "dateOfBirth", "expiryDate"],
+    properties: { documentType: { type: "string", enum: ["civil_id", "resident_card", "passport", "other"] }, fullName: nullable({ type: "string" }),
+      idNumber: nullable({ type: "string" }), nationality: nullable({ type: "string" }), dateOfBirth: nullable({ type: "string" }), expiryDate: nullable({ type: "string" }) } };
+  const msg = await create({
+    max_tokens: 2000, output_config: { effort: "low", format: { type: "json_schema", schema } },
+    system: `You read identity documents for a real estate company in Oman so staff do not have to type them: Omani civil ID cards, resident cards and passports.
+Return only what is printed and readable. fullName in Latin letters as printed (for Arabic-only cards, the Arabic name). Dates as YYYY-MM-DD.
+nationality as an English country name. Use null for anything unreadable or missing; never guess digits. If the image is not an identity document, use documentType "other" and nulls.`,
+    messages: [{ role: "user", content: [{ type: "image", source: { type: "base64", media_type: mediaType, data: imageBase64 } }, { type: "text", text: "Read this document." }] }],
+  });
+  if (msg.stop_reason === "refusal") return null;
+  const parsed = IdFields.safeParse((() => { try { return JSON.parse(textOf(msg)); } catch { return null; } })());
+  return parsed.success ? parsed.data : null;
+}
+
+// ---- 6. Marketing kit: social captions from the listing's facts (staff edit before posting) -----------------------
+export type Social = { instagramAr: string; instagramEn: string; whatsappAr: string; whatsappEn: string; hashtags: string[] };
+
+export async function writeSocial(facts: Record<string, string | number | null>): Promise<Social | null> {
+  const schema = { type: "object", additionalProperties: false, required: ["instagramAr", "instagramEn", "whatsappAr", "whatsappEn", "hashtags"],
+    properties: { instagramAr: { type: "string" }, instagramEn: { type: "string" }, whatsappAr: { type: "string" }, whatsappEn: { type: "string" },
+      hashtags: { type: "array", items: { type: "string" } } } };
+  const msg = await create({
+    max_tokens: 3000, output_config: { effort: "low", format: { type: "json_schema", schema } },
+    system: `You write social media posts for Aqar 360, a real estate marketing company in Oman, from a listing's facts.
+instagramAr / instagramEn: an Instagram caption (60-110 words) with a short hook line, the key facts as 3-5 short lines with one emoji each, and a call to action with the link.
+whatsappAr / whatsappEn: a WhatsApp status / broadcast text (25-50 words) with the price and the link.
+hashtags: 8-12 relevant hashtags without spaces (Arabic and English, e.g. Oman, Muscat, the area, the property type, rent or sale).
+Use only the facts given; never invent features, views, finishes, distances or discounts. Prices in OMR as given. Arabic in clear Modern Standard Arabic.
+Never mention the owner or their phone.`,
+    messages: [{ role: "user", content: `Facts (JSON): ${JSON.stringify(facts)}` }],
+  });
+  if (msg.stop_reason === "refusal") return null;
+  try {
+    const data = JSON.parse(textOf(msg)) as Social;
+    return typeof data.instagramEn === "string" && Array.isArray(data.hashtags) ? data : null;
+  } catch {
+    return null;
+  }
+}

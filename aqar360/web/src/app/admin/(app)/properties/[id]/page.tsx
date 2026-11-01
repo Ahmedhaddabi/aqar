@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { DescribeButton } from "@/admin/AiParts";
+import { MarketingKit } from "@/admin/MarketingKit";
 import { Documents } from "@/admin/Documents";
 import { siteDict } from "@/admin/format";
 import { adminDict, adminLang } from "@/admin/i18n";
@@ -12,6 +13,7 @@ import { PROPERTY_STATUS } from "@/db/schema";
 import { optionLabel } from "@/i18n/dictionaries";
 import { aiReady } from "@/lib/ai";
 import { requireApp } from "@/lib/auth";
+import { listingCard } from "@/lib/marketing";
 import { htmlToText } from "@/lib/text";
 
 const KINDS = ["Apartment", "Villa", "Land", "Building", "Shop", "Office", "Warehouse", "Showroom", "Commercial", "Other"];
@@ -31,6 +33,7 @@ export default async function PropertyEditor({ params, searchParams }: {
   const data = isNew ? null : await getPropertyForEdit(Number(rawId));
   if (!isNew && !data) notFound();
   const p = data?.property;
+  const [ai, card] = await Promise.all([aiReady(), p ? listingCard(p.id) : Promise.resolve(null)]);
   const areas = await areaChoices(lang);
   return (
     <>
@@ -77,7 +80,7 @@ export default async function PropertyEditor({ params, searchParams }: {
           <Toggle name="showExactLocation" label={t.showExact} help={t.showExactHelp} checked={p?.showExactLocation ?? false} />
         </Section>
         <Section title={t.sections.texts}>
-          {(await aiReady()) && <div className="a-grid-fields wide"><DescribeButton t={T.ai} /></div>}
+          {ai && <div className="a-grid-fields wide"><DescribeButton t={T.ai} /></div>}
           <Field label={t.descriptionAr} wide><textarea name="descriptionAr" rows={4} defaultValue={htmlToText(p?.descriptionAr ?? "")} dir="rtl" /></Field>
           <Field label={t.descriptionEn} wide><textarea name="descriptionEn" rows={4} defaultValue={htmlToText(p?.descriptionEn ?? "")} dir="ltr" /></Field>
         </Section>
@@ -92,6 +95,7 @@ export default async function PropertyEditor({ params, searchParams }: {
       </ListingForm>
       {p && data && <Photos ownerType="property" ownerId={p.id} photos={data.photos} cover={p.coverImage} t={t} photoError={photo} />}
       {p && <Documents ownerType="property" ownerId={p.id} lang={lang} canShare />}
+      {p && card && <MarketingKit t={T.kit} card={card} ai={ai} />}
     </>
   );
 }

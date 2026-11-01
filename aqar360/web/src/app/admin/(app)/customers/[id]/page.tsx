@@ -3,7 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { AgreementsPanel } from "@/admin/AgreementsPanel";
-import { CustomerSummary } from "@/admin/AiParts";
+import { CustomerSummary, IdScan } from "@/admin/AiParts";
 import { getCustomer } from "@/admin/crm";
 import { dateOnly, dateTime, whatsappLink } from "@/admin/format";
 import { adminDict, adminLang, fill } from "@/admin/i18n";
@@ -33,6 +33,7 @@ export default async function CustomerPage({ params, searchParams }: { params: P
     erp ? db.select().from(invoices).where(eq(invoices.contactId, c.id)).orderBy(desc(invoices.createdAt)).limit(30) : Promise.resolve([]),
     db.select().from(serviceJobs).where(eq(serviceJobs.contactId, c.id)).orderBy(desc(serviceJobs.createdAt)).limit(30)]);
   const T2 = adminDict(lang);
+  const aiOn = await aiReady();
   const portal = portalLink(c.id);
   const wa = whatsappLink(c.phone);
   return (
@@ -41,7 +42,7 @@ export default async function CustomerPage({ params, searchParams }: { params: P
       <header className="a-head">
         <h1>{c.name}</h1>
         <p className="a-muted">{t.since} {dateOnly(c.createdAt, lang)}</p>
-        {(await aiReady()) && <CustomerSummary t={T2.ai} contactId={c.id} />}
+        {aiOn && <CustomerSummary t={T2.ai} contactId={c.id} />}
         <div className="a-contact-buttons">
           {c.phone && <a className="a-btn primary" href={`tel:${c.phone}`}>📞 {t.call}</a>}
           {wa && <a className="a-btn wa" href={wa} target="_blank" rel="noreferrer">💬 {t.whatsapp}</a>}
@@ -105,6 +106,10 @@ export default async function CustomerPage({ params, searchParams }: { params: P
               <label className="a-field"><span>{t.name}</span><input name="name" defaultValue={c.name} required /></label>
               <label className="a-field"><span>{t.phone}</span><input name="phone" defaultValue={c.phone ?? ""} dir="ltr" /></label>
               <label className="a-field"><span>{t.email}</span><input name="email" type="email" defaultValue={c.email ?? ""} dir="ltr" /></label>
+              <label className="a-field"><span>{T2.ai.idNumber}</span><input name="idNumber" dir="ltr" maxLength={40} defaultValue={c.idNumber ?? ""} /></label>
+              <label className="a-field"><span>{T2.ai.nationality}</span><input name="nationality" dir="auto" maxLength={60} defaultValue={c.nationality ?? ""} /></label>
+              <label className="a-field"><span>{T2.ai.idExpiry}</span><input name="idExpiry" type="date" dir="ltr" defaultValue={c.idExpiry ?? ""} /></label>
+              {aiOn && <IdScan t={T2.ai} />}
               <label className="a-field"><span>{t.internalNotes}</span><textarea name="notes" rows={3} defaultValue={c.notes} /></label>
               <div><button className="a-btn primary">{t.save}</button></div>
             </form>

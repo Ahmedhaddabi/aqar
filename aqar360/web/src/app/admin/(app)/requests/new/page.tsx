@@ -1,7 +1,7 @@
 import { asc, eq } from "drizzle-orm";
 import Link from "next/link";
 
-import { FillFromMessage } from "@/admin/AiParts";
+import { FillFromMessage, IdScan } from "@/admin/AiParts";
 import { siteDict } from "@/admin/format";
 import { adminDict, adminLang } from "@/admin/i18n";
 import { db } from "@/db";
@@ -24,12 +24,13 @@ export default async function NewEntryPage({ searchParams }: { searchParams: Pro
   const q = await searchParams;
   const areaRows = await db.select().from(areas).where(eq(areas.active, true)).orderBy(asc(areas.nameEn));
   const opts = FORM_OPTIONS["Aqar Search Request"];
+  const ai = await aiReady();
   return (
     <>
       <p><Link href="/admin/requests">← {T.crm.inbox}</Link></p>
       <header className="a-head"><h1>{t.title}</h1><p className="a-muted">{t.intro}</p></header>
       {q.error && <p className="a-alert">{t.invalid}</p>}
-      {(await aiReady()) && <FillFromMessage t={T.ai} />}
+      {ai && <FillFromMessage t={T.ai} />}
       <form action={createEntry} className="a-form a-listing-form">
         <section className="a-panel">
           <h2>{t.customer}</h2>
@@ -38,6 +39,10 @@ export default async function NewEntryPage({ searchParams }: { searchParams: Pro
             <label className="a-field"><span>{t.name}</span><input name="name" required minLength={2} dir="auto" /></label>
             <label className="a-field"><span>{t.email}</span><input name="email" type="email" dir="ltr" /></label>
             <label className="a-field"><span>{t.language}</span><select name="language" defaultValue="ar"><option value="ar">العربية</option><option value="en">English</option></select></label>
+            <label className="a-field"><span>{T.ai.idNumber}</span><input name="idNumber" dir="ltr" maxLength={40} /></label>
+            <label className="a-field"><span>{T.ai.nationality}</span><input name="nationality" dir="auto" maxLength={60} /></label>
+            <label className="a-field"><span>{T.ai.idExpiry}</span><input name="idExpiry" type="date" dir="ltr" /></label>
+            {ai && <div className="wide"><IdScan t={T.ai} /></div>}
             <label className="a-field"><span>{t.source}</span>
               <select name="source" defaultValue="Phone call">{Object.entries(t.sources).map(([k, v]) => <option key={k} value={k}>{v}</option>)}</select></label>
           </div>

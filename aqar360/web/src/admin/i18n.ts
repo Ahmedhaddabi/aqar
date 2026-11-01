@@ -9,7 +9,7 @@ type IntegText = { name: string; icon: string; link: string; purpose: string; st
 
 const en = {
   appName: "Aqar 360 Admin",
-  nav: { today: "Today", requests: "Requests", customers: "Customers", listings: "Properties & projects", invoices: "Invoices", expenses: "Expenses", finance: "Finance", hr: "Team (HR)", hiring: "Hiring & suppliers", site: "Website content", messages: "Messages", reports: "Reports", settings: "Settings", crm: "CRM", erp: "ERP", hrApp: "HR", overview: "Overview", apps: "Apps", setup: "Setup", payMethods: "Payment methods", jobs: "Service jobs", people: "People", leave: "Leave", payroll: "Payroll", renewals: "Renewals", account: "My account", claims: "My expense claims", notifications: "Notifications", approvals: "Approvals", recurring: "Recurring expenses", kb: "Knowledge base", search: "Search everything…", newEntry: "New customer / request", whatsapp: "WhatsApp", market: "Market intelligence", assistant: "AI assistant", field: "Field (mobile)", users: "Staff", integrations: "Integrations", calendar: "Calendar", reviews: "Reviews & referrals", agreements: "Agreements", website: "Open website", signOut: "Sign out", language: "العربية" },
+  nav: { today: "Today", requests: "Requests", customers: "Customers", listings: "Properties & projects", invoices: "Invoices", expenses: "Expenses", finance: "Finance", hr: "Team (HR)", hiring: "Hiring & suppliers", site: "Website content", messages: "Messages", reports: "Reports", settings: "Settings", crm: "CRM", erp: "ERP", hrApp: "HR", overview: "Overview", apps: "Apps", setup: "Setup", payMethods: "Payment methods", jobs: "Service jobs", people: "People", leave: "Leave", payroll: "Payroll", renewals: "Renewals", account: "My account", claims: "My expense claims", notifications: "Notifications", approvals: "Approvals", recurring: "Recurring expenses", kb: "Knowledge base", search: "Search everything…", newEntry: "New customer / request", whatsapp: "WhatsApp", market: "Market intelligence", assistant: "AI assistant", field: "Field (mobile)", users: "Staff", integrations: "Integrations", calendar: "Calendar", reviews: "Reviews & referrals", agreements: "Agreements", performance: "Performance", website: "Open website", signOut: "Sign out", language: "العربية" },
   roles: { admin: "Admin", manager: "Manager", agent: "Agent" } as Record<string, string>,
   roleHelp: {
     admin: "Everything, including staff accounts and settings",
@@ -395,6 +395,9 @@ const en = {
     install: "Use this as an app: in Chrome tap ⋮ → Add to Home screen (iPhone: Safari → Share → Add to Home Screen).", installButton: "Install",
     photos: "Property photos", receipt: "Expense receipt", today: "Today", nothing: "Nothing scheduled for today.", directions: "Directions",
     checkIn: "I have arrived", checkedIn: "Arrival recorded", uploadPhotos: "Photos / files",
+    offline: "No signal: today's list is the last one loaded; what you record is kept on the phone.", waiting: "{n} waiting to be sent.",
+    signin: "Please sign in again to send what is waiting (it stays on the phone).", sent: "Sent.", savedOffline: "saved",
+    notePlaceholder: "Quick note about this visit…", noteButton: "Save note",
   },
   wa: {
     title: "WhatsApp", intro: "Customer conversations from your WhatsApp Business number. Replies go from the same number.",
@@ -415,6 +418,22 @@ const en = {
     fill: "Fill the form", filled: "Filled. Please check every field before saving.", describe: "Write description (Arabic + English)", described: "Draft written. Edit it before saving.",
     privacy: "Questions and the records needed to answer them are sent to the AI provider (Anthropic) for processing; nothing is used to train models.",
     draft: "Draft reply", drafted: "Draft ready: check it, then press Send.", summary: "Summary",
+    readId: "Read ID card / passport", idRead: "Filled from the document. Please check every field.", idFailed: "Could not read the document. Try a sharper photo or type the details.",
+    idPrivacy: "The photo is read once and not kept. To keep a copy, upload it to the customer's documents.",
+    idNumber: "ID / passport number", nationality: "Nationality", idExpiry: "ID expiry date",
+  },
+  kit: {
+    title: "Marketing kit", intro: "Ready-to-post texts and a shareable image with the photo, price and a QR code to the listing.",
+    notPublic: "This property is not on the website yet: the QR code will only work once it is shown and checked.",
+    write: "Write posts (Instagram + WhatsApp)", working: "Working…", makeCard: "Make listing card", download: "Download image", share: "Share",
+    copy: "Copy", copied: "Copied", hashtags: "Hashtags", cardAlt: "Listing card", cardFailed: "Could not make the card. Try again.",
+    aiOff: "AI is not connected (Integrations).", limit: "Too many AI requests this hour.", failed: "The AI could not write this. Try again.",
+  },
+  perf: {
+    title: "Performance", intro: "Deals won, viewings done and income on each person's deals this month, with targets and commission.",
+    person: "Person", won: "Deals won", viewings: "Viewings", income: "Income", commission: "Commission", pct: "Commission %", none: "No staff yet.",
+    how: "Income = payments received this month on invoices linked to the person's requests, our share only (client media money excluded). Commission = income × the person's %.",
+    setTitle: "Targets and commission", setIntro: "Targets are for the month shown above; leave a box empty for no target. The commission % applies from now on.", save: "Save",
   },
   agr: {
     title: "Agreements", intro: "Agreements customers sign online: marketing agreements with owners, reservations and more. Start a new one from a customer or request page.",
@@ -503,7 +522,7 @@ const en = {
 
 const ar: typeof en = {
   appName: "إدارة عقار 360",
-  nav: { today: "اليوم", requests: "الطلبات", customers: "العملاء", listings: "العقارات والمشاريع", invoices: "الفواتير", expenses: "المصروفات", finance: "المالية", hr: "الفريق", hiring: "التوظيف والموردون", site: "محتوى الموقع", messages: "الرسائل", reports: "التقارير", settings: "الإعدادات", crm: "CRM", erp: "ERP", hrApp: "HR", overview: "نظرة عامة", apps: "التطبيقات", setup: "الإعداد", payMethods: "طرق الدفع", jobs: "أعمال الخدمات", people: "الموظفون", leave: "الإجازات", payroll: "الرواتب", renewals: "التجديدات", account: "حسابي", claims: "مطالبات مصروفاتي", notifications: "الإشعارات", approvals: "الموافقات", recurring: "المصروفات المتكررة", kb: "دليل العمل", search: "ابحث في كل شيء…", newEntry: "عميل / طلب جديد", whatsapp: "واتساب", market: "ذكاء السوق", assistant: "المساعد الذكي", field: "الميدان (الجوال)", users: "حسابات الموظفين", integrations: "الربط بالخدمات", calendar: "التقويم", reviews: "التقييمات والإحالات", agreements: "الاتفاقيات", website: "فتح الموقع", signOut: "تسجيل الخروج", language: "English" },
+  nav: { today: "اليوم", requests: "الطلبات", customers: "العملاء", listings: "العقارات والمشاريع", invoices: "الفواتير", expenses: "المصروفات", finance: "المالية", hr: "الفريق", hiring: "التوظيف والموردون", site: "محتوى الموقع", messages: "الرسائل", reports: "التقارير", settings: "الإعدادات", crm: "CRM", erp: "ERP", hrApp: "HR", overview: "نظرة عامة", apps: "التطبيقات", setup: "الإعداد", payMethods: "طرق الدفع", jobs: "أعمال الخدمات", people: "الموظفون", leave: "الإجازات", payroll: "الرواتب", renewals: "التجديدات", account: "حسابي", claims: "مطالبات مصروفاتي", notifications: "الإشعارات", approvals: "الموافقات", recurring: "المصروفات المتكررة", kb: "دليل العمل", search: "ابحث في كل شيء…", newEntry: "عميل / طلب جديد", whatsapp: "واتساب", market: "ذكاء السوق", assistant: "المساعد الذكي", field: "الميدان (الجوال)", users: "حسابات الموظفين", integrations: "الربط بالخدمات", calendar: "التقويم", reviews: "التقييمات والإحالات", agreements: "الاتفاقيات", performance: "الأداء", website: "فتح الموقع", signOut: "تسجيل الخروج", language: "English" },
   roles: { admin: "مدير النظام", manager: "مدير", agent: "موظف مبيعات" },
   roleHelp: {
     admin: "كل شيء، بما في ذلك حسابات الموظفين والإعدادات",
@@ -888,6 +907,9 @@ const ar: typeof en = {
     install: "استخدمه كتطبيق: في Chrome اضغط ⋮ ← إضافة إلى الشاشة الرئيسية (آيفون: Safari ← مشاركة ← إضافة إلى الشاشة الرئيسية).", installButton: "تثبيت",
     photos: "صور العقار", receipt: "إيصال مصروف", today: "اليوم", nothing: "لا يوجد شيء مجدول لليوم.", directions: "الاتجاهات",
     checkIn: "وصلت", checkedIn: "تم تسجيل الوصول", uploadPhotos: "الصور / الملفات",
+    offline: "لا توجد تغطية: قائمة اليوم هي آخر نسخة محمّلة، وما تسجله يُحفظ في الهاتف.", waiting: "{n} بانتظار الإرسال.",
+    signin: "يرجى تسجيل الدخول مرة أخرى لإرسال ما ينتظر (يبقى محفوظا في الهاتف).", sent: "تم الإرسال.", savedOffline: "تم الحفظ",
+    notePlaceholder: "ملاحظة سريعة عن الزيارة…", noteButton: "حفظ الملاحظة",
   },
   wa: {
     title: "واتساب", intro: "محادثات العملاء من رقم واتساب للأعمال. الردود تخرج من نفس الرقم.",
@@ -908,6 +930,22 @@ const ar: typeof en = {
     fill: "عبّئ النموذج", filled: "تمت التعبئة. راجع كل حقل قبل الحفظ.", describe: "اكتب الوصف (عربي + إنجليزي)", described: "كُتبت مسودة. عدّلها قبل الحفظ.",
     privacy: "الأسئلة والسجلات اللازمة للإجابة تُرسل لمزود الذكاء الاصطناعي (Anthropic) للمعالجة؛ ولا تُستخدم لتدريب النماذج.",
     draft: "اقترح ردا", drafted: "الرد جاهز: راجعه ثم اضغط إرسال.", summary: "ملخص",
+    readId: "قراءة البطاقة / الجواز", idRead: "تمت التعبئة من الوثيقة. يرجى مراجعة كل الحقول.", idFailed: "تعذرت قراءة الوثيقة. جرّب صورة أوضح أو اكتب البيانات.",
+    idPrivacy: "تُقرأ الصورة مرة واحدة ولا تُحفظ. لحفظ نسخة ارفعها في مستندات العميل.",
+    idNumber: "رقم البطاقة / الجواز", nationality: "الجنسية", idExpiry: "تاريخ انتهاء البطاقة",
+  },
+  kit: {
+    title: "حزمة التسويق", intro: "نصوص جاهزة للنشر وصورة للمشاركة فيها الصورة والسعر ورمز QR يفتح العقار.",
+    notPublic: "هذا العقار غير معروض في الموقع بعد: رمز QR يعمل فقط بعد إظهاره وتأكيده.",
+    write: "اكتب منشورات (إنستغرام + واتساب)", working: "جارٍ العمل…", makeCard: "إنشاء بطاقة العقار", download: "تنزيل الصورة", share: "مشاركة",
+    copy: "نسخ", copied: "تم النسخ", hashtags: "الوسوم", cardAlt: "بطاقة العقار", cardFailed: "تعذر إنشاء البطاقة. حاول مرة أخرى.",
+    aiOff: "الذكاء الاصطناعي غير مربوط (صفحة الربط).", limit: "طلبات كثيرة للذكاء الاصطناعي هذه الساعة.", failed: "تعذرت الكتابة. حاول مرة أخرى.",
+  },
+  perf: {
+    title: "الأداء", intro: "الصفقات الناجحة والمعاينات والدخل من صفقات كل شخص هذا الشهر، مع الأهداف والعمولة.",
+    person: "الموظف", won: "صفقات ناجحة", viewings: "معاينات", income: "الدخل", commission: "العمولة", pct: "نسبة العمولة %", none: "لا يوجد موظفون بعد.",
+    how: "الدخل = الدفعات المستلمة هذا الشهر على فواتير مرتبطة بطلبات الموظف، حصتنا فقط (دون أموال إعلانات العميل). العمولة = الدخل × نسبة الموظف.",
+    setTitle: "الأهداف والعمولة", setIntro: "الأهداف للشهر المعروض أعلاه؛ اترك الخانة فارغة إن لم يوجد هدف. نسبة العمولة تُطبق من الآن.", save: "حفظ",
   },
   agr: {
     title: "الاتفاقيات", intro: "اتفاقيات يوقّعها العملاء إلكترونيا: اتفاقيات التسويق مع الملاك والحجوزات وغيرها. ابدأ اتفاقية جديدة من صفحة العميل أو الطلب.",

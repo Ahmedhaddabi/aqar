@@ -24,15 +24,19 @@ export async function createEntry(form: FormData) {
     language: z.enum(["ar", "en"]).default("ar"), source: z.string().trim().max(40).default("Phone call"),
     kind: z.enum(["none", ...REQUEST_KINDS]).default("none"), subtype: optText(40), propertyType: optText(40), budgetMin: optNum, budgetMax: optNum,
     bedrooms: z.coerce.number().int().min(0).max(20).optional().or(z.literal("").transform(() => undefined)), timing: optText(40),
-    notes: z.string().trim().max(2000).default(""),
+    notes: z.string().trim().max(2000).default(""), idNumber: optText(40), nationality: optText(60),
+    idExpiry: optText(10).pipe(z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional()),
   }).safeParse(Object.fromEntries([...form.entries()].filter(([k]) => !["areas", "consent", "assignMe"].includes(k))));
   const phone = parsed.success ? normalizePhone(parsed.data.phone) : null;
   if (!parsed.success || !phone) redirect("/admin/requests/new?error=1");
   const v = parsed.data;
 
   const [existing] = await db.select().from(contacts).where(eq(contacts.phone, phone)).limit(1);
+  const idDetails = { ...(v.idNumber ? { idNumber: v.idNumber } : {}), ...(v.nationality ? { nationality: v.nationality } : {}),
+    ...(v.idExpiry ? { idExpiry: v.idExpiry } : {}) };
   const contactId = existing?.id ?? (await db.insert(contacts).values({ name: v.name, phone, email: v.email?.toLowerCase() ?? null, language: v.language,
-    source: v.source }).returning({ id: contacts.id }))[0].id;
+    source: v.source, ...idDetails }).returning({ id: contacts.id }))[0].id;
+  if (existing && Object.keys(idDetails).length) await db.update(contacts).set(idDetails).where(eq(contacts.id, existing.id));
   if (existing && !existing.email && v.email) await db.update(contacts).set({ email: v.email.toLowerCase() }).where(eq(contacts.id, existing.id));
   await audit(existing ? "customer_matched_by_staff" : "customer_created_by_staff", "contact", contactId, { source: v.source }, user.id);
   if (v.kind === "none") redirect(`/admin/customers/${contactId}${existing ? "?existing=1" : ""}`);

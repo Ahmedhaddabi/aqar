@@ -5,8 +5,10 @@ import { eq } from "drizzle-orm";
 import { adminLang } from "@/admin/i18n";
 import { db } from "@/db";
 import { areas } from "@/db/schema";
-import { aiReady, askAssistant, type ChatTurn, draftReply, extractRequest, type Extracted, summarizeCustomer, underLimit, writeListing } from "@/lib/ai";
+import { aiReady, askAssistant, type ChatTurn, draftReply, extractRequest, type Extracted, type IdFields, readIdDocument, type Social, summarizeCustomer,
+  underLimit, writeListing, writeSocial } from "@/lib/ai";
 import { audit, requireApp } from "@/lib/auth";
+import { listingFacts } from "@/lib/marketing";
 
 type Result<T> = { ok: true; data: T } | { ok: false; error: "off" | "limit" | "failed" };
 
@@ -88,6 +90,38 @@ export async function aiCustomerSummary(contactId: number): Promise<Result<strin
     return data ? { ok: true, data } : { ok: false, error: "failed" };
   } catch (error) {
     console.error("ai summary failed:", (error as Error).message);
+    return { ok: false, error: "failed" };
+  }
+}
+
+const ID_TYPES = ["image/jpeg", "image/png", "image/webp"] as const;
+
+/** ID card or passport photo → name, number, nationality, expiry for the form (staff check them; the photo is not kept). */
+export async function aiReadId(form: FormData): Promise<Result<IdFields>> {
+  const g = await guard("crm", "ai_read_id");
+  if (g.error) return { ok: false, error: g.error };
+  const file = form.get("photo");
+  if (!(file instanceof File) || file.size > 6_000_000 || !ID_TYPES.includes(file.type as (typeof ID_TYPES)[number])) return { ok: false, error: "failed" };
+  try {
+    const data = await readIdDocument(Buffer.from(await file.arrayBuffer()).toString("base64"), file.type as (typeof ID_TYPES)[number]);
+    return data && data.documentType !== "other" ? { ok: true, data } : { ok: false, error: "failed" };
+  } catch (error) {
+    console.error("ai read id failed:", (error as Error).message);
+    return { ok: false, error: "failed" };
+  }
+}
+
+/** Marketing kit: Instagram and WhatsApp texts for one property, from its saved details. */
+export async function aiSocial(propertyId: number): Promise<Result<Social>> {
+  const g = await guard("crm", "ai_social");
+  if (g.error) return { ok: false, error: g.error };
+  const facts = await listingFacts(Number(propertyId));
+  if (!facts) return { ok: false, error: "failed" };
+  try {
+    const data = await writeSocial(facts);
+    return data ? { ok: true, data } : { ok: false, error: "failed" };
+  } catch (error) {
+    console.error("ai social failed:", (error as Error).message);
     return { ok: false, error: "failed" };
   }
 }
