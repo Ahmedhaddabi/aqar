@@ -15,7 +15,7 @@ async function page(path) {
 
 const PAGES = ["", "/find-me-a-property", "/market-my-property", "/market-my-project", "/content-services", "/consulting",
   "/areas", "/areas/al-khoudh", "/insights", "/insights/renting-apartment-muscat", "/careers", "/partners-suppliers",
-  "/about", "/contact", "/legal/privacy", "/map", "/projects"];
+  "/about", "/contact", "/legal/privacy", "/map", "/projects", "/calculators"];
 
 for (const lang of ["ar", "en"]) {
   for (const path of PAGES) {

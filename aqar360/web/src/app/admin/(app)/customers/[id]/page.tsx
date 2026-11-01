@@ -2,6 +2,7 @@ import { desc, eq } from "drizzle-orm";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import { AgreementsPanel } from "@/admin/AgreementsPanel";
 import { CustomerSummary } from "@/admin/AiParts";
 import { getCustomer } from "@/admin/crm";
 import { dateOnly, dateTime, whatsappLink } from "@/admin/format";
@@ -88,6 +89,7 @@ export default async function CustomerPage({ params, searchParams }: { params: P
           </section>
           <Timeline rows={timeline} t={t} lang={lang} contactId={c.id} showRequest />
           <Documents ownerType="contact" ownerId={c.id} lang={lang} canShare={user.role !== "agent"} />
+          <AgreementsPanel t={T2.agr} lang={lang} contactId={c.id} />
         </div>
         <aside>
           <section className="a-panel">

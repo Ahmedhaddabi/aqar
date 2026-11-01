@@ -14,6 +14,7 @@ import {
 import type { Locale } from "./config";
 import type { FormConfig } from "./content";
 import { autoAssign } from "./assign";
+import { creditReferral } from "./reviews";
 import { notify } from "./notify";
 import { matchRequest } from "./matching";
 import { afterRequestReceived } from "./messages";
@@ -183,7 +184,8 @@ export const customerStatus = (status: RequestStatus, lang: "ar" | "en") => CUST
 const KIND: Record<FormKind, RequestKind> = { search: "search", property: "listing", consultation: "consulting" };
 const RATE_LIMIT = 10; // submissions per IP per hour
 
-export async function submitForm(kind: FormKind, payload: unknown, ip?: string): Promise<{ ok: true; data: IntakeResult } | { ok: false; error: IntakeError }> {
+/** `viaChat`: the website chat assistant (its own limits replace the captcha, which a chat cannot show). */
+export async function submitForm(kind: FormKind, payload: unknown, ip?: string, opts: { viaChat?: boolean } = {}): Promise<{ ok: true; data: IntakeResult } | { ok: false; error: IntakeError }> {
   const lang: "ar" | "en" = (payload as { language?: string })?.language === "en" ? "en" : "ar";
   const msg = MESSAGES[lang];
   const parsed = SCHEMAS[kind].safeParse(payload);
@@ -213,7 +215,7 @@ export async function submitForm(kind: FormKind, payload: unknown, ip?: string):
       gt(auditLog.at, new Date(Date.now() - 3_600_000)), sql`${auditLog.data}->>'ip' = ${ipHash}`));
     if (recent.n >= RATE_LIMIT) return { ok: false, error: { status: 429, code: "rate_limited", message: "Too many requests." } };
   }
-  if (!(await verifyCaptcha(data.captcha_token, ip))) {
+  if (!opts.viaChat && !(await verifyCaptcha(data.captcha_token, ip))) {
     return { ok: false, error: { status: 400, code: "captcha_failed", message: msg.invalid } };
   }
 
@@ -257,6 +259,8 @@ export async function submitForm(kind: FormKind, payload: unknown, ip?: string):
     data: { kind, ...(ipHash ? { ip: ipHash } : {}) } });
   if (request.kind === "search") await matchRequest(request.id).catch((e) => console.error("matching failed:", e.message));
   await autoAssign(request.id).catch((e) => console.error("auto-assign failed:", e.message));
+  const referrer = await creditReferral(request.id, attribution).catch(() => null);
+  if (referrer) await db.insert(activities).values({ requestId: request.id, contactId: contact.id, type: "system", body: `referred_by:${referrer.id}` });
   await notify({ app: "crm", roles: ["admin", "manager"] }, { kind: request.kind === "listing" ? "opportunity_new" : "request_new",
     title: `${request.number} · ${data.full_name}`, href: `/admin/requests/${request.id}`, key: `request_new:${request.id}` });
   await afterRequestReceived(request.id, token).catch((e) => console.error("confirmation failed:", e.message));

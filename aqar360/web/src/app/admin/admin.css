@@ -446,3 +446,17 @@ body.a-busy { cursor: progress; }
 .p-market { background: var(--teal-soft); border-radius: 10px; padding: 10px 14px; }
 .p-market p { margin: 4px 0; }
 .a-report { white-space: pre-wrap; font-family: inherit; line-height: 1.7; background: var(--bg); padding: 14px; border-radius: 10px; margin: 0 0 12px; }
+.p-rating { border: 0; padding: 0; margin: 0; display: grid; gap: 6px; }
+.p-rating legend { font-weight: 700; margin-bottom: 6px; }
+.p-rating label { display: flex; gap: 8px; align-items: center; font-size: 1.3rem; color: #e3a33b; cursor: pointer; }
+.review-stars-admin { color: #e3a33b; letter-spacing: 1px; }
+/* Agreements */
+.agreement-body p { white-space: pre-wrap; line-height: 1.8; margin: 0 0 14px; }
+.agreement-body p[dir="rtl"], .agreement-body p:dir(rtl) { text-align: right; }
+.agreement-signed { border-top: 2px solid var(--teal); padding-top: 14px; margin-top: 10px; }
+.agreement-hash { font-size: 0.75rem; word-break: break-all; }
+.agreement-sign { display: grid; gap: 12px; }
+.sig { display: grid; gap: 6px; }
+.sig-canvas { width: 100%; height: 180px; border: 2px dashed var(--line); border-radius: 10px; background: #fff; touch-action: none; cursor: crosshair; }
+.sig-image { max-width: 320px; max-height: 140px; display: block; border-bottom: 1px solid var(--line); }
+@media print { .agreement-sign, .agreement details, .a-btn, .a-ok, .a-alert { display: none !important; } .a-doc.agreement { border: 0; padding: 0; } }

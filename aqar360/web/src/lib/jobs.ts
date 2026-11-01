@@ -8,6 +8,7 @@ import { contacts, invoices, jobEvents, type JobStatus, serviceJobs, services } 
 import { jobLink } from "./doc-link";
 import { sendMessage } from "./messages";
 import { notify } from "./notify";
+import { askForReview } from "./reviews";
 
 export const OPEN_JOB = ["new", "scheduled", "in_progress", "waiting_client", "review"] as const;
 const SCHEDULE_CONFIRM_HOURS = 4; // "confirm the shoot date within 4 working hours"
@@ -52,6 +53,7 @@ export async function setJobStatus(jobId: number, status: JobStatus, userId: num
   const [updated] = await db.update(serviceJobs).set({ status, dueAt, pausedAt, updatedAt: now,
     completedAt: status === "completed" ? now : null }).where(eq(serviceJobs.id, jobId)).returning();
   await addEvent(jobId, "status", status, userId);
+  if (status === "completed") await askForReview(job.contactId, `job:${jobId}`, job.requestId);
   return updated;
 }
 

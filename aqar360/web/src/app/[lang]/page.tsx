@@ -5,6 +5,7 @@ import { JsonLd } from "@/components/JsonLd";
 import { getDictionary, optionLabel } from "@/i18n/dictionaries";
 import { companyName } from "@/lib/config";
 import { getAreas, getPages, getServices } from "@/lib/content";
+import { publicReviews } from "@/lib/reviews";
 import { type LangParams, langOf } from "@/lib/params";
 import { organizationLd, pageMetadata } from "@/lib/seo";
 
@@ -17,7 +18,8 @@ export default async function HomePage({ params }: LangParams) {
   const lang = await langOf(params);
   const dict = getDictionary(lang);
   const h = dict.home;
-  const [areas, services, pages] = await Promise.all([getAreas(lang), getServices(lang), getPages(lang)]);
+  const [areas, services, pages, reviews] = await Promise.all([getAreas(lang), getServices(lang), getPages(lang),
+    publicReviews().catch(() => [])]);
   const base = `/${lang}`;
 
   return (
@@ -133,6 +135,23 @@ export default async function HomePage({ params }: LangParams) {
               ))}
             </div>
             <p style={{ marginTop: 16 }}><Link href={`${base}/insights`}>{h.insightsLink} →</Link></p>
+          </div>
+        </section>
+      )}
+
+      {reviews.length > 0 && (
+        <section className="section alt">
+          <div className="container">
+            <h2>{dict.reviews.title}</h2>
+            <div className="grid three">
+              {reviews.map((r) => (
+                <figure key={r.id} className="card review-card">
+                  <p className="review-stars" aria-label={dict.reviews.stars.replace("{n}", String(r.rating))}>{"★".repeat(r.rating)}{"☆".repeat(5 - r.rating)}</p>
+                  {r.comment && <blockquote dir="auto">{r.comment}</blockquote>}
+                  <figcaption>{r.name}</figcaption>
+                </figure>
+              ))}
+            </div>
           </div>
         </section>
       )}

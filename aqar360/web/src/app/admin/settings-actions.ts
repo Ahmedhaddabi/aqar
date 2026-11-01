@@ -10,9 +10,10 @@ import { settings } from "@/db/schema";
 import { audit, requireUser } from "@/lib/auth";
 
 const textKeys = ["companyNameAr", "companyNameEn", "companyAddress", "companyPhone", "companyEmail", "companyCr", "companyVat",
-  "contactPhone", "contactWhatsapp", "contactEmail"] as const;
+  "contactPhone", "contactWhatsapp", "contactEmail", "googleReviewUrl"] as const;
 const numberKeys = { firstResponseHours: [1, 72], followUpDays: [1, 90], requestValidDays: [7, 365], viewingStart: [0, 23], viewingEnd: [1, 24],
-  viewingSlotMinutes: [15, 240], viewingNoticeHours: [0, 168], viewingDaysAhead: [1, 60], reassignHours: [0, 72] } as const;
+  viewingSlotMinutes: [15, 240], viewingNoticeHours: [0, 168], viewingDaysAhead: [1, 60], reassignHours: [0, 72],
+  chatDailyCap: [10, 5000] } as const;
 
 export async function saveSettings(form: FormData) {
   const user = await requireUser(["admin"]);
@@ -23,7 +24,7 @@ export async function saveSettings(form: FormData) {
   const rows: { key: string; value: unknown }[] = Object.entries(parsed.data).map(([key, value]) => ({ key, value }));
   const days = [...new Set(form.getAll("viewingDays").map(Number).filter((d) => Number.isInteger(d) && d >= 0 && d <= 6))];
   rows.push({ key: "viewingDays", value: days.join(",") }, { key: "viewingSelfBooking", value: form.get("viewingSelfBooking") === "on" },
-    { key: "assignAuto", value: form.get("assignAuto") === "on" });
+    { key: "assignAuto", value: form.get("assignAuto") === "on" }, { key: "chatEnabled", value: form.get("chatEnabled") === "on" });
   await db.insert(settings).values(rows).onConflictDoUpdate({ target: settings.key, set: { value: sql`excluded.value` } });
   await audit("settings_saved", "settings", null, {}, user.id);
   revalidateTag("aqar-content");

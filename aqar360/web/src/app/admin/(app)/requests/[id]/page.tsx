@@ -1,6 +1,8 @@
+import { eq } from "drizzle-orm";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import { AgreementsPanel } from "@/admin/AgreementsPanel";
 import { activeStaff, getRequest } from "@/admin/crm";
 import { matchesFor, offersFor } from "@/admin/deals";
 import { Offers, Suggestions } from "@/admin/DealPanels";
@@ -8,7 +10,8 @@ import { dateOnly, dateTime, detailRows, money, siteDict, whatsappLink } from "@
 import { adminDict, adminLang, fill } from "@/admin/i18n";
 import { Documents } from "@/admin/Documents";
 import { Timeline } from "@/admin/Timeline";
-import { REQUEST_STATUSES } from "@/db/schema";
+import { db } from "@/db";
+import { contacts, REQUEST_STATUSES } from "@/db/schema";
 import { optionLabel } from "@/i18n/dictionaries";
 import { requireApp } from "@/lib/auth";
 import { siteUrl } from "@/lib/config";
@@ -29,6 +32,7 @@ export default async function RequestPage({ params, searchParams }: {
   const data = Number.isInteger(id) ? await getRequest(user, id) : null;
   if (!data) notFound();
   const { request: r, contact: c, owner, areas, project, property, timeline } = data;
+  const [referrer] = r.referredBy ? await db.select({ name: contacts.name }).from(contacts).where(eq(contacts.id, r.referredBy)) : [];
   const [staff, matchRows, offerRows] = await Promise.all([user.role === "agent" ? Promise.resolve([]) : activeStaff(),
     r.kind === "search" ? matchesFor(r.id) : Promise.resolve([]), offersFor(r.id)]);
   const offerChoices = matchRows.filter((m) => m.property && ["approved", "sent"].includes(m.match.status))
@@ -44,6 +48,7 @@ export default async function RequestPage({ params, searchParams }: {
     ...detailRows(r.details, lang, t.yes, t.no).map((d) => [d.label, d.value] as const),
     [t.expires, r.expiresOn ? dateOnly(r.expiresOn, lang) : null],
     [t.source, [r.sourceChannel, r.sourcePage].filter(Boolean).join(" · ")],
+    [T.reviewsAdmin.referredBy, referrer?.name ?? null],
   ].filter(([, v]) => v) as [string, string][];
   const review = (r.details as { review?: { decision: string; mode?: string; propertyId?: number; reason?: string } }).review;
   const flash = await searchParams;
@@ -134,6 +139,7 @@ export default async function RequestPage({ params, searchParams }: {
           {r.kind !== "consulting" && <Offers rows={offerRows} t={T.match} lang={lang} requestId={r.id} choices={offerChoices} />}
           <Timeline rows={timeline} t={t} lang={lang} contactId={c.id} requestId={r.id} results={T.match} />
           <Documents ownerType="request" ownerId={r.id} lang={lang} canShare={user.role !== "agent"} />
+          <AgreementsPanel t={T.agr} lang={lang} contactId={c.id} requestId={r.id} />
         </div>
 
         <aside>

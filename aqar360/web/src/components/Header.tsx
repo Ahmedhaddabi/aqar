@@ -17,7 +17,7 @@ export function Header({ lang, dict, brand }: { lang: Locale; dict: Dictionary; 
   ] as const;
   const more = [
     ["/market-my-project", n.marketProject], ["/careers", n.careers], ["/partners-suppliers", n.partners],
-    ["/about", n.about], ["/contact", n.contact],
+    ["/calculators", n.calculators], ["/about", n.about], ["/contact", n.contact],
   ] as const;
   const link = ([path, label]: readonly [string, string]) => {
     const href = `/${lang}${path}`;

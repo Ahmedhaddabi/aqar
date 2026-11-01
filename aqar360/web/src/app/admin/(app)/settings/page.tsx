@@ -9,6 +9,7 @@ import { auditLog, settings, users } from "@/db/schema";
 import { requireUser } from "@/lib/auth";
 import { contact } from "@/lib/config";
 import { assignRules } from "@/lib/assign";
+import { chatSettings } from "@/lib/chat";
 import { viewingRules } from "@/lib/viewings";
 
 import { saveSettings } from "../../settings-actions";
@@ -35,7 +36,7 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
 type T = ReturnType<typeof adminDict>["settings"];
 
 async function General({ t, p }: { t: T; p: ReturnType<typeof adminDict>["pay"] }) {
-  const [rows, rules, assign] = await Promise.all([db.select().from(settings), viewingRules(), assignRules()]);
+  const [rows, rules, assign, chat] = await Promise.all([db.select().from(settings), viewingRules(), assignRules(), chatSettings()]);
   const v = (key: string, fallback = "") => String(rows.find((r) => r.key === key)?.value ?? fallback);
   const text = (key: string, label: string, dir: "ltr" | "rtl" | "auto" = "auto", fallback = "", type = "text") => (
     <Field label={label}><input name={key} type={type} defaultValue={v(key, fallback)} dir={dir} maxLength={300} /></Field>
@@ -58,6 +59,7 @@ async function General({ t, p }: { t: T; p: ReturnType<typeof adminDict>["pay"] 
           {text("contactPhone", t.contactPhone, "ltr", contact.phone, "tel")}
           {text("contactWhatsapp", t.whatsapp, "ltr", contact.whatsapp, "tel")}
           {text("contactEmail", t.contactEmail, "ltr", contact.email, "email")}
+          {text("googleReviewUrl", t.googleReviewUrl, "ltr", "", "url")}
         </div>
       </Section>
       <Section title={t.work}>
@@ -66,6 +68,13 @@ async function General({ t, p }: { t: T; p: ReturnType<typeof adminDict>["pay"] 
           <Field label={t.followUpDays}><input type="number" name="followUpDays" min={1} max={90} defaultValue={v("followUpDays", "14")} required /></Field>
           <Field label={t.requestValidDays}><input type="number" name="requestValidDays" min={7} max={365} defaultValue={v("requestValidDays", "90")} required /></Field>
         </div>
+      </Section>
+      <Section title={`💬 ${t.chat.title}`}>
+        <p className="a-muted wide">{t.chat.intro} <a href="/admin/integrations#anthropic">{t.chat.aiLink}</a></p>
+        <Toggle name="chatEnabled" label={t.chat.enabled} help={t.chat.enabledHelp} checked={chat.enabled} />
+        <Field label={t.chat.cap} help={t.chat.capHelp}>
+          <input type="number" name="chatDailyCap" min={10} max={5000} defaultValue={chat.dailyCap} required />
+        </Field>
       </Section>
       <Section title={`🔁 ${t.assign.title}`}>
         <p className="a-muted wide">{t.assign.intro} <a href="/admin/users">{t.assign.staffLink}</a></p>

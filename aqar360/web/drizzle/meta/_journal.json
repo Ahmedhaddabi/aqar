@@ -71,6 +71,13 @@
       "when": 1793516407864,
       "tag": "0009_owners_assign",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1793517588746,
+      "tag": "0010_release_a",
+      "breakpoints": true
     }
   ]
 }

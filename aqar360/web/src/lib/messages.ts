@@ -12,7 +12,8 @@ import { docLink } from "./doc-link";
 import { integrationConfig } from "./integrations";
 
 export const TEMPLATE_KEYS = ["received", "match_sent", "viewing_reminder", "still_searching", "request_expiring",
-  "invoice_sent", "payment_reminder", "job_brief", "job_review", "not_selected", "portal_link", "viewing_booked"] as const;
+  "invoice_sent", "payment_reminder", "job_brief", "job_review", "not_selected", "portal_link", "viewing_booked",
+  "review_request", "agreement_sent"] as const;
 export type TemplateKey = (typeof TEMPLATE_KEYS)[number];
 
 /** Draft wording (the customer edits it in Admin → Messages). Variables: {{name}}, {{number}}, {{link}}, … */
@@ -24,6 +25,14 @@ export const DEFAULT_TEMPLATES: Record<TemplateKey, Record<"ar" | "en", { subjec
   match_sent: {
     ar: { subject: "{{company}}: عقار مقترح لطلبك {{number}}", body: "مرحبا {{name}}،\nوجدنا عقارا قد يناسبك: {{property}} — {{price}}.\n{{link}}\nاحجز موعد المعاينة أو احفظ العقار من حسابك: {{portal}}" },
     en: { subject: "{{company}}: a property for your request {{number}}", body: "Hello {{name}},\nWe found a property that may suit you: {{property}} — {{price}}.\n{{link}}\nBook a viewing or save it from your account: {{portal}}" },
+  },
+  review_request: {
+    ar: { subject: "{{company}}: كيف كانت تجربتك معنا؟", body: "مرحبا {{name}}،\nشكرا لثقتك بنا. يسعدنا أن نعرف رأيك في خدمتنا، يستغرق ذلك دقيقة واحدة:\n{{link}}" },
+    en: { subject: "{{company}}: how did we do?", body: "Hello {{name}},\nThank you for choosing us. We would love to hear how we did; it takes one minute:\n{{link}}" },
+  },
+  agreement_sent: {
+    ar: { subject: "{{company}}: {{title}} للتوقيع", body: "مرحبا {{name}}،\nأرسلنا لك «{{title}}» ({{number}}). يمكنك قراءته وتوقيعه من هنا:\n{{link}}" },
+    en: { subject: "{{company}}: {{title}} to sign", body: "Hello {{name}},\nWe have sent you \"{{title}}\" ({{number}}). You can read and sign it here:\n{{link}}" },
   },
   viewing_booked: {
     ar: { subject: "{{company}}: تم حجز موعد المعاينة", body: "مرحبا {{name}}،\nتم تأكيد موعد معاينة {{property}} يوم {{when}}.\nيمكنك تغيير الموعد أو إلغاؤه من حسابك: {{portal}}" },

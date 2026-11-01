@@ -39,3 +39,6 @@ The platform is built with editable placeholders wherever the information belong
 | 33 | Project cover images | None | Aqar Development Project → Cover Image (public file) |
 | 34 | Project page content: gallery photos, Arabic description and payment plan, brochure (public file) | Drawn "DEMO IMAGE" placeholders and demo text on staging only | Aqar Development Project → Website Gallery, Description (Arabic), Payment Plan (Arabic), Brochure |
 | 35 | Units per project for live availability | 6 demo units in "(Demo) Mawaleh Gardens" | Property (the building, linked to the project) → Property Units with Aqar Unit Type, size, price, status |
+| 36 | Agreement texts (exclusive marketing, marketing, reservation) and the fee wording | Draft bilingual templates with ____ blanks (lib/agreements.ts) | Customer's lawyer approves the text; staff edit each agreement before sending (Admin → Agreements) |
+| 37 | Google review link shown to happy customers after their review | None | Admin → Settings → Google review link |
+| 38 | Website chat assistant: switch on and daily message cap | Off; cap 300 messages a day | Admin → Settings → Website chat assistant (needs the AI connection) |

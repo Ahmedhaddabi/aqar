@@ -5,6 +5,7 @@ import { db } from "@/db";
 import { contacts, documents, invoices, payments, requests, serviceJobs } from "@/db/schema";
 import { docLink, jobLink, receiptLink, validPortalLink } from "@/lib/doc-link";
 import { customerStatus } from "@/lib/intake";
+import { referralCode, referralStats, referralUrl } from "@/lib/reviews";
 
 import { OwnerDashboard } from "../Owner";
 import { ViewingsAndSuggestions } from "../Viewings";
@@ -33,6 +34,7 @@ export default async function PortalHome({ searchParams }: { searchParams: Promi
       .where(eq(invoices.contactId, c.id)).orderBy(desc(payments.paidOn)).limit(30),
     db.select().from(serviceJobs).where(eq(serviceJobs.contactId, c.id)).orderBy(desc(serviceJobs.createdAt)).limit(30),
   ]);
+  const invited = await referralStats(c.id);
   const jobIds = jobs.map((j) => j.id);
   const reqIds = reqs.map((r) => r.id);
   const files = await db.select().from(documents).where(and(eq(documents.shared, true), or(
@@ -88,6 +90,12 @@ export default async function PortalHome({ searchParams }: { searchParams: Promi
           )}
         </section>
       </div>
+      <section className="a-panel">
+        <h2>🎁 ادعُ صديقا · Invite a friend</h2>
+        <p>أرسل رابطك لمن يبحث عن عقار أو يريد تسويق عقاره · Share your link with anyone looking for a property or wanting to market one:</p>
+        <code className="a-code" dir="ltr">{referralUrl(await referralCode(c.id))}</code>
+        {invited.total > 0 && <p className="a-muted">وصلنا عن طريقك {invited.total} · People who came through you: {invited.total}</p>}
+      </section>
       {files.length > 0 && (
         <section className="a-panel">
           <h2>ملفاتي · My files</h2>

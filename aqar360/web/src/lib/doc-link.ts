@@ -4,7 +4,7 @@ import { createHmac, timingSafeEqual } from "node:crypto";
 
 import { siteUrl } from "./config";
 
-type Kind = "invoice" | "receipt" | "job" | "portal";
+type Kind = "invoice" | "receipt" | "job" | "portal" | "review" | "agreement";
 const sign = (kind: Kind, value: string) =>
   createHmac("sha256", process.env.AUTH_SECRET!).update(`${kind}:${value}`).digest("base64url").slice(0, 32);
 
@@ -36,3 +36,13 @@ export function portalLink(contactId: number, days = 30) {
 export function validPortalLink(contactId: number, exp: number, signature: string | undefined) {
   return Number.isInteger(contactId) && exp * 1000 > Date.now() && valid("portal", `${contactId}.${exp}`, signature);
 }
+
+/** One review per customer and deal or job (`ref` = request:<id> or job:<id>). */
+export const reviewLink = (contactId: number, ref: string) =>
+  link(`/portal/review?c=${contactId}&r=${encodeURIComponent(ref)}&`, "review", `${contactId}.${ref}`);
+export const validReviewLink = (contactId: number, ref: string, signature: string | undefined) =>
+  Number.isInteger(contactId) && valid("review", `${contactId}.${ref}`, signature);
+
+/** An agreement to read and sign online. */
+export const agreementLink = (id: number) => link(`/doc/agreement/${id}?`, "agreement", String(id));
+export const validAgreementLink = (id: number, signature: string | undefined) => valid("agreement", String(id), signature);

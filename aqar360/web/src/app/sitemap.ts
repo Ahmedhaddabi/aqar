@@ -5,7 +5,7 @@ import { getSitemapEntries } from "@/lib/content";
 
 // Public, indexable pages only; private pages (my-request) and unapproved policies are excluded (§15.4).
 const STATIC = ["", "/find-me-a-property", "/market-my-property", "/market-my-project", "/content-services",
-  "/consulting", "/map", "/projects", "/areas", "/insights", "/careers", "/partners-suppliers", "/about", "/contact"];
+  "/consulting", "/map", "/projects", "/areas", "/insights", "/careers", "/partners-suppliers", "/about", "/contact", "/calculators"];
 
 export const revalidate = 3600;
 

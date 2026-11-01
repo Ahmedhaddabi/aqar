@@ -28,13 +28,13 @@ async function ai() {
  * Every call opts into server-side refusal fallbacks ("default" routing) where the model supports them; Haiku has none.
  * Effort is set per task: low for extraction and drafting, medium for the assistant.
  */
-async function create(params: Omit<Anthropic.Beta.MessageCreateParamsNonStreaming, "model">) {
+export async function create(params: Omit<Anthropic.Beta.MessageCreateParamsNonStreaming, "model">) {
   const { ai: client, model: m } = await ai();
   const fallback = !m.startsWith("claude-haiku");
   return client.beta.messages.create({ ...params, model: m, ...(fallback ? { betas: ["server-side-fallback-2026-07-01"], fallbacks: "default" as const } : {}) });
 }
 
-const textOf = (msg: Anthropic.Beta.BetaMessage) => msg.content.filter((b): b is Anthropic.Beta.BetaTextBlock => b.type === "text").map((b) => b.text).join("\n").trim();
+export const textOf = (msg: Anthropic.Beta.BetaMessage) => msg.content.filter((b): b is Anthropic.Beta.BetaTextBlock => b.type === "text").map((b) => b.text).join("\n").trim();
 
 /** At most N AI calls per staff member per hour (cost control); counted from the audit log. */
 export async function underLimit(userId: number, perHour?: number) {

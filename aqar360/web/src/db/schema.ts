@@ -1,7 +1,8 @@
 // Database schema (Postgres). Simple, flat tables; Arabic and English text side by side.
 import { sql } from "drizzle-orm";
 import {
-  bigserial, boolean, date, doublePrecision, index, integer, jsonb, numeric, pgSequence, pgTable, primaryKey, serial, text, timestamp,
+  type AnyPgColumn, bigserial, boolean, date, doublePrecision, index, integer, jsonb, numeric, pgSequence, pgTable, primaryKey, serial, text, timestamp,
+  uniqueIndex,
 } from "drizzle-orm/pg-core";
 
 const created = () => timestamp("created_at", { withTimezone: true }).notNull().defaultNow();
@@ -195,6 +196,10 @@ export const contacts = pgTable("contacts", {
   language: text("language").$type<"ar" | "en">().notNull().default("ar"),
   notes: text("notes").notNull().default(""),
   source: text("source"), // first contact: Website, Phone call, Walk-in, WhatsApp, Instagram, Referral, ...
+  referralCode: text("referral_code").unique(), // the customer's own "invite a friend" link (/r/CODE), made on first use
+  idNumber: text("id_number"), // civil ID / passport number, when staff need it for a contract
+  nationality: text("nationality"),
+  idExpiry: date("id_expiry"),
   createdAt: created(),
   updatedAt: updated(),
 }, (t) => [index("contacts_phone_idx").on(t.phone), index("contacts_email_idx").on(t.email)]);
@@ -245,6 +250,7 @@ export const requests = pgTable("requests", {
   sourcePage: text("source_page"),
   attribution: jsonb("attribution").$type<Record<string, string>>().notNull().default({}),
   alertsPaused: boolean("alerts_paused").notNull().default(false),
+  referredBy: integer("referred_by").references((): AnyPgColumn => contacts.id, { onDelete: "set null" }), // customer whose link brought this request
   expiresOn: date("expires_on"),
   firstResponseAt: timestamp("first_response_at", { withTimezone: true }),
   closedReason: text("closed_reason"),
@@ -704,3 +710,48 @@ export const propertyViews = pgTable("property_views", {
   day: date("day").notNull(),
   count: integer("count").notNull().default(0),
 }, (t) => [primaryKey({ columns: [t.propertyId, t.day] })]);
+
+/** Website chat limits: messages per visitor (hashed IP) and in total per Muscat day. */
+export const chatUsage = pgTable("chat_usage", {
+  day: date("day").notNull(),
+  key: text("key").notNull(), // "all" or the hashed visitor IP
+  count: integer("count").notNull().default(0),
+}, (t) => [primaryKey({ columns: [t.day, t.key] })]);
+
+/** Customer reviews after a won deal or a completed job; shown on the website only if the customer allowed it and staff approved. */
+export const reviews = pgTable("reviews", {
+  id: serial("id").primaryKey(),
+  contactId: integer("contact_id").notNull().references(() => contacts.id, { onDelete: "cascade" }),
+  ref: text("ref").notNull(), // what was reviewed: request:<id> or job:<id> (one review each)
+  rating: integer("rating").notNull(), // 1-5
+  comment: text("comment").notNull().default(""),
+  publish: boolean("publish").notNull().default(false), // the customer allows showing it with their first name
+  approved: boolean("approved").notNull().default(false), // staff chose to show it on the website
+  createdAt: created(),
+}, (t) => [index("reviews_contact_idx").on(t.contactId), uniqueIndex("reviews_contact_ref_idx").on(t.contactId, t.ref)]);
+
+export const AGREEMENT_STATUSES = ["draft", "sent", "signed", "declined", "cancelled"] as const;
+export const agreementNumbers = pgSequence("agreement_number_seq", { startWith: 1 });
+/** Agreements signed online: the exact text is fixed when sent (SHA-256), the signature, name, time and device are kept. */
+export const agreements = pgTable("agreements", {
+  id: serial("id").primaryKey(),
+  number: text("number").notNull().unique(), // AGR-2026-00001
+  contactId: integer("contact_id").notNull().references(() => contacts.id),
+  requestId: integer("request_id").references(() => requests.id, { onDelete: "set null" }),
+  propertyId: integer("property_id").references(() => properties.id, { onDelete: "set null" }),
+  template: text("template"),
+  title: text("title").notNull(),
+  body: text("body").notNull(),
+  bodyHash: text("body_hash"), // set when sent; signing checks the text is unchanged
+  status: text("status").$type<(typeof AGREEMENT_STATUSES)[number]>().notNull().default("draft"),
+  sentAt: timestamp("sent_at", { withTimezone: true }),
+  signedAt: timestamp("signed_at", { withTimezone: true }),
+  signerName: text("signer_name"),
+  signature: text("signature"), // PNG data URL of the drawn signature
+  signerIpHash: text("signer_ip_hash"),
+  signerAgent: text("signer_agent"),
+  declineReason: text("decline_reason"),
+  createdBy: integer("created_by").references(() => users.id),
+  createdAt: created(),
+  updatedAt: updated(),
+}, (t) => [index("agreements_contact_idx").on(t.contactId)]);

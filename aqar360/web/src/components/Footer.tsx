@@ -10,7 +10,7 @@ export function Footer({ lang, dict, brand }: { lang: Locale; dict: Dictionary; 
   const explore = [
     ["/find-me-a-property", n.find], ["/market-my-property", n.marketProperty], ["/market-my-project", n.marketProject],
     ["/content-services", n.contentServices], ["/consulting", n.consulting], ["/careers", n.careers],
-    ["/partners-suppliers", n.partners], ["/contact", n.contact],
+    ["/partners-suppliers", n.partners], ["/calculators", n.calculators], ["/contact", n.contact],
   ];
   return (
     <footer className="site-footer">

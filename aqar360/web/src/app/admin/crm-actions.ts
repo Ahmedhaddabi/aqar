@@ -11,6 +11,7 @@ import { audit, requireUser } from "@/lib/auth";
 import { normalizePhone } from "@/lib/intake";
 import { matchRequest } from "@/lib/matching";
 import { notify } from "@/lib/notify";
+import { askForReview } from "@/lib/reviews";
 
 const id = z.coerce.number().int().positive();
 
@@ -44,6 +45,7 @@ export async function changeStatus(form: FormData) {
     body: `${r.status}>${parsed.data.status}${closing && parsed.data.reason ? `|${parsed.data.reason}` : ""}` });
   await audit("request_status", "request", r.id, { from: r.status, to: parsed.data.status }, user.id);
   if (["won", "closed"].includes(parsed.data.status) || ["won", "closed"].includes(r.status)) await matchRequest(r.id);
+  if (parsed.data.status === "won") await askForReview(r.contactId, `request:${r.id}`, r.id);
   refresh(r.id, r.contactId);
 }
 

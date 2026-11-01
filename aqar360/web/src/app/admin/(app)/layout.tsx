@@ -22,6 +22,7 @@ export default async function AdminAppLayout({ children }: { children: ReactNode
     { href: "/admin/requests/new", label: n.newEntry, icon: "➕" },
     { href: "/admin/requests", label: n.requests, icon: "📥" },
     { href: "/admin/calendar", label: n.calendar, icon: "📅" },
+    { href: "/admin/agreements", label: n.agreements, icon: "✍️" },
     { href: "/admin/whatsapp", label: n.whatsapp, icon: "💬" },
     { href: "/admin/customers", label: n.customers, icon: "🧑" },
     { href: "/admin/assistant", label: n.assistant, icon: "✨" },
@@ -31,6 +32,7 @@ export default async function AdminAppLayout({ children }: { children: ReactNode
       { href: "/admin/messages", label: n.messages, icon: "✉️" },
       { href: "/admin/reports", label: n.reports, icon: "📈" },
       { href: "/admin/market", label: n.market, icon: "🗺" },
+      { href: "/admin/reviews", label: n.reviews, icon: "⭐" },
     ] : []),
   ] });
   // ERP: money and operations.
