@@ -12,6 +12,7 @@
     "smoke": "node scripts/smoke.mjs",
     "test:integrations": "tsx --env-file=.env.local scripts/test-integrations.mts",
     "test:viewings": "tsx --env-file=.env.local scripts/test-viewings.mts",
+    "test:owners": "tsx --env-file=.env.local scripts/test-owners-assign.mts",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "tsx --env-file=.env.local scripts/migrate.mts",
     "db:seed": "tsx --env-file=.env.local scripts/seed.mts",

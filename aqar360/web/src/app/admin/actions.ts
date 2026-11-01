@@ -119,6 +119,17 @@ export async function setApps(form: FormData) {
   revalidatePath("/admin/users");
 }
 
+/** In or out of the fair rotation for new website requests (lib/assign.ts). */
+export async function setReceivesRequests(form: FormData) {
+  const admin = await requireUser(["admin"]);
+  const id = Number(form.get("id"));
+  if (!Number.isInteger(id)) return;
+  const on = form.get("receives") === "on";
+  await db.update(users).set({ receivesRequests: on }).where(eq(users.id, id));
+  await audit("user_rotation_changed", "user", id, { receivesRequests: on }, admin.id);
+  revalidatePath("/admin/users");
+}
+
 export async function createUser(_prev: FormState, form: FormData): Promise<FormState> {
   const admin = await requireUser(["admin"]);
   const parsed = z.object({ name: text(), email, role: z.enum(ROLES), password }).safeParse(Object.fromEntries(form));

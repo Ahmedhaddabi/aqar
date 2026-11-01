@@ -27,6 +27,7 @@ export const users = pgTable("users", {
   mfaSecret: text("mfa_secret"), // two-step sign-in key, encrypted with AUTH_SECRET
   mfaEnabled: boolean("mfa_enabled").notNull().default(false),
   lastLoginAt: timestamp("last_login_at", { withTimezone: true }),
+  receivesRequests: boolean("receives_requests").notNull().default(false), // in the fair rotation for new website requests
   createdAt: created(),
 });
 
@@ -696,3 +697,10 @@ export const savedProperties = pgTable("saved_properties", {
   propertyId: integer("property_id").notNull().references(() => properties.id, { onDelete: "cascade" }),
   createdAt: created(),
 }, (t) => [primaryKey({ columns: [t.contactId, t.propertyId] })]);
+
+/** Map views of a public property, one row per property and Muscat day (shown to the owner in the portal). */
+export const propertyViews = pgTable("property_views", {
+  propertyId: integer("property_id").notNull().references(() => properties.id, { onDelete: "cascade" }),
+  day: date("day").notNull(),
+  count: integer("count").notNull().default(0),
+}, (t) => [primaryKey({ columns: [t.propertyId, t.day] })]);

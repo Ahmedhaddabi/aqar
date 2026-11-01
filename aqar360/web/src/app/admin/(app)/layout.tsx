@@ -1,13 +1,17 @@
+import { after } from "next/server";
 import { type ReactNode, Suspense } from "react";
 
 import { adminDict, adminLang } from "@/admin/i18n";
 import { Nav, type NavItem, type NavModule } from "@/admin/Nav";
 import { Progress } from "@/admin/Progress";
+import { maybeRunAssignments } from "@/lib/assign";
 import { canOpen, requireUser } from "@/lib/auth";
 import { unreadCount } from "@/lib/notify";
 
 export default async function AdminAppLayout({ children }: { children: ReactNode }) {
   const user = await requireUser();
+  // Requests nobody answered in time move to the next person (at most every 10 minutes, after the page is sent).
+  after(() => maybeRunAssignments().catch((e) => console.error("reassign failed:", (e as Error).message)));
   const lang = await adminLang(user.language);
   const n = adminDict(lang).nav;
   const office = user.role !== "agent";

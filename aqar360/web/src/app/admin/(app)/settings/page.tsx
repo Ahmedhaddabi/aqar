@@ -8,6 +8,7 @@ import { db } from "@/db";
 import { auditLog, settings, users } from "@/db/schema";
 import { requireUser } from "@/lib/auth";
 import { contact } from "@/lib/config";
+import { assignRules } from "@/lib/assign";
 import { viewingRules } from "@/lib/viewings";
 
 import { saveSettings } from "../../settings-actions";
@@ -34,7 +35,7 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
 type T = ReturnType<typeof adminDict>["settings"];
 
 async function General({ t, p }: { t: T; p: ReturnType<typeof adminDict>["pay"] }) {
-  const [rows, rules] = await Promise.all([db.select().from(settings), viewingRules()]);
+  const [rows, rules, assign] = await Promise.all([db.select().from(settings), viewingRules(), assignRules()]);
   const v = (key: string, fallback = "") => String(rows.find((r) => r.key === key)?.value ?? fallback);
   const text = (key: string, label: string, dir: "ltr" | "rtl" | "auto" = "auto", fallback = "", type = "text") => (
     <Field label={label}><input name={key} type={type} defaultValue={v(key, fallback)} dir={dir} maxLength={300} /></Field>
@@ -65,6 +66,13 @@ async function General({ t, p }: { t: T; p: ReturnType<typeof adminDict>["pay"] 
           <Field label={t.followUpDays}><input type="number" name="followUpDays" min={1} max={90} defaultValue={v("followUpDays", "14")} required /></Field>
           <Field label={t.requestValidDays}><input type="number" name="requestValidDays" min={7} max={365} defaultValue={v("requestValidDays", "90")} required /></Field>
         </div>
+      </Section>
+      <Section title={`🔁 ${t.assign.title}`}>
+        <p className="a-muted wide">{t.assign.intro} <a href="/admin/users">{t.assign.staffLink}</a></p>
+        <Toggle name="assignAuto" label={t.assign.auto} help={t.assign.autoHelp} checked={assign.auto} />
+        <Field label={t.assign.reassign} help={t.assign.reassignHelp}>
+          <input type="number" name="reassignHours" min={0} max={72} defaultValue={assign.reassignHours} required />
+        </Field>
       </Section>
       <Section title={`📅 ${t.viewing.title}`}>
         <p className="a-muted wide">{t.viewing.intro}</p>

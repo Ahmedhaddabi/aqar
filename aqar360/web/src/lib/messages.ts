@@ -99,6 +99,11 @@ async function deliver(to: string, subject: string, body: string) {
   return res.ok ? { status: "sent" as const, reason: null } : { status: "failed" as const, reason: `provider_${res.status}` };
 }
 
+/** Staff emails (the weekly report): straight through Resend, not the customer outbox; skipped while email is not connected. */
+export async function sendStaffEmail(to: string, subject: string, body: string) {
+  return deliver(to, subject, body).catch(() => ({ status: "failed" as const, reason: "network" }));
+}
+
 /** Queue-and-send one message. The same key never sends twice; missing consent or address is recorded, not an error. */
 type SendOpts = { key: string; template: TemplateKey; contactId: number; requestId?: number | null;
   purpose: "request_updates" | "match_alerts" | "transactional"; vars: Record<string, string> };

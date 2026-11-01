@@ -1,4 +1,5 @@
 import { and, count, desc, eq, gte, inArray, lt, sql } from "drizzle-orm";
+import Link from "next/link";
 
 import { adminDict, adminLang } from "@/admin/i18n";
 import { db } from "@/db";
@@ -51,7 +52,8 @@ export default async function ReportsPage({ searchParams }: { searchParams: Prom
   const statusOrder = OPEN_STATUSES as readonly string[];
   return (
     <>
-      <header className="a-head"><h1>{t.title}</h1><p className="a-muted">{t.intro}</p></header>
+      <header className="a-head"><h1>{t.title}</h1><p className="a-muted">{t.intro}</p>
+        <p><Link className="a-btn small" href="/admin/reports/weekly">📨 {adminDict(lang).weekly.link}</Link></p></header>
       <form className="a-inline a-toolbar" action="/admin/reports">
         <label className="a-inline">{T.money.from_} <input type="date" name="from" defaultValue={from} /></label>
         <label className="a-inline">{T.money.to} <input type="date" name="to" defaultValue={to} /></label>

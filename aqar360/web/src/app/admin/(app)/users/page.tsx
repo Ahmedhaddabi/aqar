@@ -6,7 +6,7 @@ import { db } from "@/db";
 import { APPS, ROLES, users } from "@/db/schema";
 import { requireUser } from "@/lib/auth";
 
-import { changeRole, resetMfa, setApps, toggleUser } from "../../actions";
+import { changeRole, resetMfa, setApps, setReceivesRequests, toggleUser } from "../../actions";
 
 export default async function UsersPage({ searchParams }: { searchParams: Promise<{ error?: string }> }) {
   const me = await requireUser(["admin"]);
@@ -58,6 +58,13 @@ export default async function UsersPage({ searchParams }: { searchParams: Promis
                       <input type="hidden" name="id" value={u.id} />
                       {APPS.map((a) => <label key={a} className="a-check"><input type="checkbox" name="apps" value={a} defaultChecked={u.apps.includes(a)} /> {appNames[a]}</label>)}
                       <button className="a-btn small">{t.users.saveApps}</button>
+                    </form>
+                  )}
+                  {u.active && (
+                    <form action={setReceivesRequests} className="a-inline">
+                      <input type="hidden" name="id" value={u.id} />
+                      <label className="a-check" title={t.users.receivesHelp}><input type="checkbox" name="receives" defaultChecked={u.receivesRequests} /> {t.users.receives}</label>
+                      <button className="a-btn small">{t.users.saveRotation}</button>
                     </form>
                   )}
                 </td>

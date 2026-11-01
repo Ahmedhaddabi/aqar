@@ -13,6 +13,7 @@ import {
 
 import type { Locale } from "./config";
 import type { FormConfig } from "./content";
+import { autoAssign } from "./assign";
 import { notify } from "./notify";
 import { matchRequest } from "./matching";
 import { afterRequestReceived } from "./messages";
@@ -255,6 +256,7 @@ export async function submitForm(kind: FormKind, payload: unknown, ip?: string):
   await db.insert(auditLog).values({ action: "form_submitted", entity: "request", entityId: String(request.id),
     data: { kind, ...(ipHash ? { ip: ipHash } : {}) } });
   if (request.kind === "search") await matchRequest(request.id).catch((e) => console.error("matching failed:", e.message));
+  await autoAssign(request.id).catch((e) => console.error("auto-assign failed:", e.message));
   await notify({ app: "crm", roles: ["admin", "manager"] }, { kind: request.kind === "listing" ? "opportunity_new" : "request_new",
     title: `${request.number} · ${data.full_name}`, href: `/admin/requests/${request.id}`, key: `request_new:${request.id}` });
   await afterRequestReceived(request.id, token).catch((e) => console.error("confirmation failed:", e.message));

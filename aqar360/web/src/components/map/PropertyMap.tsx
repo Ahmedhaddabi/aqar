@@ -51,6 +51,17 @@ function labelPoint(area: MapArea): Point {
   return [area.center![0], Number.isFinite(north) ? north : area.center![1]];
 }
 
+/** One view per listing per browser session for the owner's dashboard; never blocks or breaks the map. */
+function countView(code: string) {
+  try {
+    const key = `aqar_viewed_${code}`;
+    if (sessionStorage.getItem(key)) return;
+    sessionStorage.setItem(key, "1");
+  } catch { /* storage blocked: count anyway */ }
+  fetch("/api/views", { method: "POST", keepalive: true, headers: { "Content-Type": "application/json" }, body: JSON.stringify({ code }) })
+    .catch(() => undefined);
+}
+
 function matches(item: MapListing, purpose: Purpose, kind: string) {
   const purposeOk = purpose === "all" || item.purpose === purpose || item.purpose === "Sale or Rent";
   return purposeOk && (!kind || item.kind === kind);
@@ -136,6 +147,7 @@ export function PropertyMap({ lang, dict, data }: { lang: Locale; dict: Dictiona
   const selectListing = useCallback((l: MapListing) => {
     setSelectedId(l.id);
     track("map_listing_select", { listing_type: l.type, kind: l.kind });
+    if (l.type === "property") countView(l.id);
     if (l.point) mapRef.current?.flyTo({ center: l.point, zoom: Math.max(mapRef.current.getZoom(), 15), duration: 800 });
     else if (l.area) focusArea(l.area);
   }, [focusArea]);

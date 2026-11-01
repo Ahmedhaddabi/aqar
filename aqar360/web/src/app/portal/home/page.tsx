@@ -6,6 +6,7 @@ import { contacts, documents, invoices, payments, requests, serviceJobs } from "
 import { docLink, jobLink, receiptLink, validPortalLink } from "@/lib/doc-link";
 import { customerStatus } from "@/lib/intake";
 
+import { OwnerDashboard } from "../Owner";
 import { ViewingsAndSuggestions } from "../Viewings";
 
 const KIND: Record<string, string> = { search: "أبحث عن عقار · Property search", listing: "تسويق عقاري · Market my property", consulting: "استشارة · Consulting" };
@@ -56,6 +57,7 @@ export default async function PortalHome({ searchParams }: { searchParams: Promi
         </section>
       )}
       <ViewingsAndSuggestions p={{ c: c.id, e: exp, s: q.s ?? "" }} done={q.done} />
+      <OwnerDashboard contactId={c.id} />
       <div className="a-two-lang">
         <section className="a-panel">
           <h2>طلباتي · My requests</h2>
