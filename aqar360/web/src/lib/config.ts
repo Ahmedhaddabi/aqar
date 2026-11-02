@@ -17,6 +17,7 @@ export const contact = {
   phone: process.env.NEXT_PUBLIC_CONTACT_PHONE || "",
   whatsapp: (process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "").replace(/[^\d]/g, ""),
   email: process.env.NEXT_PUBLIC_CONTACT_EMAIL || "",
+  instagram: "", facebook: "", threads: "", // set in Admin → Settings → Website
 };
 
 export const companyName: Record<Locale, string> = {

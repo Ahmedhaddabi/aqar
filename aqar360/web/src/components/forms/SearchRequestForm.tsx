@@ -20,7 +20,7 @@ const SPEC: Spec = {
   interest_type: "text", interest_id: "text", interest_unit: "text", source_page: "text",
 };
 const INTEREST = ["interest_type", "interest_id", "interest_unit", "source_page"];
-const PREFILL = ["purpose", "property_type", "areas", "budget_max", "notes", ...INTEREST];
+const PREFILL = ["purpose", "property_type", "areas", "budget_max", "bedrooms_min", "notes", ...INTEREST];
 
 export function SearchRequestForm({ lang, dict, config }: { lang: Locale; dict: Dictionary; config: FormConfig }) {
   const f = dict.form;

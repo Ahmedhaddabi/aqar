@@ -60,6 +60,9 @@ async function General({ t, p }: { t: T; p: ReturnType<typeof adminDict>["pay"] 
           {text("contactWhatsapp", t.whatsapp, "ltr", contact.whatsapp, "tel")}
           {text("contactEmail", t.contactEmail, "ltr", contact.email, "email")}
           {text("googleReviewUrl", t.googleReviewUrl, "ltr", "", "url")}
+          {text("instagramUrl", t.instagramUrl, "ltr", "", "url")}
+          {text("facebookUrl", t.facebookUrl, "ltr", "", "url")}
+          {text("threadsUrl", t.threadsUrl, "ltr", "", "url")}
         </div>
       </Section>
       <Section title={t.work}>

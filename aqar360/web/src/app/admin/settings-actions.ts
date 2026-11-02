@@ -10,7 +10,7 @@ import { settings } from "@/db/schema";
 import { audit, requireUser } from "@/lib/auth";
 
 const textKeys = ["companyNameAr", "companyNameEn", "companyAddress", "companyPhone", "companyEmail", "companyCr", "companyVat",
-  "contactPhone", "contactWhatsapp", "contactEmail", "googleReviewUrl"] as const;
+  "contactPhone", "contactWhatsapp", "contactEmail", "googleReviewUrl", "instagramUrl", "facebookUrl", "threadsUrl"] as const;
 const numberKeys = { firstResponseHours: [1, 72], followUpDays: [1, 90], requestValidDays: [7, 365], viewingStart: [0, 23], viewingEnd: [1, 24],
   viewingSlotMinutes: [15, 240], viewingNoticeHours: [0, 168], viewingDaysAhead: [1, 60], reassignHours: [0, 72],
   chatDailyCap: [10, 5000] } as const;

@@ -346,3 +346,12 @@ Validation: 112 backend tests pass (4 new: slugs, public page with live units/ga
 - Migration 0014 (customer_accounts, customer_sessions, customer_codes), applied to the live and test databases.
 - Verified on the test database: new test:accounts 32/32 (through the real pages and forms); test:pages, viewings, owners, release A, release B, map, extras and integrations all pass; public pages load with the new header.
 - Not done: SMS codes for accounts made with a mobile number only (they connect through the private link or staff; password reset by contacting the team).
+
+## Website layout matched to the client design (2026-11-02)
+
+- Side menu on wide screens (right side in Arabic) with icons, Explore and Company groups, "Start a request", language and log in at the bottom; top bar with a menu button on phones (components/Header.tsx). Floating "WhatsApp us" button when a WhatsApp number is set.
+- Home page rebuilt like the design: photo hero with type chips, search card over the hero (Buy/Rent, type, area, budget, bedrooms → pre-fills the request form, bedrooms now included), map link, area ticker, "Aqar in numbers", featured banners (projects + selling + content services, auto-rotating), "Available now" project cards, why us, content services row, consulting band, reviews, FAQ, guides, "Talk to our team" band.
+- Every inner page header is the blue photo banner (components/PageHead.tsx); login on a photo band; new footer (brand, social links, three columns, legal line); request forms as one rounded panel; project cards like the design.
+- Admin → Settings → Website: Instagram, Facebook and Threads links (footer and contact band; https only).
+- Styles: src/app/site.css (layout pieces), design.css keeps tokens and shared pieces. Photos from the design in public/img/photo-1…5.jpg.
+- Checked with screenshots (desktop English and Arabic, 390 px phone: no sideways scrolling) and all test suites on the test database.

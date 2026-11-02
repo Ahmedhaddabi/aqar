@@ -13,6 +13,7 @@ const en = {
     contentServices: "Content services", consulting: "Consulting", areas: "Areas", insights: "Insights",
     careers: "Careers", partners: "Join as a supplier", about: "About us", contact: "Contact", more: "More",
     switchLanguage: "العربية", menu: "Menu", account: "My account", logIn: "Log in", startRequest: "Start a request", map: "Map", projects: "Projects", calculators: "Calculators",
+    buyRent: "Buy & rent", sellLet: "Sell & let", services: "Services", explore: "Explore", company: "Company", whatsapp: "WhatsApp us",
   },
   home: {
     heroTitle: "What would you like to do?",
@@ -40,6 +41,28 @@ const en = {
     ],
     insightsTitle: "Guides and insights", insightsLink: "All guides",
     joinTitle: "Work with us", careersText: "See our open positions.", partnersText: "Register your skills or services as a supplier.",
+    heroLine1: "Property in Oman,", heroLine2: "handled end to end.",
+    tags: { apartments: "Apartments", villas: "Villas", land: "Land", projects: "New projects" },
+    searchTitle: "Find the right property", anyType: "Any type", anyArea: "Any area", any: "Any", bedrooms: "Bedrooms", propertyType: "Property type",
+    search: "Search", popular: "Popular:", readyUnits: "Ready units", sellMine: "Sell my property", openMap: "Open the map",
+    statsTitle: "Aqar in numbers", statsText: "Years of selling, letting and marketing property across Muscat.",
+    stats: [{ n: 100, label: "Happy clients" }, { n: 250, label: "Properties marketed" }, { n: 40, label: "Projects launched" }, { n: 12, label: "Years of experience" }],
+    featuredProject: "Featured project", viewProject: "View project", from: "From",
+    slideSellTag: "Selling or letting?", slideSellTitle: "We market your property for you", slideSellText: "Reviewed, photographed and matched to serious buyers and tenants.",
+    slideSellCta: "See how", slideContentTag: "Content services", slideContentTitle: "Photos, plans and video", slideContentText: "Professional content, ordered on its own.",
+    slideContentCta: "View prices", prev: "Previous", next: "Next",
+    featured: "Featured", availableTitle: "Available now", availableText: "Reviewed projects and properties we market.", allProjects: "View all projects",
+    servicesEyebrow: "Order on its own", servicesText: "Any content service can be ordered without marketing.",
+    faqEyebrow: "FAQ", faqTitle: "Questions people ask us", faqText: "Still unsure? Our team answers on WhatsApp.", askWhatsapp: "Ask on WhatsApp",
+    faq: [
+      { q: "Does sending a request cost anything?", a: "No. Sending a request to buy, rent, sell or let is free. Content services and consulting are paid, and prices are confirmed in your quotation." },
+      { q: "Will my property be published straight away?", a: "No. We review price, demand, location and documents first. Sending a property for review is not a commitment to accept it." },
+      { q: "Do you publish every property online?", a: "No. Many opportunities are matched privately with buyers and tenants in our network rather than listed publicly." },
+      { q: "Can I order photos or video without marketing?", a: "Yes. Every content service can be ordered on its own." },
+      { q: "Is your consulting an official valuation?", a: "No. Consulting is not an engineering, legal or official valuation unless it is provided by a licensed specialist." },
+    ],
+    talkChip: "We reply within one working day", talkTitle: "Talk to our team", talkText: "Real estate marketing specialists. Call, WhatsApp or message us.",
+    phoneWhatsapp: "Phone and WhatsApp", copyNumber: "Copy number", copied: "Copied", email: "Email",
   },
   pages: {
     find: {
@@ -278,7 +301,8 @@ const en = {
     note: "An AI assistant: it can make mistakes. Our team confirms every detail.", error: "Something went wrong. Please try again.",
   },
   footer: {
-    tagline: "Managed real estate marketing and services in Oman.", legal: "Legal", explore: "Explore",
+    tagline: "Real estate marketing in Oman: sale, rent and investment.", legal: "Legal", explore: "Explore", services: "Services", contact: "Contact",
+    sendMessage: "Send a message",
     rights: "All rights reserved.", priceNote: "Prices are indicative and confirmed in your quotation.",
   },
   legalNames: {
@@ -304,6 +328,7 @@ const ar: Dictionary = {
     contentServices: "خدمات المحتوى", consulting: "الاستشارات", areas: "المناطق", insights: "المعرفة",
     careers: "الوظائف", partners: "انضم كمورد أو فني", about: "من نحن", contact: "تواصل معنا", more: "المزيد",
     switchLanguage: "English", menu: "القائمة", account: "حسابي", logIn: "تسجيل الدخول", startRequest: "ابدأ طلبك", map: "الخريطة", projects: "المشاريع", calculators: "الحاسبات",
+    buyRent: "شراء وإيجار", sellLet: "بيع وتأجير", services: "الخدمات", explore: "استكشف", company: "الشركة", whatsapp: "راسلنا على واتساب",
   },
   home: {
     heroTitle: "ما الذي تريد إنجازه؟",
@@ -331,6 +356,28 @@ const ar: Dictionary = {
     ],
     insightsTitle: "أدلة ومعرفة", insightsLink: "جميع الأدلة",
     joinTitle: "اعمل معنا", careersText: "اطلع على الوظائف المتاحة.", partnersText: "سجّل مهاراتك أو خدماتك كمورد.",
+    heroLine1: "عقارك في عُمان،", heroLine2: "نتولاه من البداية إلى النهاية.",
+    tags: { apartments: "شقق", villas: "فلل", land: "أراضٍ", projects: "مشاريع جديدة" },
+    searchTitle: "ابحث عن العقار المناسب", anyType: "أي نوع", anyArea: "أي منطقة", any: "أي عدد", bedrooms: "غرف النوم", propertyType: "نوع العقار",
+    search: "بحث", popular: "الأكثر طلبًا:", readyUnits: "وحدات جاهزة", sellMine: "بيع عقاري", openMap: "افتح الخريطة",
+    statsTitle: "عقار بالأرقام", statsText: "سنوات من بيع وتأجير وتسويق العقارات في مسقط.",
+    stats: [{ n: 100, label: "عميل سعيد" }, { n: 250, label: "عقار تم تسويقه" }, { n: 40, label: "مشروع تم إطلاقه" }, { n: 12, label: "سنة من الخبرة" }],
+    featuredProject: "مشروع مميز", viewProject: "عرض المشروع", from: "من",
+    slideSellTag: "تبيع أو تؤجر؟", slideSellTitle: "نسوّق عقارك نيابة عنك", slideSellText: "نراجعه ونصوّره ونطابقه مع مشترين ومستأجرين جادّين.",
+    slideSellCta: "اعرف كيف", slideContentTag: "خدمات المحتوى", slideContentTitle: "صور ومخططات وفيديو", slideContentText: "محتوى احترافي يمكن طلبه بشكل مستقل.",
+    slideContentCta: "عرض الأسعار", prev: "السابق", next: "التالي",
+    featured: "مميز", availableTitle: "متاح الآن", availableText: "مشاريع وعقارات تمت مراجعتها ونسوّقها.", allProjects: "عرض كل المشاريع",
+    servicesEyebrow: "اطلبها بشكل مستقل", servicesText: "يمكن طلب أي خدمة محتوى دون التسويق.",
+    faqEyebrow: "الأسئلة الشائعة", faqTitle: "أسئلة يطرحها علينا الناس", faqText: "ما زلت مترددًا؟ فريقنا يجيبك على واتساب.", askWhatsapp: "اسأل على واتساب",
+    faq: [
+      { q: "هل إرسال الطلب له تكلفة؟", a: "لا. إرسال طلب شراء أو إيجار أو بيع أو تأجير مجاني. خدمات المحتوى والاستشارات مدفوعة، وتُؤكد الأسعار في عرض السعر." },
+      { q: "هل سيُنشر عقاري مباشرة؟", a: "لا. نراجع السعر والطلب والموقع والمستندات أولًا. إرسال العقار للمراجعة لا يعني الالتزام بقبوله." },
+      { q: "هل تنشرون كل العقارات على الإنترنت؟", a: "لا. كثير من الفرص تتم مطابقتها بشكل خاص مع مشترين ومستأجرين في شبكتنا بدلًا من عرضها علنًا." },
+      { q: "هل يمكنني طلب الصور أو الفيديو دون التسويق؟", a: "نعم. يمكن طلب كل خدمة محتوى بشكل مستقل." },
+      { q: "هل استشارتكم تقييم رسمي؟", a: "لا. الاستشارة ليست تقييمًا هندسيًا أو قانونيًا أو رسميًا ما لم يقدمها مختص مرخّص." },
+    ],
+    talkChip: "نرد خلال يوم عمل واحد", talkTitle: "تحدث مع فريقنا", talkText: "مختصون في تسويق العقارات. اتصل بنا أو راسلنا على واتساب.",
+    phoneWhatsapp: "الهاتف وواتساب", copyNumber: "نسخ الرقم", copied: "تم النسخ", email: "البريد الإلكتروني",
   },
   pages: {
     find: {
@@ -571,7 +618,8 @@ const ar: Dictionary = {
     note: "مساعد بالذكاء الاصطناعي وقد يخطئ. يؤكد فريقنا كل التفاصيل.", error: "حدث خطأ، حاول مرة أخرى.",
   },
   footer: {
-    tagline: "تسويق وخدمات عقارية مُدارة في سلطنة عُمان.", legal: "قانوني", explore: "استكشف",
+    tagline: "تسويق عقاري في عُمان: بيع وتأجير واستثمار.", legal: "قانوني", explore: "استكشف", services: "الخدمات", contact: "تواصل",
+    sendMessage: "أرسل رسالة",
     rights: "جميع الحقوق محفوظة.", priceNote: "الأسعار تقديرية وتُؤكد في عرض السعر.",
   },
   legalNames: {

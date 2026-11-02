@@ -211,8 +211,9 @@ export async function listJobs(lang: Locale): Promise<Job[]> {
 // ---- Contact -----------------------------------------------------------------------------------------------------
 /** Contact buttons: Admin → Settings first, then the server's NEXT_PUBLIC_* values. */
 export async function siteContact() {
-  const rows = await db.select().from(settings).where(inArray(settings.key, ["contactPhone", "contactWhatsapp", "contactEmail"]));
+  const rows = await db.select().from(settings).where(inArray(settings.key, ["contactPhone", "contactWhatsapp", "contactEmail", "instagramUrl", "facebookUrl", "threadsUrl"]));
   const get = (key: string) => String(rows.find((r) => r.key === key)?.value ?? "").trim();
+  const link = (key: string) => (/^https:\/\/\S+$/.test(get(key)) ? get(key) : ""); // social links: https only
   return { phone: get("contactPhone") || envContact.phone, whatsapp: get("contactWhatsapp").replace(/[^\d]/g, "") || envContact.whatsapp,
-    email: get("contactEmail") || envContact.email };
+    email: get("contactEmail") || envContact.email, instagram: link("instagramUrl"), facebook: link("facebookUrl"), threads: link("threadsUrl") };
 }
