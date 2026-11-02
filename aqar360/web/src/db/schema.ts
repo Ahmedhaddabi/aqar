@@ -812,3 +812,42 @@ export const commissionPayouts = pgTable("commission_payouts", {
   createdBy: integer("created_by").references(() => users.id),
   createdAt: created(),
 }, (t) => [index("commission_payouts_user_idx").on(t.userId, t.month)]);
+
+// ---- Customer accounts (website "Log in / Create account") ------------------------------------------------------
+/**
+ * A customer's own login. It shows a customer record (requests, viewings, invoices) only once ownership is proven:
+ * an emailed code, a private link we sent them, or staff confirming them. Until then contactId stays empty.
+ */
+export const customerAccounts = pgTable("customer_accounts", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  email: text("email").unique(), // lowercase
+  phone: text("phone").unique(), // +968XXXXXXXX
+  passwordHash: text("password_hash").notNull(),
+  emailVerifiedAt: timestamp("email_verified_at", { withTimezone: true }),
+  contactId: integer("contact_id").unique().references(() => contacts.id, { onDelete: "set null" }),
+  linkedVia: text("linked_via"), // email_code | private_link | staff | new_request
+  language: text("language").$type<"ar" | "en">().notNull().default("ar"),
+  lastLoginAt: timestamp("last_login_at", { withTimezone: true }),
+  createdAt: created(),
+  updatedAt: updated(),
+});
+
+export const customerSessions = pgTable("customer_sessions", {
+  id: text("id").primaryKey(), // SHA-256 of the cookie token
+  accountId: integer("account_id").notNull().references(() => customerAccounts.id, { onDelete: "cascade" }),
+  expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
+  createdAt: created(),
+}, (t) => [index("customer_sessions_account_idx").on(t.accountId)]);
+
+/** One-time codes (verify email, reset password): only a hash is stored; 15 minutes, 5 tries. */
+export const customerCodes = pgTable("customer_codes", {
+  id: serial("id").primaryKey(),
+  accountId: integer("account_id").notNull().references(() => customerAccounts.id, { onDelete: "cascade" }),
+  purpose: text("purpose").$type<"verify_email" | "reset_password">().notNull(),
+  codeHash: text("code_hash").notNull(),
+  expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
+  attempts: integer("attempts").notNull().default(0),
+  usedAt: timestamp("used_at", { withTimezone: true }),
+  createdAt: created(),
+}, (t) => [index("customer_codes_account_idx").on(t.accountId, t.purpose)]);

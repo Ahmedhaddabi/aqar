@@ -16,6 +16,7 @@ export default async function PortalSignIn({ searchParams }: { searchParams: Pro
           <div><button className="a-btn primary">أرسل الرابط · Send link</button></div>
         </form>
       )}
+      <p className="a-muted" style={{ marginTop: 16 }}>لديك حساب؟ <a href="/ar/account/login">سجّل الدخول بكلمة المرور</a> · Have an account? <a href="/en/account/login">Log in with your password</a></p>
     </section>
   );
 }

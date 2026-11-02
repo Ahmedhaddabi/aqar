@@ -99,6 +99,13 @@
       "when": 1793547085439,
       "tag": "0013_staff_extras",
       "breakpoints": true
+    },
+    {
+      "idx": 14,
+      "version": "7",
+      "when": 1793598043715,
+      "tag": "0014_customer_accounts",
+      "breakpoints": true
     }
   ]
 }

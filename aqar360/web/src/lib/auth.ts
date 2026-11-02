@@ -44,7 +44,7 @@ export async function verifyLogin(email: string, password: string) {
   return user;
 }
 // Same bcrypt cost for unknown emails, so response time does not reveal which emails exist.
-const DUMMY_HASH = "$2b$12$x4k7bEdB2R8AdCO3.w0guuQREbF4hOoKseaaMkaL5HsQzIqpAgkde";
+export const DUMMY_HASH = "$2b$12$x4k7bEdB2R8AdCO3.w0guuQREbF4hOoKseaaMkaL5HsQzIqpAgkde";
 
 export async function startSession(userId: number) {
   const token = randomBytes(32).toString("base64url");

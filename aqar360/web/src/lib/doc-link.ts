@@ -33,6 +33,11 @@ export function portalLink(contactId: number, days = 30) {
   const exp = Math.floor(Date.now() / 1000) + days * 86_400;
   return link(`/portal/home?c=${contactId}&e=${exp}&`, "portal", `${contactId}.${exp}`);
 }
+/** The same signed values for forms on the signed-in "My account" page (short-lived: the session is the real check). */
+export function portalParams(contactId: number, hours = 12) {
+  const e = Math.floor(Date.now() / 1000) + hours * 3_600;
+  return { c: contactId, e, s: process.env.AUTH_SECRET ? sign("portal", `${contactId}.${e}`) : "" };
+}
 export function validPortalLink(contactId: number, exp: number, signature: string | undefined) {
   return Number.isInteger(contactId) && exp * 1000 > Date.now() && valid("portal", `${contactId}.${exp}`, signature);
 }

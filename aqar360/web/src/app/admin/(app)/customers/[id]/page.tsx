@@ -1,4 +1,4 @@
-import { desc, eq } from "drizzle-orm";
+import { and, desc, eq, isNull, or, sql } from "drizzle-orm";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
@@ -10,14 +10,14 @@ import { adminDict, adminLang, fill } from "@/admin/i18n";
 import { Documents } from "@/admin/Documents";
 import { Timeline } from "@/admin/Timeline";
 import { db } from "@/db";
-import { invoices, serviceJobs } from "@/db/schema";
+import { customerAccounts, invoices, serviceJobs } from "@/db/schema";
 import { aiReady } from "@/lib/ai";
 import { canOpen } from "@/lib/auth";
 import { portalLink } from "@/lib/doc-link";
 import { requireApp } from "@/lib/auth";
 import { consentSummary } from "@/lib/intake";
 
-import { updateCustomer } from "../../../crm-actions";
+import { linkWebAccount, updateCustomer } from "../../../crm-actions";
 
 export default async function CustomerPage({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<{ existing?: string }> }) {
   const user = await requireApp("crm");
@@ -35,6 +35,12 @@ export default async function CustomerPage({ params, searchParams }: { params: P
   const T2 = adminDict(lang);
   const aiOn = await aiReady();
   const portal = portalLink(c.id);
+  const same = [c.phone ? eq(customerAccounts.phone, c.phone) : null, c.email ? sql`${customerAccounts.email} = lower(${c.email})` : null].filter((x) => x !== null);
+  const [webLinked, webMatches] = await Promise.all([
+    db.select().from(customerAccounts).where(eq(customerAccounts.contactId, c.id)).limit(1),
+    same.length ? db.select().from(customerAccounts).where(and(isNull(customerAccounts.contactId), or(...same))).limit(5) : Promise.resolve([]),
+  ]);
+  const manager = user.role === "admin" || user.role === "manager";
   const wa = whatsappLink(c.phone);
   return (
     <>
@@ -98,6 +104,30 @@ export default async function CustomerPage({ params, searchParams }: { params: P
             <p className="a-muted">{T2.portal.intro}</p>
             <p dir="ltr" className="a-muted" style={{ wordBreak: "break-all" }}>{portal}</p>
             {wa && <a className="a-btn wa small" target="_blank" rel="noreferrer" href={`${wa}?text=${encodeURIComponent(`${c.name}: ${portal}`)}`}>💬 {T2.portal.send}</a>}
+          </section>
+          <section className="a-panel">
+            <h2>{T2.webAccount.title}</h2>
+            {webLinked[0] ? (
+              <form action={linkWebAccount} className="a-inline">
+                <span>{webLinked[0].name} · <span dir="ltr">{webLinked[0].email ?? webLinked[0].phone}</span></span>
+                <span className="a-state on">{T2.webAccount.linked} · {T2.webAccount.via[webLinked[0].linkedVia ?? ""] ?? "—"}</span>
+                {manager && <><input type="hidden" name="contact" value={c.id} /><input type="hidden" name="account" value={webLinked[0].id} />
+                  <button className="a-btn small danger" name="unlink" value="1">{T2.webAccount.unlink}</button></>}
+              </form>
+            ) : webMatches.length === 0 ? <p className="a-muted">{T2.webAccount.none}</p> : (
+              <>
+                <p className="a-muted">{T2.webAccount.matches}</p>
+                <ul className="a-list">
+                  {webMatches.map((a) => (
+                    <li key={a.id}>
+                      <span>{a.name} · <span dir="ltr">{a.email ?? a.phone}</span></span>
+                      {manager && <form action={linkWebAccount}><input type="hidden" name="contact" value={c.id} /><input type="hidden" name="account" value={a.id} />
+                        <button className="a-btn small">{T2.webAccount.link}</button></form>}
+                    </li>
+                  ))}
+                </ul>
+              </>
+            )}
           </section>
           <section className="a-panel">
             <h2>{t.editCustomer}</h2>

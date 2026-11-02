@@ -18,7 +18,7 @@ export function Footer({ lang, dict, brand }: { lang: Locale; dict: Dictionary; 
         <div>
           <h3>{brand}</h3>
           <p>{dict.footer.tagline}</p>
-          <p className="muted" style={{ color: "rgb(255 255 255 / 65%)" }}>{dict.footer.priceNote}</p>
+          <p className="muted">{dict.footer.priceNote}</p>
         </div>
         <div>
           <h3>{dict.footer.explore}</h3>

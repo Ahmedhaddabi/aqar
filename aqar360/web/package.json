@@ -18,6 +18,7 @@
     "test:map": "tsx --env-file=.env.test.local scripts/test-map.mts",
     "test:pages": "tsx --env-file=.env.test.local scripts/test-pages.mts",
     "test:extras": "tsx --env-file=.env.test.local scripts/test-extras.mts",
+    "test:accounts": "tsx --env-file=.env.test.local scripts/test-accounts.mts",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "tsx --env-file=.env.local scripts/migrate.mts",
     "db:seed": "tsx --env-file=.env.local scripts/seed.mts",

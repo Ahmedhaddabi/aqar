@@ -44,3 +44,5 @@ The platform is built with editable placeholders wherever the information belong
 | 38 | Website chat assistant: switch on and daily message cap | Off; cap 300 messages a day | Admin → Settings → Website chat assistant (needs the AI connection) |
 | 39 | A sample croquis (personal details blurred) to confirm reading and placement | Not tested with a real croquis | Send one to the developer; staff then upload croquis on each land property (Plot section) |
 | 40 | First admin account on the new database | None (database replaced on 2026-11-01) | /admin/setup with ADMIN_SETUP_TOKEN, then add staff on the Staff page |
+| 41 | Website look: final logo, colours and fonts (current: the design sent on 2026-11-02 — Instrument Sans / Tajawal, blue #1020F0) | Text logo "Aqar 360 · عقار 360" | web/src/app/design.css tokens at the top; logo in components/Header.tsx |
+| 42 | SMS provider for account codes (accounts made with a mobile number only) | None: they connect through the private link or staff; password help by contacting the team | Developer adds the provider to Admin → Integrations |

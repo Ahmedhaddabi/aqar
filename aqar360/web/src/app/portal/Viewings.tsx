@@ -3,7 +3,7 @@ import { suggestionsFor, upcomingViewings } from "@/lib/viewings";
 
 import { cancelViewingForm, toggleSavedForm } from "./actions";
 
-type Portal = { c: number; e: number; s: string };
+export type Portal = { c: number; e: number; s: string };
 const query = (p: Portal) => `c=${p.c}&e=${p.e}&s=${encodeURIComponent(p.s)}`;
 const when = (at: Date, lang: "ar" | "en") => new Intl.DateTimeFormat(lang === "ar" ? "ar-OM" : "en-GB",
   { weekday: "long", day: "numeric", month: "long", hour: "numeric", minute: "2-digit", timeZone: "Asia/Muscat" }).format(at);

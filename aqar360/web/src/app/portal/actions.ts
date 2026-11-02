@@ -8,6 +8,7 @@ import { z } from "zod";
 import { db } from "@/db";
 import { contacts, serviceJobs } from "@/db/schema";
 import { audit } from "@/lib/auth";
+import { currentCustomer, linkAccount } from "@/lib/customer-auth";
 import { jobLink, portalLink, validJobLink, validPortalLink } from "@/lib/doc-link";
 import { addEvent, setJobStatus } from "@/lib/jobs";
 import { sendMessage } from "@/lib/messages";
@@ -88,6 +89,11 @@ function portalFrom(form: FormData) {
   return p;
 }
 const portalQuery = (p: { c: number; e: number; s: string }) => `c=${p.c}&e=${p.e}&s=${encodeURIComponent(p.s)}`;
+/** Back to where the customer came from: "My account" when signed in to this record, otherwise the private link. */
+async function home(p: { c: number; e: number; s: string }, done: string, hash: string) {
+  const account = await currentCustomer();
+  return account?.contactId === p.c ? `/${account.language}/account?done=${done}${hash}` : `/portal/home?${portalQuery(p)}&done=${done}${hash}`;
+}
 
 export async function bookViewingForm(form: FormData) {
   const p = portalFrom(form);
@@ -95,17 +101,26 @@ export async function bookViewingForm(form: FormData) {
   const replace = Number(form.get("replace")) || undefined;
   const result = await bookOnline(p.c, match, String(form.get("slot") ?? ""), replace);
   if (!result.ok) redirect(`/portal/book?${portalQuery(p)}&m=${match}${replace ? `&replace=${replace}` : ""}&error=${result.reason}`);
-  redirect(`/portal/home?${portalQuery(p)}&done=booked#viewings`);
+  redirect(await home(p, "booked", "#viewings"));
 }
 
 export async function cancelViewingForm(form: FormData) {
   const p = portalFrom(form);
   const done = await cancelOnline(p.c, Number(form.get("id")));
-  redirect(`/portal/home?${portalQuery(p)}&done=${done ? "cancelled" : "none"}#viewings`);
+  redirect(await home(p, done ? "cancelled" : "none", "#viewings"));
 }
 
 export async function toggleSavedForm(form: FormData) {
   const p = portalFrom(form);
   const saved = await toggleSaved(p.c, Number(form.get("match")));
-  redirect(`/portal/home?${portalQuery(p)}&done=${saved === null ? "none" : saved ? "saved" : "unsaved"}#suggestions`);
+  redirect(await home(p, saved === null ? "none" : saved ? "saved" : "unsaved", "#suggestions"));
+}
+
+/** A signed-in customer opened a private link we sent them: that proves the record is theirs, so it joins the account. */
+export async function linkFromPortalForm(form: FormData) {
+  const p = portalFrom(form);
+  const account = await currentCustomer();
+  if (!account) redirect("/ar/account/login");
+  const ok = await linkAccount(account.id, p.c, "private_link");
+  redirect(ok ? `/${account.language}/account?done=linked` : `/portal/home?${portalQuery(p)}&linked=0`);
 }

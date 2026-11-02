@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { IBM_Plex_Sans_Arabic } from "next/font/google";
+import { Instrument_Sans, Tajawal } from "next/font/google";
 import { notFound } from "next/navigation";
 import type { ReactNode } from "react";
 
@@ -12,8 +12,11 @@ import { chatAvailable } from "@/lib/chat";
 import { companyName, dir, gtmId, isLocale, locales, siteUrl } from "@/lib/config";
 
 import "../globals.css";
+import "../design.css";
 
-const font = IBM_Plex_Sans_Arabic({ subsets: ["arabic", "latin"], weight: ["400", "500", "600", "700"], display: "swap" });
+// Design: Instrument Sans for Latin text, Tajawal for Arabic (each falls back to the other).
+const latin = Instrument_Sans({ subsets: ["latin"], weight: ["400", "500", "600"], display: "swap", variable: "--font-latin" });
+const arabic = Tajawal({ subsets: ["arabic", "latin"], weight: ["400", "500", "700"], display: "swap", variable: "--font-arabic" });
 
 export const revalidate = 300;
 
@@ -40,8 +43,8 @@ export default async function LangLayout({ children, params }: { children: React
   const chat = await chatAvailable().catch(() => false);
   return (
     <html lang={lang} dir={dir(lang)}>
-      <body className={font.className}>
-        <Header lang={lang} dict={dict} brand={companyName[lang]} />
+      <body className={`${latin.variable} ${arabic.variable}`}>
+        <Header lang={lang} dict={dict} brand={companyName} />
         <main id="main">{children}</main>
         <Footer lang={lang} dict={dict} brand={companyName[lang]} />
         {chat && <ChatWidget lang={lang} t={dict.chat} />}

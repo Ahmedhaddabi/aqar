@@ -12,7 +12,7 @@ const en = {
     home: "Home", find: "Find me a property", marketProperty: "Market my property", marketProject: "Market my project",
     contentServices: "Content services", consulting: "Consulting", areas: "Areas", insights: "Insights",
     careers: "Careers", partners: "Join as a supplier", about: "About us", contact: "Contact", more: "More",
-    switchLanguage: "العربية", menu: "Menu", account: "My account", map: "Map", projects: "Projects", calculators: "Calculators",
+    switchLanguage: "العربية", menu: "Menu", account: "My account", logIn: "Log in", startRequest: "Start a request", map: "Map", projects: "Projects", calculators: "Calculators",
   },
   home: {
     heroTitle: "What would you like to do?",
@@ -303,7 +303,7 @@ const ar: Dictionary = {
     home: "الرئيسية", find: "ابحثوا لي عن عقار", marketProperty: "سوّقوا عقاري", marketProject: "سوّقوا مشروعي",
     contentServices: "خدمات المحتوى", consulting: "الاستشارات", areas: "المناطق", insights: "المعرفة",
     careers: "الوظائف", partners: "انضم كمورد أو فني", about: "من نحن", contact: "تواصل معنا", more: "المزيد",
-    switchLanguage: "English", menu: "القائمة", account: "حسابي", map: "الخريطة", projects: "المشاريع", calculators: "الحاسبات",
+    switchLanguage: "English", menu: "القائمة", account: "حسابي", logIn: "تسجيل الدخول", startRequest: "ابدأ طلبك", map: "الخريطة", projects: "المشاريع", calculators: "الحاسبات",
   },
   home: {
     heroTitle: "ما الذي تريد إنجازه؟",

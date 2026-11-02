@@ -343,6 +343,9 @@ const en = {
   },
   receipts: { receipt: "Receipt", open: "Receipt", aging: "Customers owe, by age", current: "Not due yet", d30: "1–30 days late", d60: "31–60 days late", d90: "61–90 days late", d90p: "Over 90 days late" },
   portal: { link: "Customer portal link", intro: "One link where the customer sees their requests, invoices and receipts, pays online and approves deliveries. Valid 30 days.", send: "Send on WhatsApp" },
+  webAccount: { title: "Website account", none: "No website account for this customer.", linked: "Linked", via: { email_code: "email code", private_link: "private link",
+    staff: "staff", new_request: "new request" } as Record<string, string>, matches: "Accounts with this customer's mobile or email (not linked yet). Link only after you have confirmed it is really them.",
+    link: "Link to this customer", unlink: "Unlink" },
   entry: {
     title: "New customer or request", intro: "For phone calls, WhatsApp chats and walk-ins. The phone number finds an existing customer, so nobody is added twice.",
     customer: "Customer", phone: "Mobile", name: "Full name", email: "Email (optional)", language: "Language", source: "How did they reach us?",
@@ -880,6 +883,9 @@ const ar: typeof en = {
   },
   receipts: { receipt: "إيصال", open: "الإيصال", aging: "المستحق على العملاء حسب العمر", current: "لم يحن موعده", d30: "متأخر 1–30 يوما", d60: "متأخر 31–60 يوما", d90: "متأخر 61–90 يوما", d90p: "متأخر أكثر من 90 يوما" },
   portal: { link: "رابط بوابة العميل", intro: "رابط واحد يرى فيه العميل طلباته وفواتيره وإيصالاته ويدفع إلكترونيا ويعتمد التسليمات. صالح 30 يوما.", send: "إرسال عبر واتساب" },
+  webAccount: { title: "حساب الموقع", none: "لا يوجد حساب على الموقع لهذا العميل.", linked: "مرتبط", via: { email_code: "رمز البريد", private_link: "الرابط الخاص",
+    staff: "الموظف", new_request: "طلب جديد" }, matches: "حسابات بنفس رقم الهاتف أو البريد (غير مرتبطة). اربط فقط بعد التأكد أنه العميل نفسه.",
+    link: "اربط بهذا العميل", unlink: "إلغاء الربط" },
   entry: {
     title: "عميل أو طلب جديد", intro: "للمكالمات ومحادثات واتساب والزيارات. رقم الهاتف يجد العميل الموجود حتى لا يُضاف مرتين.",
     customer: "العميل", phone: "رقم الهاتف", name: "الاسم الكامل", email: "البريد الإلكتروني (اختياري)", language: "اللغة", source: "كيف وصل إلينا؟",

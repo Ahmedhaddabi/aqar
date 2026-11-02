@@ -336,3 +336,13 @@ Validation: 112 backend tests pass (4 new: slugs, public page with live units/ga
 - Migration 0013 (users.area_ids, users.calendar_key, commission_payouts).
 - Verified on the test database: test:pages 60/60 (every admin page and tab signed in as a temporary admin), test:extras 11/11, map 17/17, release B 25/25, release A 52/52, owners 30/30, viewings 31/31, integrations 29/29, smoke 59/59.
 - Not done: nightly database backup to GitHub (blocked: the repository is public, so even encrypted dumps should not be stored there) — see runbooks/backup_restore.md.
+
+## New website design and customer accounts (2026-11-02)
+
+- Website restyled to the client's design (artifact "home"): Instrument Sans + Tajawal, blue accent #1020F0, glass header with "Log in / My account" and "Start a request", blue hero, rounded cards and fields, light footer (src/app/design.css, loaded after globals.css). The customer portal pages use the same look (src/app/customer.css, scoped under `.cust`). Dark mode from the design is not built yet.
+- Customer accounts: /[lang]/account/login (log in / create account tabs, mobile number or email + password, keep me logged in, continue as guest), /[lang]/account/forgot (6-digit email code, new password, every old login ends), /[lang]/account (My account: requests, viewings, saved properties, owner dashboard, jobs, invoices, receipts, invite link, files — the same sections as the private portal link, now one shared component).
+- An account shows customer data only after ownership is proven (ADR-051): email code, opening a private link we sent while logged in ("Add to my account"), staff linking (Admin → customer → Website account, managers/admins), or a request sent while logged in that creates a new record with the account's own mobile/email.
+- Security: bcrypt passwords, database sessions (SHA-256 of the cookie), 30 days with "keep me logged in" else 12 hours, 5 failed logins in 15 minutes lock the account, same answers for unknown accounts, codes hashed with AUTH_SECRET (15 minutes, 5 tries, 3 per hour).
+- Migration 0014 (customer_accounts, customer_sessions, customer_codes), applied to the live and test databases.
+- Verified on the test database: new test:accounts 32/32 (through the real pages and forms); test:pages, viewings, owners, release A, release B, map, extras and integrations all pass; public pages load with the new header.
+- Not done: SMS codes for accounts made with a mobile number only (they connect through the private link or staff; password reset by contacting the team).

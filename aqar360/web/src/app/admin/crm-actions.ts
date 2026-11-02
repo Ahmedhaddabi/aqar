@@ -6,8 +6,9 @@ import { z } from "zod";
 
 import { canSeeRequest } from "@/admin/crm";
 import { db } from "@/db";
-import { ACTIVITY_TYPES, activities, contacts, REQUEST_STATUSES, requests, users } from "@/db/schema";
+import { ACTIVITY_TYPES, activities, contacts, customerAccounts, REQUEST_STATUSES, requests, users } from "@/db/schema";
 import { audit, requireUser } from "@/lib/auth";
+import { linkAccount } from "@/lib/customer-auth";
 import { normalizePhone } from "@/lib/intake";
 import { matchRequest } from "@/lib/matching";
 import { notify } from "@/lib/notify";
@@ -115,4 +116,21 @@ export async function updateCustomer(form: FormData) {
     idNumber: idNumber || null, nationality: nationality || null, idExpiry: idExpiry || null, updatedAt: new Date() }).where(eq(contacts.id, parsed.data.id));
   await audit("customer_updated", "contact", parsed.data.id, {}, user.id);
   refresh(undefined, parsed.data.id);
+}
+
+/** Staff confirmed who the website account belongs to (managers and admins only): link or unlink it to this customer. */
+export async function linkWebAccount(form: FormData) {
+  const user = await requireUser();
+  if (!["admin", "manager"].includes(user.role)) return;
+  const contactId = Number(form.get("contact"));
+  const accountId = Number(form.get("account"));
+  if (!Number.isInteger(contactId) || !Number.isInteger(accountId)) return;
+  if (form.get("unlink")) {
+    await db.update(customerAccounts).set({ contactId: null, linkedVia: null, updatedAt: new Date() })
+      .where(and(eq(customerAccounts.id, accountId), eq(customerAccounts.contactId, contactId)));
+    await audit("customer_account_unlinked", "contact", contactId, { account: accountId });
+  } else if (await linkAccount(accountId, contactId, "staff")) {
+    await audit("customer_account_linked_by_staff", "contact", contactId, { account: accountId });
+  }
+  revalidatePath(`/admin/customers/${contactId}`);
 }

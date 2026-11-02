@@ -185,7 +185,8 @@ const KIND: Record<FormKind, RequestKind> = { search: "search", property: "listi
 const RATE_LIMIT = 10; // submissions per IP per hour
 
 /** `viaChat`: the website chat assistant (its own limits replace the captcha, which a chat cannot show). */
-export async function submitForm(kind: FormKind, payload: unknown, ip?: string, opts: { viaChat?: boolean } = {}): Promise<{ ok: true; data: IntakeResult } | { ok: false; error: IntakeError }> {
+export async function submitForm(kind: FormKind, payload: unknown, ip?: string, opts: { viaChat?: boolean } = {}):
+  Promise<{ ok: true; data: IntakeResult; contact?: { id: number; returning: boolean; phone: string; email?: string } } | { ok: false; error: IntakeError }> {
   const lang: "ar" | "en" = (payload as { language?: string })?.language === "en" ? "en" : "ar";
   const msg = MESSAGES[lang];
   const parsed = SCHEMAS[kind].safeParse(payload);
@@ -264,7 +265,8 @@ export async function submitForm(kind: FormKind, payload: unknown, ip?: string, 
   await notify({ app: "crm", roles: ["admin", "manager"] }, { kind: request.kind === "listing" ? "opportunity_new" : "request_new",
     title: `${request.number} · ${data.full_name}`, href: `/admin/requests/${request.id}`, key: `request_new:${request.id}` });
   await afterRequestReceived(request.id, token).catch((e) => console.error("confirmation failed:", e.message));
-  return { ok: true, data: { request_number: request.number, status: customerStatus(request.status, lang), self_service_token: token } };
+  return { ok: true, data: { request_number: request.number, status: customerStatus(request.status, lang), self_service_token: token },
+    contact: { ...contact, phone: data.phone, email: data.email } };
 }
 
 // ---- Customer self-service (private link) ----------------------------------------------------------------------
