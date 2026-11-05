@@ -49,3 +49,5 @@ The platform is built with editable placeholders wherever the information belong
 | 43 | Website photos (hero, banners, page headers, service and guide cards) | 5 photos taken from the design file (public/img/photo-1…5.jpg); usage rights not confirmed | Replace with the client's own or licensed photos, same file names |
 | 44 | "Aqar in numbers" figures (+100 clients, +250 properties, +40 projects, +12 years) | Figures from the design, not confirmed | src/i18n/dictionaries.ts → home.stats (Arabic and English) |
 | 45 | Phone, WhatsApp, email and social links shown on the website (the design shows +968 9333 1177, +968 9333 7711, @aqar.official) | Empty: phone, WhatsApp button, social icons and contact cards stay hidden | Admin → Settings → Website |
+| 46 | Web pages the agent may read, and confirmation each site allows it (check terms, or get written permission; lawyer's view on Oman's data law) | None | Admin → Agent → Web pages |
+| 47 | OpenRouter API key and choice of model for reading pages without structured data | None (the agent still compares own data) | openrouter.ai/settings/keys, then Admin → Integrations; the default model is the free router |

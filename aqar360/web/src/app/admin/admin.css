@@ -698,3 +698,30 @@ input[type="checkbox"], input[type="radio"] { width: 16px; height: 16px; min-hei
 :root[data-theme="dark"] .a-doc { color: #111418; }
 @media print { .a-mesh, .a-topbar, .a-side { display: none !important; } .a-shell { display: block; } body { background: #fff; } }
 @media (prefers-reduced-motion: reduce) { .a-card, .a-app, .a-kpi, .a-side { transition: none; } }
+
+/* The agent's suggestions */
+.a-sugs { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
+.a-sug { display: flex; flex-wrap: wrap; gap: 14px; align-items: center; justify-content: space-between; margin: 0; }
+.a-sug .a-grow { flex: 1 1 360px; }
+.a-sug strong { overflow-wrap: anywhere; }
+.a-sug p { margin: 4px 0 0; }
+.a-sug-why { display: flex; flex-wrap: wrap; gap: 6px; }
+.a-sug-why .a-tag { margin: 0; }
+.a-sug-note { font-size: 12.5px; color: var(--warn); }
+
+/* The scrolling model list in Admin → Integrations */
+.a-models-head { display: flex; gap: 10px; align-items: center; }
+.a-models-head input { flex: 1; min-width: 0; }
+.a-models-head small { white-space: nowrap; }
+.a-models { max-height: 340px; overflow-y: auto; overscroll-behavior: contain; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); }
+.a-model { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 10px; align-items: center; padding: 10px 12px; border-bottom: 1px solid var(--line); cursor: pointer; }
+.a-model[hidden] { display: none; }
+.a-model:last-of-type { border-bottom: 0; }
+.a-model:hover { background: var(--bg); }
+.a-model:has(input:checked) { background: var(--soft); }
+.a-model input { width: 18px; height: 18px; }
+.a-model-name { display: grid; gap: 2px; min-width: 0; }
+.a-model-name strong { font-size: 13.5px; font-weight: 500; overflow-wrap: anywhere; }
+.a-model-name small { font-size: 11.5px; overflow-wrap: anywhere; }
+.a-model-price { font-size: 12px; color: var(--muted); white-space: nowrap; }
+.a-models-none { padding: 14px; color: var(--muted); }

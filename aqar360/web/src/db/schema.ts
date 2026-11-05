@@ -851,3 +851,60 @@ export const customerCodes = pgTable("customer_codes", {
   usedAt: timestamp("used_at", { withTimezone: true }),
   createdAt: created(),
 }, (t) => [index("customer_codes_account_idx").on(t.accountId, t.purpose)]);
+
+// ---- The built-in agent: web pages it reads, ads it found, suggestions waiting for a person -------------------------
+/** A page an admin chose for the agent to read, after confirming the site allows it. */
+export const agentSources = pgTable("agent_sources", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  url: text("url").notNull().unique(),
+  active: boolean("active").notNull().default(true),
+  confirmedBy: integer("confirmed_by").references(() => users.id, { onDelete: "set null" }), // the admin who confirmed permission
+  lastRunAt: timestamp("last_run_at", { withTimezone: true }),
+  lastStatus: text("last_status"), // ok | empty | robots | blocked | error | ai_limit
+  lastDetail: text("last_detail"),
+  lastFound: integer("last_found").notNull().default(0),
+  createdAt: created(),
+});
+
+/** Public ads found on those pages: no names, phone numbers or emails are stored. */
+export const marketListings = pgTable("market_listings", {
+  id: serial("id").primaryKey(),
+  sourceId: integer("source_id").notNull().references(() => agentSources.id, { onDelete: "cascade" }),
+  url: text("url").notNull().unique(),
+  title: text("title").notNull().default(""),
+  kind: text("kind"),
+  purpose: text("purpose").$type<"sale" | "rent">(),
+  areaId: integer("area_id").references(() => areas.id, { onDelete: "set null" }),
+  price: money("price"),
+  previousPrice: money("previous_price"),
+  bedrooms: integer("bedrooms"),
+  sizeSqm: doublePrecision("size_sqm"),
+  firstSeenAt: timestamp("first_seen_at", { withTimezone: true }).notNull().defaultNow(),
+  lastSeenAt: timestamp("last_seen_at", { withTimezone: true }).notNull().defaultNow(),
+  priceChangedAt: timestamp("price_changed_at", { withTimezone: true }),
+}, (t) => [index("market_listings_area_idx").on(t.areaId, t.kind, t.purpose)]);
+
+/** One thing the agent noticed. Nothing happens until a person presses a button; a dismissed one never comes back. */
+export const agentSuggestions = pgTable("agent_suggestions", {
+  id: serial("id").primaryKey(),
+  key: text("key").notNull().unique(),
+  kind: text("kind").notNull(),
+  status: text("status").$type<"new" | "done" | "dismissed" | "expired">().notNull().default("new"),
+  score: integer("score").notNull().default(0),
+  data: jsonb("data").$type<Record<string, string | number | string[] | null>>().notNull().default({}),
+  requestId: integer("request_id").references(() => requests.id, { onDelete: "cascade" }),
+  propertyId: integer("property_id").references(() => properties.id, { onDelete: "cascade" }),
+  listingId: integer("listing_id").references(() => marketListings.id, { onDelete: "cascade" }),
+  decidedBy: integer("decided_by").references(() => users.id, { onDelete: "set null" }),
+  decidedAt: timestamp("decided_at", { withTimezone: true }),
+  createdAt: created(),
+}, (t) => [index("agent_suggestions_status_idx").on(t.status, t.score)]);
+
+export const agentRuns = pgTable("agent_runs", {
+  id: serial("id").primaryKey(),
+  trigger: text("trigger").notNull(), // daily | manual | hourly
+  startedAt: timestamp("started_at", { withTimezone: true }).notNull().defaultNow(),
+  finishedAt: timestamp("finished_at", { withTimezone: true }),
+  stats: jsonb("stats").$type<Record<string, number>>().notNull().default({}),
+});

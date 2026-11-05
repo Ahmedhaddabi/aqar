@@ -12,7 +12,7 @@ import { THEME_KEY } from "./theme";
 
 export type NavItem = { href: string; label: string; icon: AdminIcon };
 export type NavGroup = { label: string; items: NavItem[] };
-export type NavModule = { key: "crm" | "erp" | "hr"; label: string; home: string; groups: NavGroup[] };
+export type NavModule = { key: "crm" | "erp" | "hr" | "agents"; label: string; home: string; groups: NavGroup[] };
 
 const isActive = (href: string, pathname: string) => (href === "/admin" ? pathname === "/admin" : pathname === href || pathname.startsWith(`${href}/`));
 // Pages under these paths belong to an app even when they are not menu items (detail pages).

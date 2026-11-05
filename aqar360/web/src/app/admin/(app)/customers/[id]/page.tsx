@@ -111,8 +111,8 @@ export default async function CustomerPage({ params, searchParams }: { params: P
               <form action={linkWebAccount} className="a-inline">
                 <span>{webLinked[0].name} · <span dir="ltr">{webLinked[0].email ?? webLinked[0].phone}</span></span>
                 <span className="a-state on">{T2.webAccount.linked} · {T2.webAccount.via[webLinked[0].linkedVia ?? ""] ?? "—"}</span>
-                {manager && <><input type="hidden" name="contact" value={c.id} /><input type="hidden" name="account" value={webLinked[0].id} />
-                  <button className="a-btn small danger" name="unlink" value="1">{T2.webAccount.unlink}</button></>}
+                {manager && <><input type="hidden" name="contact" value={c.id} /><input type="hidden" name="account" value={webLinked[0].id} /><input type="hidden" name="unlink" value="1" />
+                  <button className="a-btn small danger">{T2.webAccount.unlink}</button></>}
               </form>
             ) : webMatches.length === 0 ? <p className="a-muted">{T2.webAccount.none}</p> : (
               <>

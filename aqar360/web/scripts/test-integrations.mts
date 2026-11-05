@@ -87,6 +87,7 @@ try {
 
   // Each provider must reject fake keys (real network calls, nothing is sent or charged).
   await saveIntegration("resend", { apiKey: "re_fake_key_ABCD1234", from: "Aqar 360 <noreply@example.com>" }, [], true);
+  await saveIntegration("openrouter", { apiKey: "sk-or-v1-FakeKeyForTestingOnly0000", model: "openrouter/free" }, [], true);
   for (const id of INTEGRATIONS) {
     const r = await testIntegration(id, { email: "nobody@example.com" });
     check(`${id}: fake keys rejected by the provider`, !r.ok, r.message);

@@ -13,11 +13,11 @@ import { settings } from "@/db/schema";
 import { siteUrl } from "./config";
 import { openSecret, sealSecret } from "./totp";
 
-export const INTEGRATIONS = ["resend", "thawani", "paymob", "whatsapp", "anthropic"] as const;
+export const INTEGRATIONS = ["resend", "thawani", "paymob", "whatsapp", "anthropic", "openrouter"] as const;
 export type IntegrationId = (typeof INTEGRATIONS)[number];
 
 export type FieldDef = { name: string; env: string; secret?: boolean; required?: boolean; options?: string[]; default?: string;
-  placeholder?: string; numeric?: boolean; generated?: boolean };
+  placeholder?: string; numeric?: boolean; generated?: boolean; modelList?: boolean };
 
 export const AI_MODELS = ["claude-opus-5-5", "claude-sonnet-5-5", "claude-haiku-5-5"];
 
@@ -54,11 +54,15 @@ export const FIELDS: Record<IntegrationId, FieldDef[]> = {
     { name: "model", env: "AI_MODEL", options: AI_MODELS, default: "claude-opus-5-5" },
     { name: "perHour", env: "AI_PER_HOUR", numeric: true, default: "60" },
   ],
+  openrouter: [
+    { name: "apiKey", env: "OPENROUTER_API_KEY", secret: true, required: true, placeholder: "sk-or-…" },
+    { name: "model", env: "OPENROUTER_MODEL", modelList: true, default: "openrouter/free" },
+  ],
 };
 
 /** Addresses the customer pastes into the provider's dashboard. */
 export const CALLBACKS: Record<IntegrationId, string[]> = {
-  resend: [], anthropic: [],
+  resend: [], anthropic: [], openrouter: [],
   thawani: [`${siteUrl}/api/webhooks/thawani`, `${siteUrl}/api/pay/return/thawani`],
   paymob: [`${siteUrl}/api/webhooks/paymob`, `${siteUrl}/api/pay/return/paymob`],
   whatsapp: [`${siteUrl}/api/webhooks/whatsapp`],
@@ -141,6 +145,7 @@ export async function saveIntegration(id: IntegrationId, input: Record<string, s
       else if (given) values[f.name] = ENC + sealSecret(given);
     } else if (f.options && given && !f.options.includes(given)) continue;
     else if (f.numeric && given && !/^\d+$/.test(given)) continue;
+    else if (f.modelList && given && !/^[\w./:~-]+$/.test(given)) continue;
     else if (given) values[f.name] = given.slice(0, 500);
     else delete values[f.name];
   }
@@ -175,6 +180,36 @@ export async function testIntegration(id: IntegrationId, ctx: { email: string })
 }
 
 const timeout = () => AbortSignal.timeout(15_000);
+
+export type OpenRouterModel = { id: string; name: string; input: number | null; output: number | null };
+type RawModel = { id: string; name?: string; pricing?: { prompt?: string; completion?: string }; supported_parameters?: string[];
+  architecture?: { input_modalities?: string[]; output_modalities?: string[] } };
+/** US dollars per million tokens; null for a model with no fixed price (OpenRouter marks those -1). */
+const perMillion = (v: unknown) => { const n = Number(v); return Number.isFinite(n) && n >= 0 ? Math.round(n * 1e8) / 100 : null; };
+
+/** The models that can do the agent's job (read text, answer only in text, JSON on request): free ones first, then by name. */
+export function usableModels(json: unknown): OpenRouterModel[] {
+  const free = (m: OpenRouterModel) => (m.input === 0 && m.output === 0 ? 0 : 1);
+  return ((json as { data?: RawModel[] }).data ?? [])
+    .filter((m) => m.architecture?.input_modalities?.includes("text") && m.architecture.output_modalities?.join() === "text" && m.supported_parameters?.includes("response_format"))
+    .map((m) => ({ id: m.id, name: m.name ?? m.id, input: perMillion(m.pricing?.prompt), output: perMillion(m.pricing?.completion) }))
+    .sort((a, b) => free(a) - free(b) || a.name.localeCompare(b.name));
+}
+
+let modelCache: { at: number; rows: OpenRouterModel[] } | null = null;
+
+/** OpenRouter's current models (a public list, no key needed), kept for an hour. Empty if OpenRouter cannot be reached. */
+export async function openRouterModels(): Promise<OpenRouterModel[]> {
+  if (modelCache && Date.now() - modelCache.at < 3_600_000) return modelCache.rows;
+  try {
+    const res = await fetch("https://openrouter.ai/api/v1/models", { cache: "no-store", signal: AbortSignal.timeout(8_000) });
+    const rows = res.ok ? usableModels(await res.json()) : [];
+    if (rows.length) modelCache = { at: Date.now(), rows };
+    return rows.length ? rows : modelCache?.rows ?? [];
+  } catch {
+    return modelCache?.rows ?? [];
+  }
+}
 const reason = (status: number, json: Record<string, unknown>, ...paths: string[]) => {
   const pick = paths.map((p) => p.split(".").reduce<unknown>((o, k) => (o && typeof o === "object" ? (o as Record<string, unknown>)[k] : undefined), json))
     .find((v) => typeof v === "string" && v);
@@ -228,5 +263,13 @@ const CHECKS: Record<IntegrationId, (v: Record<string, string>, ctx: { email: st
       if (error instanceof Anthropic.APIError) return { ok: false, message: `${error.status ?? ""} ${error.message}`.trim().slice(0, 300) };
       throw error;
     }
+  },
+  async openrouter(v) {
+    const res = await fetch("https://openrouter.ai/api/v1/key", { cache: "no-store", signal: timeout(), headers: { Authorization: `Bearer ${v.apiKey}` } });
+    const json = await res.json().catch(() => ({}));
+    if (!res.ok) return { ok: false, message: reason(res.status, json, "error.message") };
+    const models = await openRouterModels();
+    const model = models.find((m) => m.id === v.model);
+    return model || !models.length ? { ok: true, message: `model:${model?.name ?? v.model}` } : { ok: false, message: `404 model ${v.model} is no longer offered` };
   },
 };

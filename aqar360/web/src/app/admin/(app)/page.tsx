@@ -7,6 +7,7 @@ import { ago, dateTime } from "@/admin/format";
 import { expiringSoon } from "@/admin/hr";
 import { adminDict, adminLang, fill } from "@/admin/i18n";
 import { db } from "@/db";
+import { agentOpenCount } from "@/lib/agent";
 import { projects, properties } from "@/db/schema";
 import { requireApp } from "@/lib/auth";
 
@@ -30,6 +31,7 @@ export default async function TodayPage({ searchParams }: { searchParams: Promis
     [t.overdue, today.overdue, "/admin/requests?tab=new", today.overdue ? "danger" : undefined],
     [t.dueToday, today.due.length, "#due"],
     [T.match.toReview, suggestions, "/admin/requests?tab=open", suggestions ? "alert" : undefined],
+    ...(user.role === "agent" ? [] : [[T.agent.waiting + " · " + T.nav.agentsApp, await agentOpenCount(), "/admin/agents", undefined] as [string, number, string, undefined]]),
     [T.today.projects, projectCount, `/${lang}/projects`],
     [T.today.properties, propertyCount, `/${lang}/map`],
   ];

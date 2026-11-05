@@ -29,6 +29,7 @@ export default async function LauncherPage({ searchParams }: { searchParams: Pro
     ...(apps.includes("crm") ? [{ href: "/admin", name: T.nav.crm, sub: t.crm, text: t.crmText, icon: "inbox" as const }] : []),
     ...(apps.includes("erp") ? [{ href: "/admin/erp", name: T.nav.erp, sub: t.erp, text: t.erpText, icon: "cash" as const }] : []),
     ...(apps.includes("hr") ? [{ href: "/admin/hr", name: T.nav.hrApp, sub: t.hr, text: t.hrText, icon: "id" as const }] : []),
+    ...(apps.includes("crm") && user.role !== "agent" ? [{ href: "/admin/agents", name: T.nav.agentsApp, sub: t.agent, text: t.agentText, icon: "spark" as const }] : []),
     ...(user.role === "admin" ? [{ href: "/admin/settings", name: T.nav.setup, sub: t.setup, text: t.setupText, icon: "gear" as const }] : []),
   ];
   return (

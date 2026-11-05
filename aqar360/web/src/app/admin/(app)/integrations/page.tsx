@@ -1,10 +1,11 @@
 import { dateTime } from "@/admin/format";
 import { adminDict, adminLang, fill } from "@/admin/i18n";
 import { Field, Toggle } from "@/admin/ListingParts";
+import { ModelPicker } from "@/admin/ModelPicker";
 import { requireUser } from "@/lib/auth";
-import { CALLBACKS, FIELDS, integrationOverview } from "@/lib/integrations";
+import { CALLBACKS, FIELDS, integrationOverview, openRouterModels } from "@/lib/integrations";
 
-import { removeIntegrationForm, saveIntegrationForm } from "../../integration-actions";
+import { removeIntegrationForm, saveAndTestIntegrationForm, saveIntegrationForm } from "../../integration-actions";
 
 type Row = Awaited<ReturnType<typeof integrationOverview>>[number];
 
@@ -25,7 +26,7 @@ export default async function IntegrationsPage({ searchParams }: { searchParams:
   const user = await requireUser(["admin"]);
   const lang = await adminLang(user.language);
   const t = adminDict(lang).integ;
-  const [rows, q] = await Promise.all([integrationOverview(), searchParams]);
+  const [rows, q, models] = await Promise.all([integrationOverview(), searchParams, openRouterModels()]);
   const testText = (message: string) => {
     if (message === "missing") return t.missing;
     const [kind, ...rest] = message.split(":");
@@ -88,6 +89,16 @@ export default async function IntegrationsPage({ searchParams }: { searchParams:
                       </Field>
                     );
                   }
+                  if (f.modelList && models.length) {
+                    // Not <Field>: its <label> would wrap a whole list of radio buttons.
+                    return (
+                      <div key={f.name} className="a-field wide">
+                        <span>{label}</span>
+                        <ModelPicker name={f.name} value={r.plain[f.name]} models={models} t={t.modelPicker} />
+                        <small>{p.help[f.name]}</small>
+                      </div>
+                    );
+                  }
                   if (f.secret) {
                     const hint = r.hints[f.name];
                     return (
@@ -99,7 +110,7 @@ export default async function IntegrationsPage({ searchParams }: { searchParams:
                     );
                   }
                   return (
-                    <Field key={f.name} label={label} help={p.help[f.name]}>
+                    <Field key={f.name} label={label} help={f.modelList ? t.modelPicker.failed : p.help[f.name]}>
                       <input name={f.name} defaultValue={r.plain[f.name]} dir="ltr" placeholder={f.placeholder} spellCheck={false}
                         inputMode={f.numeric ? "numeric" : undefined} />
                     </Field>
@@ -111,8 +122,8 @@ export default async function IntegrationsPage({ searchParams }: { searchParams:
               </div>
               <p className="a-muted">{p.test}</p>
               <div className="a-inline">
-                <button className="a-btn primary" name="intent" value="test">{t.saveTest}</button>
-                <button className="a-btn" name="intent" value="save">{t.save}</button>
+                <button className="a-btn primary" formAction={saveAndTestIntegrationForm}>{t.saveTest}</button>
+                <button className="a-btn">{t.save}</button>
               </div>
             </form>
 

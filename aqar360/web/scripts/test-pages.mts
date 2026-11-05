@@ -63,7 +63,7 @@ try {
     employee ? `/admin/hr/employees/${employee.id}` : null, "/admin/hr/leave", "/admin/hr/payroll", run ? `/admin/hr/payroll/${run.id}` : null,
     slip ? `/admin/hr/payslips/${slip.id}` : null, "/admin/hr/renewals", "/admin/integrations", "/admin/invoices", `/admin/invoices/${inv.id}`,
     "/admin/invoices/new", "/admin/jobs", `/admin/jobs/${job.id}`, `/admin/jobs/new?contact=${c.id}`, "/admin/kb", kb ? `/admin/kb/${kb.id}` : null, "/admin/listings",
-    "/admin/market", "/admin/messages", "/admin/messages?tab=log", "/admin/messages?tab=whatsapp", "/admin/notifications", "/admin/payment-methods",
+    "/admin/agents", "/admin/agents?tab=done", "/admin/agents/sources", "/admin/market", "/admin/messages", "/admin/messages?tab=log", "/admin/messages?tab=whatsapp", "/admin/notifications", "/admin/payment-methods",
     "/admin/performance", "/admin/plots", project ? `/admin/projects/${project.id}` : null, prop ? `/admin/properties/${prop.id}` : null, "/admin/recurring",
     "/admin/reports", "/admin/reports/weekly", "/admin/requests", `/admin/requests/${r.id}`, "/admin/requests/new", "/admin/reviews", "/admin/reviews?tab=referrals",
     "/admin/search?q=test", "/admin/settings", "/admin/settings?tab=audit", "/admin/site", area ? `/admin/site/areas/${area.id}` : null,
