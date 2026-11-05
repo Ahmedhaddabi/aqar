@@ -355,3 +355,12 @@ Validation: 112 backend tests pass (4 new: slugs, public page with live units/ga
 - Admin → Settings → Website: Instagram, Facebook and Threads links (footer and contact band; https only).
 - Styles: src/app/site.css (layout pieces), design.css keeps tokens and shared pieces. Photos from the design in public/img/photo-1…5.jpg.
 - Checked with screenshots (desktop English and Arabic, 390 px phone: no sideways scrolling) and all test suites on the test database.
+
+## Admin matched to the client admin design (2026-11-03)
+
+- Shell: glass side rail (brand, CRM / ERP / HR switch, "All apps", menu in groups with line icons, general pages, the signed-in person with sign out) and a glass top bar (where you are, search with Ctrl K, New, language, light/dark, open website, notifications). On phones the rail slides in from the side (right side in Arabic).
+- Look: soft blue canvas with light orbs, glass cards, Instrument Sans + Tajawal, pill statuses, underline tabs, rounded 40 px fields and buttons; blue band with key numbers on Today, ERP overview and All apps (now inside the shell, same address); sign-in and setup on the blue band.
+- Dark mode: the moon/sun button in the top bar; the choice is kept per browser (light until someone picks dark). Invoices and agreements stay white for printing.
+- Everything is the shared admin stylesheet (src/app/admin/admin.css) and src/admin/Nav.tsx, so all admin pages, including Staff accounts and settings, follow it.
+- Not built (shown in the design as sample data): AI agents (social listening, market scrapers, matcher app) and "Add a property by photos".
+- Checked with screenshots (English, Arabic, dark, phone) and test:pages (every admin page), accounts, release A/B, viewings, extras on the test database. scripts/shot-admin.mts makes a temporary admin session for screenshots (test database only).

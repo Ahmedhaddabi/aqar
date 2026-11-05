@@ -35,18 +35,25 @@ export default async function TodayPage({ searchParams }: { searchParams: Promis
   ];
   return (
     <>
-      <header className="a-head">
-        <h1>{fill(T.today.hello, { name: user.name.split(" ")[0] })}</h1>
-        <p className="a-muted">{T.today.intro}</p>
-      </header>
-      {denied && <p className="a-alert">{T.today.denied}</p>}
-      {expiring.length > 0 && (
-        <p className="a-alert"><Link href="/admin/erp">⚠ {T.today.expiring}: {expiring.length} → {T.nav.erp}</Link></p>
-      )}
-      <section className="a-cards">
-        {cards.map(([label, value, href, tone]) => (
-          <Link className={`a-card${tone ? ` ${tone}` : ""}`} key={label} href={href}><strong>{value}</strong><span>{label}</span></Link>
-        ))}
+      <section className="a-band">
+        <div className="a-band-grid" />
+        <div className="a-bandrow">
+          <div>
+            {expiring.length > 0 && <Link className="a-chip" href="/admin/erp"><i />{T.today.expiring}: {expiring.length}</Link>}
+            <h1>{fill(T.today.hello, { name: user.name.split(" ")[0] })}</h1>
+            <p>{T.today.intro}</p>
+          </div>
+          <div className="a-inline">
+            <Link className="a-btn primary" href="/admin/requests/new">+ {T.nav.newEntry}</Link>
+            <Link className="a-btn" href="/admin/requests">{T.nav.requests}</Link>
+          </div>
+        </div>
+        {denied && <p className="a-alert">{T.today.denied}</p>}
+        <div className="a-cards">
+          {cards.map(([label, value, href, tone]) => (
+            <Link className={`a-card${tone ? ` ${tone}` : ""}`} key={label} href={href}><strong>{value}</strong><span>{label}</span></Link>
+          ))}
+        </div>
       </section>
       <div className="a-two">
         <section className="a-panel">

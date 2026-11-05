@@ -9,7 +9,10 @@ type IntegText = { name: string; icon: string; link: string; purpose: string; st
 
 const en = {
   appName: "Aqar 360 Admin",
-  nav: { today: "Today", requests: "Requests", customers: "Customers", listings: "Properties & projects", invoices: "Invoices", expenses: "Expenses", finance: "Finance", hr: "Team (HR)", hiring: "Hiring & suppliers", site: "Website content", messages: "Messages", reports: "Reports", settings: "Settings", crm: "CRM", erp: "ERP", hrApp: "HR", overview: "Overview", apps: "Apps", setup: "Setup", payMethods: "Payment methods", jobs: "Service jobs", people: "People", leave: "Leave", payroll: "Payroll", renewals: "Renewals", account: "My account", claims: "My expense claims", notifications: "Notifications", approvals: "Approvals", recurring: "Recurring expenses", kb: "Knowledge base", search: "Search everything…", newEntry: "New customer / request", whatsapp: "WhatsApp", market: "Market intelligence", assistant: "AI assistant", field: "Field (mobile)", users: "Staff", integrations: "Integrations", calendar: "Calendar", reviews: "Reviews & referrals", agreements: "Agreements", performance: "Performance", plots: "Plots map", website: "Open website", signOut: "Sign out", language: "العربية" },
+  nav: { today: "Today", requests: "Requests", customers: "Customers", listings: "Properties & projects", invoices: "Invoices", expenses: "Expenses", finance: "Finance", hr: "Team (HR)", hiring: "Hiring & suppliers", site: "Website content", messages: "Messages", reports: "Reports", settings: "Settings", crm: "CRM", erp: "ERP", hrApp: "HR", overview: "Overview", apps: "Apps", setup: "Setup", payMethods: "Payment methods", jobs: "Service jobs", people: "People", leave: "Leave", payroll: "Payroll", renewals: "Renewals", account: "My account", claims: "My expense claims", notifications: "Notifications", approvals: "Approvals", recurring: "Recurring expenses", kb: "Knowledge base", search: "Search everything…", newEntry: "New customer / request", whatsapp: "WhatsApp", market: "Market intelligence", assistant: "AI assistant", field: "Field (mobile)", users: "Staff", integrations: "Integrations", calendar: "Calendar", reviews: "Reviews & referrals", agreements: "Agreements", performance: "Performance", plots: "Plots map", website: "Open website", signOut: "Sign out", language: "العربية",
+    allApps: "All apps", daily: "Daily work", propsSite: "Properties & website", insights: "Insights", money: "Finance & operations",
+    team: "Team", general: "General", admin: "Admin", newShort: "New", jump: "Search or jump to…", menu: "Menu", theme: "Light / dark",
+    langShort: "ع" },
   roles: { admin: "Admin", manager: "Manager", agent: "Agent" } as Record<string, string>,
   roleHelp: {
     admin: "Everything, including staff accounts and settings",
@@ -270,7 +273,7 @@ const en = {
     noWebhookSecret: "Webhook secret missing: payments are confirmed when the customer returns only.",
     attempts: "Online payment attempts", statuses: { pending: "Waiting", paid: "Paid", failed: "Failed", cancelled: "Cancelled" } as Record<string, string>,
   },
-  launcher: {
+  launcher: { open: "Open",
     hello: "Welcome, {name}", intro: "Choose an app to start.", denied: "You don't have access to that app. Ask an admin to add it to your account.",
     crm: "Customers and sales", erp: "Money and operations", hr: "Team, payroll and hiring", setup: "Settings and staff",
     crmText: "Website requests, customers, matching, viewings, offers, properties, website content, messages and reports.",
@@ -550,7 +553,10 @@ const en = {
 
 const ar: typeof en = {
   appName: "إدارة عقار 360",
-  nav: { today: "اليوم", requests: "الطلبات", customers: "العملاء", listings: "العقارات والمشاريع", invoices: "الفواتير", expenses: "المصروفات", finance: "المالية", hr: "الفريق", hiring: "التوظيف والموردون", site: "محتوى الموقع", messages: "الرسائل", reports: "التقارير", settings: "الإعدادات", crm: "CRM", erp: "ERP", hrApp: "HR", overview: "نظرة عامة", apps: "التطبيقات", setup: "الإعداد", payMethods: "طرق الدفع", jobs: "أعمال الخدمات", people: "الموظفون", leave: "الإجازات", payroll: "الرواتب", renewals: "التجديدات", account: "حسابي", claims: "مطالبات مصروفاتي", notifications: "الإشعارات", approvals: "الموافقات", recurring: "المصروفات المتكررة", kb: "دليل العمل", search: "ابحث في كل شيء…", newEntry: "عميل / طلب جديد", whatsapp: "واتساب", market: "ذكاء السوق", assistant: "المساعد الذكي", field: "الميدان (الجوال)", users: "حسابات الموظفين", integrations: "الربط بالخدمات", calendar: "التقويم", reviews: "التقييمات والإحالات", agreements: "الاتفاقيات", performance: "الأداء", plots: "خريطة القطع", website: "فتح الموقع", signOut: "تسجيل الخروج", language: "English" },
+  nav: { today: "اليوم", requests: "الطلبات", customers: "العملاء", listings: "العقارات والمشاريع", invoices: "الفواتير", expenses: "المصروفات", finance: "المالية", hr: "الفريق", hiring: "التوظيف والموردون", site: "محتوى الموقع", messages: "الرسائل", reports: "التقارير", settings: "الإعدادات", crm: "CRM", erp: "ERP", hrApp: "HR", overview: "نظرة عامة", apps: "التطبيقات", setup: "الإعداد", payMethods: "طرق الدفع", jobs: "أعمال الخدمات", people: "الموظفون", leave: "الإجازات", payroll: "الرواتب", renewals: "التجديدات", account: "حسابي", claims: "مطالبات مصروفاتي", notifications: "الإشعارات", approvals: "الموافقات", recurring: "المصروفات المتكررة", kb: "دليل العمل", search: "ابحث في كل شيء…", newEntry: "عميل / طلب جديد", whatsapp: "واتساب", market: "ذكاء السوق", assistant: "المساعد الذكي", field: "الميدان (الجوال)", users: "حسابات الموظفين", integrations: "الربط بالخدمات", calendar: "التقويم", reviews: "التقييمات والإحالات", agreements: "الاتفاقيات", performance: "الأداء", plots: "خريطة القطع", website: "فتح الموقع", signOut: "تسجيل الخروج", language: "English",
+    allApps: "كل التطبيقات", daily: "العمل اليومي", propsSite: "العقارات والموقع", insights: "التحليل", money: "المال والعمليات",
+    team: "الفريق", general: "عام", admin: "لوحة الإدارة", newShort: "جديد", jump: "ابحث أو انتقل إلى…", menu: "القائمة", theme: "فاتح / داكن",
+    langShort: "EN" },
   roles: { admin: "مدير النظام", manager: "مدير", agent: "موظف مبيعات" },
   roleHelp: {
     admin: "كل شيء، بما في ذلك حسابات الموظفين والإعدادات",
@@ -811,7 +817,7 @@ const ar: typeof en = {
     noWebhookSecret: "مفتاح الإشعارات غير موجود: يتم تأكيد الدفع عند عودة العميل فقط.",
     attempts: "محاولات الدفع الإلكتروني", statuses: { pending: "بانتظار", paid: "مدفوعة", failed: "فشلت", cancelled: "ملغاة" },
   },
-  launcher: {
+  launcher: { open: "فتح",
     hello: "مرحبا {name}", intro: "اختر التطبيق للبدء.", denied: "ليست لديك صلاحية لهذا التطبيق. اطلب من المدير إضافته لحسابك.",
     crm: "العملاء والمبيعات", erp: "المال والعمليات", hr: "الفريق والرواتب والتوظيف", setup: "الإعدادات والموظفون",
     crmText: "طلبات الموقع، العملاء، المطابقة، المعاينات، العروض، العقارات، محتوى الموقع، الرسائل والتقارير.",

@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { adminDict, adminLang, fill } from "@/admin/i18n";
+import { Ic } from "@/admin/icons";
 import { and, count, eq, inArray, isNull, lt } from "drizzle-orm";
 
 import { omanToday } from "@/admin/hr";
@@ -11,10 +12,9 @@ import { canOpen, openApps, requireUser } from "@/lib/auth";
 import { OPEN_JOB, slaOf } from "@/lib/jobs";
 import { unreadCount } from "@/lib/notify";
 
-import { logout, setLanguage } from "../actions";
 
 /**
- * The home screen after sign-in (like Frappe's /apps or a Citrix workspace): one big tile per app the person may open.
+ * The home screen after sign-in (like Frappe's /apps): key numbers on the blue band, then one tile per app the person may open.
  * Inside an app the menu shows only that app's pages.
  */
 export default async function LauncherPage({ searchParams }: { searchParams: Promise<{ denied?: string }> }) {
@@ -26,28 +26,23 @@ export default async function LauncherPage({ searchParams }: { searchParams: Pro
   const apps = openApps(user);
   const kpis = user.role === "agent" ? [] : await keyNumbers(user);
   const tiles = [
-    ...(apps.includes("crm") ? [{ href: "/admin", name: T.nav.crm, sub: t.crm, text: t.crmText, icon: "🤝", color: "#0e7c7b" }] : []),
-    ...(apps.includes("erp") ? [{ href: "/admin/erp", name: T.nav.erp, sub: t.erp, text: t.erpText, icon: "🏦", color: "#1c4a73" }] : []),
-    ...(apps.includes("hr") ? [{ href: "/admin/hr", name: T.nav.hrApp, sub: t.hr, text: t.hrText, icon: "🪪", color: "#7a4fb5" }] : []),
-    ...(user.role === "admin" ? [{ href: "/admin/settings", name: T.nav.setup, sub: t.setup, text: t.setupText, icon: "⚙️", color: "#5b6b7c" }] : []),
+    ...(apps.includes("crm") ? [{ href: "/admin", name: T.nav.crm, sub: t.crm, text: t.crmText, icon: "inbox" as const }] : []),
+    ...(apps.includes("erp") ? [{ href: "/admin/erp", name: T.nav.erp, sub: t.erp, text: t.erpText, icon: "cash" as const }] : []),
+    ...(apps.includes("hr") ? [{ href: "/admin/hr", name: T.nav.hrApp, sub: t.hr, text: t.hrText, icon: "id" as const }] : []),
+    ...(user.role === "admin" ? [{ href: "/admin/settings", name: T.nav.setup, sub: t.setup, text: t.setupText, icon: "gear" as const }] : []),
   ];
   return (
-    <main className="a-launcher">
-      <header className="a-launcher-top">
-        <strong className="a-launcher-brand">{lang === "ar" ? "عقار 360" : "Aqar 360"}</strong>
-        <nav className="a-launcher-links">
-          <Link href="/admin/notifications" className="a-bell">🔔{unread > 0 && <span className="a-badge">{unread}</span>}</Link>
-          <Link href="/admin/account">{T.nav.account}</Link>
-          <form action={setLanguage}><input type="hidden" name="lang" value={lang === "ar" ? "en" : "ar"} />
-            <input type="hidden" name="path" value="/admin/apps" /><button className="a-link">{T.nav.language}</button></form>
-          <form action={logout}><button className="a-link">{T.nav.signOut}</button></form>
-        </nav>
-      </header>
-      <section className="a-launcher-body">
-        <h1>{fill(t.hello, { name: user.name.split(" ")[0] })}</h1>
-        <p className="a-muted">{tiles.length ? t.intro : t.noApps}</p>
+    <>
+      <section className="a-band">
+        <div className="a-band-grid" />
+        <div className="a-bandrow">
+          <div>
+            {unread > 0 && <Link className="a-chip" href="/admin/notifications"><i />{fill(t.unread, { n: unread })}</Link>}
+            <h1>{fill(t.hello, { name: user.name.split(" ")[0] })}</h1>
+            <p>{tiles.length ? t.intro : t.noApps}</p>
+          </div>
+        </div>
         {denied && <p className="a-alert">{t.denied}</p>}
-        {unread > 0 && <p><Link href="/admin/notifications">🔔 {fill(t.unread, { n: unread })}</Link></p>}
         {kpis.length > 0 && (
           <div className="a-kpis" aria-label={T.kpi.title}>
             {kpis.map((k) => (
@@ -55,18 +50,18 @@ export default async function LauncherPage({ searchParams }: { searchParams: Pro
             ))}
           </div>
         )}
-        <div className="a-launcher-grid">
-          {tiles.map((a) => (
-            <Link key={a.href} href={a.href} className="a-tile">
-              <span className="a-tile-icon" style={{ background: a.color }} aria-hidden="true">{a.icon}</span>
-              <span className="a-tile-name">{a.name}</span>
-              <span className="a-tile-sub">{a.sub}</span>
-              <span className="a-tile-text">{a.text}</span>
-            </Link>
-          ))}
-        </div>
       </section>
-    </main>
+      <div className="a-apps">
+        {tiles.map((a) => (
+          <Link key={a.href} href={a.href} className="a-app">
+            <span className="a-app-icon"><Ic name={a.icon} size={22} /></span>
+            <h2>{a.sub}<small>{a.name}</small></h2>
+            <p>{a.text}</p>
+            <span className="a-go">{t.open} <Ic name="chevr" size={14} className="a-flip" /></span>
+          </Link>
+        ))}
+      </div>
+    </>
   );
 }
 

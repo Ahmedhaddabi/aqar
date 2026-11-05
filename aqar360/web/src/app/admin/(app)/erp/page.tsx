@@ -46,18 +46,21 @@ export default async function ErpPage() {
   ];
   return (
     <>
-      <header className="a-head a-request-head">
-        <div><h1>{t.title}</h1><p className="a-muted">{t.intro}</p></div>
-        <div className="a-inline">
-          <Link className="a-btn primary" href="/admin/invoices/new?kind=invoice">+ {T.money.newInvoice}</Link>
-          <Link className="a-btn" href="/admin/invoices/new?kind=quote">+ {T.money.newQuote}</Link>
-          <Link className="a-btn" href="/admin/expenses">+ {T.money.addExpense}</Link>
+      <section className="a-band">
+        <div className="a-band-grid" />
+        <div className="a-bandrow">
+          <div><span className="a-chip"><i />{T.nav.erp}</span><h1>{t.title}</h1><p>{t.intro}</p></div>
+          <div className="a-inline">
+            <Link className="a-btn primary" href="/admin/invoices/new?kind=invoice">+ {T.money.newInvoice}</Link>
+            <Link className="a-btn" href="/admin/invoices/new?kind=quote">+ {T.money.newQuote}</Link>
+            <Link className="a-btn" href="/admin/expenses">+ {T.money.addExpense}</Link>
+          </div>
         </div>
-      </header>
-      <section className="a-cards">
-        {cards.map(([label, value, href, tone]) => (
-          <Link key={label} href={href} className={`a-card${tone ? ` ${tone}` : ""}`}><strong>{value}</strong><span>{label}</span></Link>
-        ))}
+        <div className="a-cards">
+          {cards.map(([label, value, href, tone]) => (
+            <Link key={label} href={href} className={`a-card${tone ? ` ${tone}` : ""}`}><strong>{value}</strong><span>{label}</span></Link>
+          ))}
+        </div>
       </section>
       <div className="a-two" style={{ marginTop: 20 }}>
         <section className="a-panel">
