@@ -23,7 +23,7 @@ export type UploadResult = { ok: true; url: string } | { ok: false; error: "inva
 export const storageConfigured = () => !!process.env.BLOB_READ_WRITE_TOKEN || process.env.NODE_ENV !== "production"
   || process.env.ALLOW_LOCAL_UPLOADS === "1";
 
-export async function uploadImage(file: File, folder: "projects" | "properties" | "receipts" | "cvs" | "docs"): Promise<UploadResult> {
+export async function uploadImage(file: File, folder: "projects" | "properties" | "receipts" | "cvs" | "docs" | "brand"): Promise<UploadResult> {
   if (!file || file.size === 0 || file.size > MAX_BYTES) return { ok: false, error: "invalid" };
   const bytes = new Uint8Array(await file.arrayBuffer());
   const kind = sniff(bytes);

@@ -30,14 +30,14 @@ export async function performance(month: string, onlyUserId?: number) {
     db.select({ userId: activities.userId }).from(activities)
       .where(and(eq(activities.type, "viewing"), eq(activities.done, true), isNotNull(activities.result), ne(activities.result, "cancelled"),
         inArray(activities.userId, ids), gte(activities.dueAt, from), lt(activities.dueAt, to))),
-    db.select({ userId: requests.assignedTo, amount: payments.amount, total: invoices.total, media: invoices.passThroughTotal }).from(payments)
+    db.select({ userId: requests.assignedTo, amount: payments.amount, total: invoices.total, media: invoices.passThroughTotal, vat: invoices.vatTotal }).from(payments)
       .innerJoin(invoices, eq(payments.invoiceId, invoices.id)).innerJoin(requests, eq(invoices.requestId, requests.id))
       .where(and(inArray(requests.assignedTo, ids), gte(payments.paidOn, fromDay), lt(payments.paidOn, toDay))),
     db.select().from(targets).where(and(eq(targets.month, month), inArray(targets.userId, ids))),
     db.select().from(commissionPayouts).where(and(eq(commissionPayouts.month, month), inArray(commissionPayouts.userId, ids))),
   ]);
   return staff.map((u) => {
-    const income = paid.filter((p) => p.userId === u.id).reduce((a, p) => a + p.amount * (1 - (p.total ? (p.media ?? 0) / p.total : 0)), 0);
+    const income = paid.filter((p) => p.userId === u.id).reduce((a, p) => a + p.amount * (1 - (p.total ? ((p.media ?? 0) + (p.vat ?? 0)) / p.total : 0)), 0);
     const goal = goals.find((g) => g.userId === u.id);
     const commission = Math.round(income * (u.pct / 100) * 1000) / 1000;
     const paidOut = Math.round(payouts.filter((p) => p.userId === u.id).reduce((a, p) => a + p.amount, 0) * 1000) / 1000;

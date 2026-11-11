@@ -22,7 +22,9 @@ export default async function CustomersPage({ searchParams }: { searchParams: Pr
         <button className="a-btn">{t.searchBtn}</button>
       </form>
       <section className="a-panel">
-        {rows.length === 0 ? <p className="a-muted">{t.none}</p> : (
+        {rows.length === 0 ? (q?.trim()
+          ? <p className="a-muted">{t.noMatch.replace("{q}", q.trim())} <Link href="/admin/customers">{t.clearSearch}</Link></p>
+          : <p className="a-muted">{t.none} <Link className="a-btn small primary" href="/admin/requests/new">+ {adminDict(lang).nav.newEntry}</Link></p>) : (
           <table className="a-table">
             <thead><tr><th>{t.name}</th><th>{t.phone}</th><th>{t.requestsCount}</th><th>{t.received}</th></tr></thead>
             <tbody>

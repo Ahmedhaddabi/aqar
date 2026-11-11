@@ -5,12 +5,13 @@ import { notFound } from "next/navigation";
 import { dateOnly, money, whatsappLink } from "@/admin/format";
 import { adminDict, adminLang, fill } from "@/admin/i18n";
 import { InvoiceDocument } from "@/admin/InvoiceDocument";
-import { companyDetails, getInvoice } from "@/admin/money";
+import { companyDetails, getInvoice, invoiceAbout } from "@/admin/money";
 import { db } from "@/db";
 import { approvals, onlinePayments, PAYMENT_METHODS } from "@/db/schema";
 import { requireApp } from "@/lib/auth";
 import { docLink, receiptLink } from "@/lib/doc-link";
 import { jobsForInvoice } from "@/lib/jobs";
+import { docQr, invoiceDesign } from "@/lib/invoice-design";
 import { payMethods } from "@/lib/payment-methods";
 
 import { requestRefund } from "../../../approval-actions";
@@ -18,7 +19,7 @@ import { jobsFromInvoice } from "../../../job-actions";
 import { addPayment, invoiceAction } from "../../../money-actions";
 import { PrintButton } from "./PrintButton";
 
-export default async function InvoicePage({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<{ refund?: string }> }) {
+export default async function InvoicePage({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<{ refund?: string; saved?: string }> }) {
   const user = await requireApp("erp", ["admin", "manager"]);
   const lang = await adminLang(user.language);
   const t = adminDict(lang).money;
@@ -27,11 +28,13 @@ export default async function InvoicePage({ params, searchParams }: { params: Pr
   const { invoice: inv, contact, paid, payments } = data;
   const company = await companyDetails();
   const A = adminDict(lang).approvals;
-  const [refundFlag, pendingRefunds] = await Promise.all([searchParams.then((q) => q.refund),
+  const q = await searchParams;
+  const [refundFlag, pendingRefunds] = await Promise.all([q.refund,
     db.select().from(approvals).where(eq(approvals.invoiceId, inv.id))]);
   const [attempts, jobs, pay] = await Promise.all([
     db.select().from(onlinePayments).where(eq(onlinePayments.invoiceId, inv.id)).orderBy(desc(onlinePayments.createdAt)),
     jobsForInvoice(inv.id), payMethods()]);
+  const [design, qr] = await Promise.all([invoiceDesign(), inv.status === "draft" ? null : docQr(inv.id)]);
   const J = adminDict(lang).jobs;
   const R = adminDict(lang).receipts;
   const p = adminDict(lang).pay;
@@ -50,6 +53,8 @@ export default async function InvoicePage({ params, searchParams }: { params: Pr
         <p><Link href={`/admin/invoices?tab=${isQuote ? "quote" : "invoice"}`}>← {t.invoices}</Link></p>
         <div className="a-inline a-doc-actions">
           <PrintButton label={t.print} />
+          {inv.status === "draft" && <Link className="a-btn small" href={`/admin/invoices/new?edit=${inv.id}`}>✏️ {t.edit}</Link>}
+          <Link className="a-btn small" href={`/admin/invoices/new?copy=${inv.id}`}>⧉ {t.duplicate}</Link>
           {inv.status === "draft" && act("send", t.markSent, "primary")}
           {inv.status === "sent" && act("send", t.markSent)}
           {isQuote && ["draft", "sent"].includes(inv.status) && act("accept", t.accept, "primary")}
@@ -59,6 +64,7 @@ export default async function InvoicePage({ params, searchParams }: { params: Pr
         </div>
       </div>
 
+      {q.saved && <p className="a-ok a-noprint" role="status">{t.saved}</p>}
       {!["draft", "cancelled"].includes(inv.status) && (
         <section className="a-panel a-noprint">
           <h2>{t.customerLink}</h2>
@@ -78,7 +84,7 @@ export default async function InvoicePage({ params, searchParams }: { params: Pr
           )}
         </section>
       )}
-      <InvoiceDocument invoice={inv} contact={contact} paid={paid} company={company} pay={pay} />
+      <InvoiceDocument invoice={inv} contact={contact} paid={paid} company={company} pay={pay} design={design} qr={qr} today={today} about={await invoiceAbout(inv)} />
 
       {!isQuote && (
         <section className="a-panel a-noprint">

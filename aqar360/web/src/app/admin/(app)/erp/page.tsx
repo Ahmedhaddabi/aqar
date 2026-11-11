@@ -1,10 +1,11 @@
 import { and, asc, count, eq, gte, inArray, lte, sql } from "drizzle-orm";
 import Link from "next/link";
 
+import { ColumnChart } from "@/admin/charts";
 import { dateOnly, money } from "@/admin/format";
 import { expiringSoon, omanToday } from "@/admin/hr";
 import { adminDict, adminLang } from "@/admin/i18n";
-import { financeSummary } from "@/admin/money";
+import { financeSummary, monthlyMoney } from "@/admin/money";
 import { db } from "@/db";
 import { approvals, contacts, expenseClaims, invoices, onlinePayments, payments, recurringExpenses, serviceJobs } from "@/db/schema";
 import { OPEN_JOB, slaOf } from "@/lib/jobs";
@@ -19,7 +20,7 @@ export default async function ErpPage() {
   const today = omanToday();
   const paidSum = sql<number>`coalesce((select sum(${payments.amount}) from ${payments} where ${payments.invoiceId} = ${invoices.id}), 0)::float`;
   const n = async (q: Promise<{ n: number }[]>) => (await q)[0].n;
-  const [month, openJobs, claims, online, unpaid, expiring] = await Promise.all([
+  const [month, openJobs, claims, online, unpaid, expiring, byMonth] = await Promise.all([
     financeSummary(`${today.slice(0, 7)}-01`, today),
     db.select().from(serviceJobs).where(inArray(serviceJobs.status, [...OPEN_JOB])),
     n(db.select({ n: count() }).from(expenseClaims).where(inArray(expenseClaims.status, ["pending", "approved"]))),
@@ -28,7 +29,10 @@ export default async function ErpPage() {
     db.select({ inv: invoices, customer: contacts.name, paid: paidSum }).from(invoices).innerJoin(contacts, eq(invoices.contactId, contacts.id))
       .where(and(eq(invoices.kind, "invoice"), inArray(invoices.status, ["sent", "partly_paid"]))).orderBy(asc(invoices.dueDate)).limit(8),
     expiringSoon(30),
+    monthlyMoney(today.slice(0, 7), 6),
   ]);
+  const C = T.charts;
+  const names = C.months.split("|");
   const lateJobs = openJobs.filter((j) => slaOf(j) === "red").length;
   const weekAhead = new Date(Date.parse(today) + 7 * 86_400_000).toISOString().slice(0, 10);
   const [recurringDue, refundsWaiting] = await Promise.all([
@@ -61,6 +65,14 @@ export default async function ErpPage() {
             <Link key={label} href={href} className={`a-card${tone ? ` ${tone}` : ""}`}><strong>{value}</strong><span>{label}</span></Link>
           ))}
         </div>
+      </section>
+      <section className="a-panel" style={{ marginTop: 20 }}>
+        <h2><Link href="/admin/finance">{C.moneySix}</Link></h2>
+        <ColumnChart lang={lang} unit={lang === "ar" ? "ر.ع" : "OMR"} tableLabel={C.table} height={160}
+          series={[{ name: C.income, slot: 1 }, { name: C.spent, slot: 2 }]}
+          groups={byMonth.map((r) => ({ label: names[Number(r.month.slice(5)) - 1], long: `${names[Number(r.month.slice(5)) - 1]} ${r.month.slice(0, 4)}`,
+            values: [Math.round(r.income), Math.round(r.spent)] }))}
+          extra={{ name: C.profit, values: byMonth.map((r) => Math.round(r.income - r.spent)) }} />
       </section>
       <div className="a-two" style={{ marginTop: 20 }}>
         <section className="a-panel">

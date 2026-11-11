@@ -1,9 +1,10 @@
 import { notFound } from "next/navigation";
 
 import { InvoiceDocument } from "@/admin/InvoiceDocument";
-import { companyDetails, getInvoice } from "@/admin/money";
+import { companyDetails, getInvoice, invoiceAbout } from "@/admin/money";
 import { validDocLink } from "@/lib/doc-link";
 import { enabledGateways } from "@/lib/payments";
+import { docQr, invoiceDesign } from "@/lib/invoice-design";
 import { payMethods } from "@/lib/payment-methods";
 
 import { PrintButton } from "../../admin/(app)/invoices/[id]/PrintButton";
@@ -46,7 +47,8 @@ export default async function CustomerDocPage({ params, searchParams }: {
           </form>
         ))}
       </div>
-      <InvoiceDocument invoice={inv} contact={data.contact} paid={paid} company={await companyDetails()} pay={await payMethods()} />
+      <InvoiceDocument invoice={inv} contact={data.contact} paid={paid} company={await companyDetails()} pay={await payMethods()}
+        design={await invoiceDesign()} qr={await docQr(inv.id)} about={await invoiceAbout(inv)} today={new Date(Date.now() + 4 * 3_600_000).toISOString().slice(0, 10)} />
     </>
   );
 }

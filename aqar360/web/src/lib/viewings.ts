@@ -150,6 +150,36 @@ export async function bookOnline(contactId: number, matchId: number, slotIso: st
   return result;
 }
 
+/**
+ * Books a viewing the WhatsApp agent agreed with the customer: same opening hours, notice and "nobody else then" rules as
+ * online booking, under the same per-property lock. The assigned agent (or admins and managers) are told.
+ */
+export async function bookForChat(opts: { contactId: number; propertyId: number; requestId: number | null; agentId: number | null; at: Date; note: string }):
+  Promise<{ ok: true; activityId: number } | { ok: false; reason: "closed" | "taken" | "limit" }> {
+  const rules = await viewingRules();
+  if (!rules.selfBooking) return { ok: false, reason: "closed" };
+  const result = await db.transaction(async (tx) => {
+    await tx.execute(sql`select pg_advisory_xact_lock(${7_302_000_000 + opts.propertyId})`);
+    const [{ n }] = await tx.select({ n: count() }).from(activities).where(and(eq(activities.contactId, opts.contactId), eq(activities.type, "viewing"),
+      eq(activities.done, false), gt(activities.dueAt, new Date())));
+    if (n >= rules.maxUpcoming) return { ok: false as const, reason: "limit" as const };
+    const free = await freeSlots({ agentId: opts.agentId, propertyId: opts.propertyId, rules, exec: tx });
+    if (!free.some((d) => d.slots.some((x) => x.getTime() === opts.at.getTime()))) return { ok: false as const, reason: "taken" as const };
+    const [a] = await tx.insert(activities).values({ requestId: opts.requestId, contactId: opts.contactId, userId: opts.agentId, type: "viewing", dueAt: opts.at,
+      propertyId: opts.propertyId, source: "whatsapp_agent", body: opts.note.slice(0, 500) }).returning();
+    if (opts.requestId) await tx.update(requests).set({ status: "viewing", updatedAt: new Date() })
+      .where(and(eq(requests.id, opts.requestId), inArray(requests.status, ["new", "contacted", "working"])));
+    return { ok: true as const, activityId: a.id };
+  });
+  if (!result.ok) return result;
+  const [p] = await db.select().from(properties).where(eq(properties.id, opts.propertyId));
+  await notify({ userIds: [opts.agentId], app: "crm", roles: opts.agentId ? ["admin"] : ["admin", "manager"] },
+    { kind: "viewing_booked", title: `WhatsApp · ${p ? propertyText(p) : ""} · ${whenText(opts.at, "en")}`,
+      href: opts.requestId ? `/admin/requests/${opts.requestId}` : `/admin/whatsapp/${opts.contactId}`, key: `viewing_booked:${result.activityId}` });
+  await audit("viewing_booked_whatsapp", "contact", opts.contactId, { activityId: result.activityId, propertyId: opts.propertyId });
+  return result;
+}
+
 /** The customer cancels one of their own upcoming viewings; the agent is told (unless it was replaced by a new time). */
 export async function cancelOnline(contactId: number, activityId: number, opts: { quiet?: boolean } = {}) {
   const [a] = await db.update(activities).set({ done: true, result: "cancelled" })

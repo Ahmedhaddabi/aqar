@@ -43,7 +43,9 @@ export default async function RequestsPage({ searchParams }: { searchParams: Pro
         </form>
       </div>
       <section className="a-panel">
-        {rows.length === 0 ? <p className="a-muted">{t.none}</p> : (
+        {rows.length === 0 ? (q?.trim()
+          ? <p className="a-muted">{t.noMatch.replace("{q}", q.trim())} <Link href="/admin/requests">{t.clearSearch}</Link></p>
+          : <p className="a-muted">{t.none} <Link className="a-btn small primary" href="/admin/requests/new">+ {adminDict(lang).nav.newEntry}</Link></p>) : (
           <table className="a-table">
             <thead>
               <tr><th>{t.customer}</th><th>{t.what}</th><th>{t.status}</th><th>{t.owner}</th><th>{t.received}</th></tr>

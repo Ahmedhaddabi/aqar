@@ -13,7 +13,7 @@ import { Timeline } from "@/admin/Timeline";
 import { db } from "@/db";
 import { contacts, REQUEST_STATUSES } from "@/db/schema";
 import { optionLabel } from "@/i18n/dictionaries";
-import { requireApp } from "@/lib/auth";
+import { canOpen, requireApp } from "@/lib/auth";
 import { siteUrl } from "@/lib/config";
 import { savedByContact } from "@/lib/viewings";
 
@@ -63,6 +63,12 @@ export default async function RequestPage({ params, searchParams }: {
           <p className="a-muted">{t.kinds[r.kind]}{r.subtype ? ` · ${optionLabel(site, r.subtype)}` : ""} · {dateTime(r.createdAt, lang)}</p>
         </div>
         <span className={`a-status big s-${r.status}`}>{t.statuses[r.status]}</span>
+        {canOpen(user, "erp") && (user.role === "admin" || user.role === "manager") && (
+          <div className="a-actions">
+            <Link className="a-btn small" href={`/admin/invoices/new?kind=quote&contact=${c.id}&request=${r.id}`}>+ {T.money.newQuote}</Link>
+            <Link className="a-btn small" href={`/admin/invoices/new?kind=invoice&contact=${c.id}&request=${r.id}`}>+ {T.money.newInvoice}</Link>
+          </div>
+        )}
       </header>
 
       {flash.existing && <p className="a-ok">{fill(T.entry.existing, { name: c.name })}</p>}

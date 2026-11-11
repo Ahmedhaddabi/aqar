@@ -57,6 +57,7 @@ export const FIELDS: Record<IntegrationId, FieldDef[]> = {
   openrouter: [
     { name: "apiKey", env: "OPENROUTER_API_KEY", secret: true, required: true, placeholder: "sk-or-…" },
     { name: "model", env: "OPENROUTER_MODEL", modelList: true, default: "openrouter/free" },
+    { name: "perHour", env: "AI_PER_HOUR", numeric: true, default: "60" },
   ],
 };
 
@@ -187,28 +188,33 @@ type RawModel = { id: string; name?: string; pricing?: { prompt?: string; comple
 /** US dollars per million tokens; null for a model with no fixed price (OpenRouter marks those -1). */
 const perMillion = (v: unknown) => { const n = Number(v); return Number.isFinite(n) && n >= 0 ? Math.round(n * 1e8) / 100 : null; };
 
-/** The models that can do the agent's job (read text, answer only in text, JSON on request): free ones first, then by name. */
-export function usableModels(json: unknown): OpenRouterModel[] {
+/**
+ * The models that can do a job, free ones first, then by name. "json": read text and answer in JSON on request (the
+ * web-reading agent). "tools": read text and call tools (the WhatsApp agent).
+ */
+export function usableModels(json: unknown, need: "json" | "tools" = "json"): OpenRouterModel[] {
   const free = (m: OpenRouterModel) => (m.input === 0 && m.output === 0 ? 0 : 1);
+  const param = need === "tools" ? "tools" : "response_format";
   return ((json as { data?: RawModel[] }).data ?? [])
-    .filter((m) => m.architecture?.input_modalities?.includes("text") && m.architecture.output_modalities?.join() === "text" && m.supported_parameters?.includes("response_format"))
+    .filter((m) => m.architecture?.input_modalities?.includes("text") && m.architecture.output_modalities?.join() === "text" && m.supported_parameters?.includes(param))
     .map((m) => ({ id: m.id, name: m.name ?? m.id, input: perMillion(m.pricing?.prompt), output: perMillion(m.pricing?.completion) }))
     .sort((a, b) => free(a) - free(b) || a.name.localeCompare(b.name));
 }
 
-let modelCache: { at: number; rows: OpenRouterModel[] } | null = null;
+let modelCache: { at: number; raw: unknown } | null = null;
 
 /** OpenRouter's current models (a public list, no key needed), kept for an hour. Empty if OpenRouter cannot be reached. */
-export async function openRouterModels(): Promise<OpenRouterModel[]> {
-  if (modelCache && Date.now() - modelCache.at < 3_600_000) return modelCache.rows;
-  try {
-    const res = await fetch("https://openrouter.ai/api/v1/models", { cache: "no-store", signal: AbortSignal.timeout(8_000) });
-    const rows = res.ok ? usableModels(await res.json()) : [];
-    if (rows.length) modelCache = { at: Date.now(), rows };
-    return rows.length ? rows : modelCache?.rows ?? [];
-  } catch {
-    return modelCache?.rows ?? [];
+export async function openRouterModels(need: "json" | "tools" = "json"): Promise<OpenRouterModel[]> {
+  if (!modelCache || Date.now() - modelCache.at >= 3_600_000) {
+    try {
+      const res = await fetch("https://openrouter.ai/api/v1/models", { cache: "no-store", signal: AbortSignal.timeout(8_000) });
+      const raw = res.ok ? await res.json() : null;
+      if (raw && usableModels(raw).length) modelCache = { at: Date.now(), raw };
+    } catch {
+      // keep the last good list
+    }
   }
+  return modelCache ? usableModels(modelCache.raw, need) : [];
 }
 const reason = (status: number, json: Record<string, unknown>, ...paths: string[]) => {
   const pick = paths.map((p) => p.split(".").reduce<unknown>((o, k) => (o && typeof o === "object" ? (o as Record<string, unknown>)[k] : undefined), json))

@@ -1,6 +1,10 @@
-import { NextResponse, type NextRequest } from "next/server";
+import { after, NextResponse, type NextRequest } from "next/server";
 
+import { agentReply } from "@/lib/wa-agent";
 import { handleWebhook, validSignature, waConfig } from "@/lib/whatsapp";
+
+// The WhatsApp agent answers after Meta has its 200 (it waits a few seconds for more messages, then asks the AI).
+export const maxDuration = 120;
 
 /** Meta's one-time check when the webhook address is saved in the app dashboard. */
 export async function GET(request: NextRequest) {
@@ -19,7 +23,14 @@ export async function POST(request: NextRequest) {
   let payload: unknown;
   try { payload = JSON.parse(raw); } catch { return NextResponse.json({ ok: false }, { status: 400 }); }
   try {
-    await handleWebhook(payload as Parameters<typeof handleWebhook>[0]);
+    const { inbound } = await handleWebhook(payload as Parameters<typeof handleWebhook>[0]);
+    if (inbound.length) {
+      after(async () => {
+        for (const m of inbound) {
+          await agentReply(m.contactId, m.messageId).catch((error) => console.error("whatsapp agent:", (error as Error).message));
+        }
+      });
+    }
     return NextResponse.json({ ok: true });
   } catch (error) {
     console.error("whatsapp webhook failed:", (error as Error).message);

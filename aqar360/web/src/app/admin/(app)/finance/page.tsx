@@ -1,6 +1,7 @@
+import { ColumnChart } from "@/admin/charts";
 import { money } from "@/admin/format";
 import { adminDict, adminLang } from "@/admin/i18n";
-import { arAging, financeSummary } from "@/admin/money";
+import { arAging, financeSummary, monthlyMoney } from "@/admin/money";
 import { requireApp } from "@/lib/auth";
 
 const isDate = (v?: string) => !!v && /^\d{4}-\d{2}-\d{2}$/.test(v);
@@ -13,10 +14,13 @@ export default async function FinancePage({ searchParams }: { searchParams: Prom
   const q = await searchParams;
   const from = isDate(q.from) ? q.from! : `${today.slice(0, 7)}-01`;
   const to = isDate(q.to) ? q.to! : today;
-  const [s, aging] = await Promise.all([financeSummary(from, to), arAging(today)]);
+  const [s, aging, byMonth] = await Promise.all([financeSummary(from, to), arAging(today), monthlyMoney(to.slice(0, 7), 12)]);
+  const C = adminDict(lang).charts;
+  const names = C.months.split("|");
   const R = adminDict(lang).receipts;
   const cards: [string, number, string?][] = [[t.income, s.income], [t.spent, s.spent], [t.profit, s.profit, s.profit < 0 ? "danger" : undefined],
-    [t.receivable, s.receivable, s.receivable > 0 ? "alert" : undefined], [t.mediaHeld, s.media], [t.pettyCash, s.petty]];
+    [t.receivable, s.receivable, s.receivable > 0 ? "alert" : undefined], [t.mediaHeld, s.media], [t.pettyCash, s.petty],
+    ...(s.vat > 0 ? [[t.vatCollected, s.vat] as [string, number]] : [])];
   return (
     <>
       <header className="a-head"><h1>{t.finance}</h1><p className="a-muted">{t.financeIntro}</p></header>
@@ -30,6 +34,15 @@ export default async function FinancePage({ searchParams }: { searchParams: Prom
         {cards.map(([label, value, tone]) => <div key={label} className={`a-card${tone ? ` ${tone}` : ""}`}><strong>{money(value, lang)}</strong><span>{label}</span></div>)}
       </section>
       <section className="a-panel" style={{ marginTop: 20 }}>
+        <h2>{C.moneyByMonth}</h2>
+        <p className="a-muted">{C.moneyByMonthHelp}</p>
+        <ColumnChart lang={lang} unit={lang === "ar" ? "ر.ع" : "OMR"} tableLabel={C.table}
+          series={[{ name: C.income, slot: 1 }, { name: C.spent, slot: 2 }]}
+          groups={byMonth.map((r) => ({ label: names[Number(r.month.slice(5)) - 1].slice(0, lang === "ar" ? 10 : 3), long: `${names[Number(r.month.slice(5)) - 1]} ${r.month.slice(0, 4)}`,
+            values: [Math.round(r.income), Math.round(r.spent)] }))}
+          extra={{ name: C.profit, values: byMonth.map((r) => Math.round(r.income - r.spent)) }} />
+      </section>
+      <section className="a-panel">
         <h2>{R.aging}</h2>
         <div className="a-cards">
           {(["current", "d30", "d60", "d90", "d90p"] as const).map((k) => (

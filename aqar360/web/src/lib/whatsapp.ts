@@ -55,15 +55,21 @@ export async function sendText(phone: string, text: string): Promise<SendResult>
   return post({ to: digits(phone), type: "text", text: { body: text.slice(0, 4096), preview_url: true } });
 }
 
+/** A photo by its public https link (Meta downloads it); the caption shows under the photo. */
+export async function sendImage(phone: string, link: string, caption?: string): Promise<SendResult> {
+  return post({ to: digits(phone), type: "image", image: { link, ...(caption ? { caption: caption.slice(0, 1024) } : {}) } });
+}
+
 export async function windowOpen(contactId: number) {
   const [last] = await db.select({ at: waMessages.createdAt }).from(waMessages)
     .where(and(eq(waMessages.contactId, contactId), eq(waMessages.direction, "in"))).orderBy(desc(waMessages.createdAt)).limit(1);
   return !!last && Date.now() - last.at.getTime() < WINDOW_MS;
 }
 
-export async function recordOut(contactId: number | null, phone: string, body: string, result: SendResult, userId: number | null = null) {
+export async function recordOut(contactId: number | null, phone: string, body: string, result: SendResult, userId: number | null = null,
+  extra: { bot?: boolean; media?: { url: string; caption?: string }[] } = {}) {
   await db.insert(waMessages).values({ contactId, direction: "out", phone, body, waId: result.ok ? result.id : null,
-    status: result.ok ? "sent" : "failed", error: result.ok ? null : result.error, userId });
+    status: result.ok ? "sent" : "failed", error: result.ok ? null : result.error, userId, bot: extra.bot ?? false, media: extra.media ?? [] });
 }
 
 export async function validSignature(raw: string, header: string | null) {
@@ -83,9 +89,13 @@ type WebhookValue = {
 
 const STOP = /^(stop|unsubscribe|ايقاف|إيقاف|الغاء|إلغاء|توقف)$/i;
 
-/** Incoming messages land on the customer's file (and their open request); delivery receipts update what we sent. */
+/**
+ * Incoming messages land on the customer's file (and their open request); delivery receipts update what we sent.
+ * Returns the new customer messages the WhatsApp agent may answer (newest per customer).
+ */
 export async function handleWebhook(payload: { entry?: { changes?: { field?: string; value?: WebhookValue }[] }[] }) {
   let handled = 0;
+  const inbound = new Map<number, number>(); // contact → newest message id
   for (const change of payload.entry?.flatMap((e) => e.changes ?? []) ?? []) {
     const v = change.value ?? {};
     for (const st of v.statuses ?? []) {
@@ -105,6 +115,7 @@ export async function handleWebhook(payload: { entry?: { changes?: { field?: str
       if (!contact) [contact] = await db.insert(contacts).values({ name: name || phone, phone, source: "WhatsApp" }).returning();
       const inserted = await db.insert(waMessages).values({ contactId: contact.id, direction: "in", phone, body: text, waId: m.id }).onConflictDoNothing().returning();
       if (!inserted.length) continue; // Meta retries: the same message is stored once
+      inbound.set(contact.id, inserted[0].id);
       const [open] = await db.select().from(requests).where(and(eq(requests.contactId, contact.id), inArray(requests.status, [...OPEN_STATUSES])))
         .orderBy(desc(requests.updatedAt)).limit(1);
       await db.insert(activities).values({ requestId: open?.id ?? null, contactId: contact.id, type: "whatsapp", body: `⬅ ${text}`, done: true });
@@ -118,7 +129,7 @@ export async function handleWebhook(payload: { entry?: { changes?: { field?: str
       handled++;
     }
   }
-  return handled;
+  return { handled, inbound: [...inbound].map(([contactId, messageId]) => ({ contactId, messageId })) };
 }
 
 /** Conversations for the inbox: customers with WhatsApp messages, newest first. */
@@ -128,6 +139,7 @@ export async function conversations(limit = 100) {
   // Rows are newest first: unread = customer messages after our last reply.
   const seen = new Map<number, { contact: typeof contacts.$inferSelect; last: typeof waMessages.$inferSelect; unread: number; replied: boolean }>();
   for (const { m, c } of rows) {
+    if (m.status === "draft" || m.status === "discarded") continue; // the agent's unsent drafts are not replies
     const entry = seen.get(c.id) ?? { contact: c, last: m, unread: 0, replied: false };
     seen.set(c.id, entry);
     if (m.direction === "out") entry.replied = true;

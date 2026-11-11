@@ -1,6 +1,7 @@
-// AI helpers (Claude via the Anthropic SDK). Principle from the strategy (§26.8, Appendix G): AI drafts and finds,
+// AI helpers. Models come through OpenRouter (Admin → Integrations → OpenRouter); a saved Anthropic key is used only
+// when OpenRouter is not connected. Principle from the strategy (§26.8, Appendix G): AI drafts and finds,
 // people decide. Nothing here writes to the database; every tool is read-only and limited to what the asking
-// staff member may see. Switched off until the Anthropic key is saved in Admin → Integrations (or ANTHROPIC_API_KEY).
+// staff member may see. Switched off until one of the two is connected.
 import Anthropic from "@anthropic-ai/sdk";
 import { and, count, desc, eq, gte, ilike, inArray, isNull, lt, lte, or, sql } from "drizzle-orm";
 import { z } from "zod";
@@ -14,31 +15,101 @@ import { canOpen, type CurrentUser } from "./auth";
 import { portalLink } from "./doc-link";
 import { integrationConfig } from "./integrations";
 
-export const aiReady = async () => !!(await integrationConfig("anthropic"));
-// One client per key, so a key changed in Admin → Integrations is used from the next request.
-let client: { key: string; ai: Anthropic } | null = null;
-async function ai() {
-  const c = await integrationConfig("anthropic");
-  if (!c) throw new Error("ai_off");
-  if (client?.key !== c.apiKey) client = { key: c.apiKey, ai: new Anthropic({ apiKey: c.apiKey }) };
-  return { ai: client.ai, model: c.model || "claude-opus-5-5", perHour: Number(c.perHour) || 60 };
+type Provider = { kind: "openrouter"; key: string; model: string; perHour: number } | { kind: "anthropic"; key: string; model: string; perHour: number };
+
+async function provider(): Promise<Provider | null> {
+  const or = await integrationConfig("openrouter");
+  if (or) return { kind: "openrouter", key: or.apiKey, model: or.model || "openrouter/free", perHour: Number(or.perHour) || 60 };
+  const an = await integrationConfig("anthropic");
+  if (an) return { kind: "anthropic", key: an.apiKey, model: an.model || "claude-opus-5-5", perHour: Number(an.perHour) || 60 };
+  return null;
 }
+export const aiReady = async () => !!(await provider());
+
+// One Anthropic client per key, so a key changed in Admin → Integrations is used from the next request.
+let client: { key: string; ai: Anthropic } | null = null;
+
+type Params = Omit<Anthropic.Beta.MessageCreateParamsNonStreaming, "model">;
+type Msg = Anthropic.Beta.BetaMessage;
 
 /**
- * Every call opts into server-side refusal fallbacks ("default" routing) where the model supports them; Haiku has none.
- * Effort is set per task: low for extraction and drafting, medium for the assistant.
+ * One model call. Callers write Anthropic-shaped requests (system, messages with text/image/document/tool blocks, tools,
+ * a JSON schema in output_config.format) and get an Anthropic-shaped reply back, whichever provider answers.
  */
-export async function create(params: Omit<Anthropic.Beta.MessageCreateParamsNonStreaming, "model">) {
-  const { ai: client, model: m } = await ai();
-  const fallback = !m.startsWith("claude-haiku");
-  return client.beta.messages.create({ ...params, model: m, ...(fallback ? { betas: ["server-side-fallback-2026-07-01"], fallbacks: "default" as const } : {}) });
+export async function create(params: Params): Promise<Msg> {
+  const p = await provider();
+  if (!p) throw new Error("ai_off");
+  if (p.kind === "openrouter") return openRouter(p.key, p.model, params);
+  if (client?.key !== p.key) client = { key: p.key, ai: new Anthropic({ apiKey: p.key }) };
+  const fallback = !p.model.startsWith("claude-haiku");
+  return client.ai.beta.messages.create({ ...params, model: p.model, ...(fallback ? { betas: ["server-side-fallback-2026-07-01"], fallbacks: "default" as const } : {}) });
+}
+
+type OrPart = { type: "text"; text: string } | { type: "image_url"; image_url: { url: string } } | { type: "file"; file: { filename: string; file_data: string } };
+type OrCall = { id: string; type: "function"; function: { name: string; arguments: string } };
+type OrMessage = { role: "system" | "user" | "assistant" | "tool"; content: string | OrPart[] | null; tool_calls?: OrCall[]; tool_call_id?: string };
+type OrReply = { choices?: { finish_reason?: string; message?: { content?: string | null; tool_calls?: OrCall[] } }[]; error?: { code?: number | string; message?: string } };
+
+/** Anthropic-shaped request → OpenRouter chat completion → Anthropic-shaped reply. Exported for tests. */
+export function toOpenRouter(model: string, params: Params) {
+  const messages: OrMessage[] = [];
+  const system = typeof params.system === "string" ? params.system : (params.system ?? []).map((b) => b.text).join("\n");
+  if (system) messages.push({ role: "system", content: system });
+  for (const m of params.messages) {
+    if (typeof m.content === "string") { messages.push({ role: m.role, content: m.content }); continue; }
+    const parts: OrPart[] = [];
+    const calls: OrCall[] = [];
+    for (const b of m.content ?? []) {
+      if (b.type === "text") parts.push({ type: "text", text: b.text });
+      else if (b.type === "image" && b.source.type === "base64") parts.push({ type: "image_url", image_url: { url: `data:${b.source.media_type};base64,${b.source.data}` } });
+      else if (b.type === "document" && b.source.type === "base64") parts.push({ type: "file", file: { filename: "document.pdf", file_data: `data:application/pdf;base64,${b.source.data}` } });
+      else if (b.type === "tool_use") calls.push({ id: b.id, type: "function", function: { name: b.name, arguments: JSON.stringify(b.input ?? {}) } });
+      else if (b.type === "tool_result") messages.push({ role: "tool", tool_call_id: b.tool_use_id,
+        content: typeof b.content === "string" ? b.content : JSON.stringify(b.content ?? "") });
+    }
+    if (m.role === "assistant") {
+      if (parts.length || calls.length) messages.push({ role: "assistant", content: parts.map((x) => (x.type === "text" ? x.text : "")).join("\n") || null, ...(calls.length ? { tool_calls: calls } : {}) });
+    } else if (parts.length) messages.push({ role: "user", content: parts });
+  }
+  const tools = (params.tools ?? []).flatMap((t) => ("input_schema" in t ? [{ type: "function" as const,
+    function: { name: t.name, description: t.description ?? "", parameters: t.input_schema } }] : []));
+  const format = (params.output_config as { format?: { type: string; schema?: object } } | undefined)?.format;
+  return {
+    model, messages, max_tokens: params.max_tokens,
+    ...(tools.length ? { tools, tool_choice: "auto" } : {}),
+    ...(format?.type === "json_schema" ? { response_format: { type: "json_schema", json_schema: { name: "result", strict: true, schema: format.schema } } } : {}),
+    // Only providers that support what we ask for (tools, JSON output) are used.
+    ...(tools.length || format ? { provider: { require_parameters: true } } : {}),
+  };
+}
+
+export function fromOpenRouter(json: OrReply, model: string): Msg {
+  const choice = json.choices?.[0];
+  const text = choice?.message?.content ?? "";
+  const calls = choice?.message?.tool_calls ?? [];
+  const content = [
+    ...(text ? [{ type: "text", text, citations: null }] : []),
+    ...calls.map((c) => ({ type: "tool_use", id: c.id, name: c.function.name, input: (() => { try { return JSON.parse(c.function.arguments || "{}"); } catch { return {}; } })() })),
+  ];
+  const stop = calls.length ? "tool_use" : choice?.finish_reason === "content_filter" ? "refusal" : choice?.finish_reason === "length" ? "max_tokens" : "end_turn";
+  return { id: "or", type: "message", role: "assistant", model, content, stop_reason: stop, stop_sequence: null,
+    usage: { input_tokens: 0, output_tokens: 0 } } as unknown as Msg;
+}
+
+async function openRouter(key: string, model: string, params: Params): Promise<Msg> {
+  const res = await fetch("https://openrouter.ai/api/v1/chat/completions", { method: "POST", signal: AbortSignal.timeout(90_000),
+    headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json", "X-Title": "Aqar 360" }, body: JSON.stringify(toOpenRouter(model, params)) });
+  const json = (await res.json().catch(() => ({}))) as OrReply;
+  const failed = json.error?.code ?? (res.ok ? null : res.status);
+  if (failed) throw new Error(`ai_${failed} ${json.error?.message ?? ""}`.trim());
+  return fromOpenRouter(json, model);
 }
 
 export const textOf = (msg: Anthropic.Beta.BetaMessage) => msg.content.filter((b): b is Anthropic.Beta.BetaTextBlock => b.type === "text").map((b) => b.text).join("\n").trim();
 
 /** At most N AI calls per staff member per hour (cost control); counted from the audit log. */
 export async function underLimit(userId: number, perHour?: number) {
-  perHour ??= (await ai()).perHour;
+  perHour ??= (await provider())?.perHour ?? 60;
   const [row] = await db.select({ n: count() }).from(auditLog).where(and(eq(auditLog.userId, userId), sql`${auditLog.action} like 'ai_%'`,
     gte(auditLog.at, new Date(Date.now() - 3_600_000))));
   return row.n < perHour;

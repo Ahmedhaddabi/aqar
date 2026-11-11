@@ -56,7 +56,7 @@ export default async function AccountPage({ params, searchParams }: Props) {
         {!contact && (
           <article className="card" id="connect">
             <h2>{t.linkTitle}</h2>
-            {q.error === "code" && <p className="auth-msg err" role="alert">{t.errors.code}</p>}
+            {(q.error === "code" || q.error === "mail" || q.error === "limit") && <p className="auth-msg err" role="alert">{t.errors[q.error]}</p>}
             {account.email && (
               <>
                 <p className="muted">{t.linkEmail}</p>

@@ -19,7 +19,8 @@ export async function signupAction(form: FormData) {
   const lang = langOf(form);
   const result = await createAccount({ name: text(form, "name", 120), identifier: text(form, "identifier"), password: text(form, "password"),
     keep: form.get("keep") === "on", lang });
-  redirect(result.ok ? `/${lang}/account?done=welcome` : `/${lang}/account/login?mode=signup&error=${result.error}`);
+  if (!result.ok) redirect(`/${lang}/account/login?mode=signup&error=${result.error}`);
+  redirect(`/${lang}/account?done=welcome${result.mailFailed ? "&error=mail#connect" : ""}`);
 }
 
 export async function logoutAction(form: FormData) {
@@ -31,8 +32,8 @@ export async function sendVerifyAction(form: FormData) {
   const lang = langOf(form);
   const account = await currentCustomer();
   if (!account) redirect(`/${lang}/account/login?error=expired`);
-  await sendCode(account, "verify_email").catch(() => false);
-  redirect(`/${lang}/account?done=sent#connect`);
+  const result = await sendCode(account, "verify_email").catch(() => "failed");
+  redirect(`/${lang}/account?${result === "sent" ? "done=sent" : `error=${result === "limit" ? "limit" : "mail"}`}#connect`);
 }
 
 export async function verifyAction(form: FormData) {

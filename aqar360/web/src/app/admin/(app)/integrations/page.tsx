@@ -60,6 +60,7 @@ export default async function IntegrationsPage({ searchParams }: { searchParams:
             )}
             {r.source === "server" && <p className="a-muted">ℹ️ {t.serverKeys}</p>}
             {r.unreadable.length > 0 && <p className="a-alert">{t.unreadable}</p>}
+            {r.id === "resend" && /@resend\.dev>?\s*$/i.test(r.plain.from) && <p className="a-alert">{t.resendTestSender}</p>}
 
             <details className="a-integ-help" open={s.key === "notSet"}>
               <summary>{t.howTo}</summary>

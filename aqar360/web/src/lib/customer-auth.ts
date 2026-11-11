@@ -69,7 +69,7 @@ export type CustomerAccount = NonNullable<Awaited<ReturnType<typeof currentCusto
 export type AuthError = "invalid" | "password" | "taken" | "wrong" | "locked";
 
 export async function createAccount(input: { name: string; identifier: string; password: string; keep: boolean; lang: "ar" | "en" }):
-  Promise<{ ok: true; account: CustomerAccount } | { ok: false; error: AuthError }> {
+  Promise<{ ok: true; account: CustomerAccount; mailFailed: boolean } | { ok: false; error: AuthError }> {
   const name = input.name.trim().slice(0, 120);
   const id = parseIdentifier(input.identifier);
   if (name.length < 2 || !id) return { ok: false, error: "invalid" };
@@ -81,8 +81,8 @@ export async function createAccount(input: { name: string; identifier: string; p
   if (!account) return { ok: false, error: "taken" };
   await db.insert(auditLog).values({ action: "customer_account_created", entity: "customer_account", entityId: String(account.id), data: {} });
   await startSession(account.id, input.keep);
-  if ("email" in id) await sendCode(account, "verify_email").catch(() => undefined);
-  return { ok: true, account };
+  const mailFailed = "email" in id && (await sendCode(account, "verify_email").catch(() => "failed")) !== "sent";
+  return { ok: true, account, mailFailed };
 }
 
 /** Same answer for an unknown account and a wrong password; 5 failures in 15 minutes lock that account for a while. */
@@ -114,17 +114,20 @@ const TEXT = {
   },
 } as const;
 
-/** Emails a 6-digit code (at most 3 an hour per purpose). Returns false when the account has no email or too many were sent. */
-export async function sendCode(account: { id: number; email: string | null; language: "ar" | "en" }, purpose: "verify_email" | "reset_password") {
-  if (!account.email) return false;
+/** Emails a 6-digit code (at most 3 an hour per purpose). A code that could not be sent is removed, so it does not use up the limit. */
+export async function sendCode(account: { id: number; email: string | null; language: "ar" | "en" }, purpose: "verify_email" | "reset_password"): Promise<"sent" | "limit" | "failed"> {
+  if (!account.email) return "failed";
   const [{ n }] = await db.select({ n: count() }).from(customerCodes).where(and(eq(customerCodes.accountId, account.id),
     eq(customerCodes.purpose, purpose), gt(customerCodes.createdAt, new Date(Date.now() - 3_600_000))));
-  if (n >= 3) return false;
+  if (n >= 3) return "limit";
   const code = String(randomInt(0, 1_000_000)).padStart(6, "0");
-  await db.insert(customerCodes).values({ accountId: account.id, purpose, codeHash: codeHash(account.id, purpose, code), expiresAt: new Date(Date.now() + 15 * 60_000) });
+  const [row] = await db.insert(customerCodes).values({ accountId: account.id, purpose, codeHash: codeHash(account.id, purpose, code), expiresAt: new Date(Date.now() + 15 * 60_000) }).returning({ id: customerCodes.id });
   const t = TEXT[purpose][account.language];
-  await sendStaffEmail(account.email, t.subject, t.body.replace("{code}", code));
-  return true;
+  const result = await sendStaffEmail(account.email, t.subject, t.body.replace("{code}", code));
+  if (result.status === "sent") return "sent";
+  console.error("customer code email not sent:", result.reason);
+  await db.delete(customerCodes).where(eq(customerCodes.id, row.id));
+  return "failed";
 }
 
 /** Checks the newest unused code for this purpose (5 tries, 15 minutes); marks it used when right. */

@@ -71,7 +71,8 @@ try {
   const a = new Visitor();
   const signup = await a.submit("/en/account/login?mode=signup", 'name="name"', { name: `Account A ${tag}`, identifier: emailA.toUpperCase(),
     password: "long-enough-1", keep: "on" });
-  check("create account with an email → My account", signup.location.endsWith("/en/account?done=welcome"), signup.location);
+  // Email is not connected on the test database, so the code cannot go out: the page must say so.
+  check("create account with an email → My account, saying the email did not go", signup.location.endsWith("/en/account?done=welcome&error=mail#connect"), signup.location);
   check("signed in: secret cookie and the header hint", a.jar.has("aqar_customer") && a.jar.get("aqar_signed_in") === "1");
   const accA = await accountBy(eq(customerAccounts.email, emailA));
   check("email saved in lower case, password hashed", !!accA && accA.passwordHash.startsWith("$2"));
@@ -81,6 +82,16 @@ try {
   check("short password is refused", short.location.includes("error=password"), short.location);
   const page = await a.open("/en/account");
   check("My account page loads, not linked yet", page.status === 200 && page.html.includes("Connect your requests"));
+  const noMail = await a.submit("/en/account", "Send a new code", {});
+  check("a new code that cannot be sent is reported, not claimed as sent", noMail.location.endsWith("/en/account?error=mail#connect"), noMail.location);
+  const noMailPage = await a.open("/en/account?error=mail");
+  check("the customer sees why", noMailPage.html.includes("We could not send the email") && !noMailPage.html.includes("We sent a code"));
+  const unsent = await db.select().from(customerCodes).where(eq(customerCodes.accountId, accA.id));
+  check("codes that were not sent are not kept (and do not use up the limit)", unsent.length === 0, `${unsent.length} left`);
+  for (let i = 0; i < 3; i++) await knownCode(accA.id, "verify_email");
+  const tooMany = await a.submit("/en/account", "Send a new code", {});
+  check("too many codes in an hour is reported", tooMany.location.endsWith("/en/account?error=limit#connect"), tooMany.location);
+  await db.delete(customerCodes).where(eq(customerCodes.accountId, accA.id));
   check("login page sends a signed-in visitor to My account", (await a.open("/en/account/login")).location.endsWith("/en/account"));
   check("My account without a login goes to the login page", (await new Visitor().open("/ar/account")).location.endsWith("/ar/account/login"));
   const ar = await new Visitor().open("/ar/account/login");

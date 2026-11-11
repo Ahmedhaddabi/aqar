@@ -9,6 +9,7 @@ import { dateOnly, dateTime, whatsappLink } from "@/admin/format";
 import { adminDict, adminLang, fill } from "@/admin/i18n";
 import { Documents } from "@/admin/Documents";
 import { Timeline } from "@/admin/Timeline";
+import { WaPrefs } from "@/admin/WaPrefs";
 import { db } from "@/db";
 import { customerAccounts, invoices, serviceJobs } from "@/db/schema";
 import { aiReady } from "@/lib/ai";
@@ -16,6 +17,7 @@ import { canOpen } from "@/lib/auth";
 import { portalLink } from "@/lib/doc-link";
 import { requireApp } from "@/lib/auth";
 import { consentSummary } from "@/lib/intake";
+import { botState } from "@/lib/wa-agent";
 
 import { linkWebAccount, updateCustomer } from "../../../crm-actions";
 
@@ -29,9 +31,9 @@ export default async function CustomerPage({ params, searchParams }: { params: P
   if (!data) notFound();
   const { contact: c, requests, timeline } = data;
   const erp = canOpen(user, "erp") && user.role !== "agent";
-  const [consent, docs, jobs] = await Promise.all([consentSummary(c.id),
+  const [consent, docs, jobs, waState] = await Promise.all([consentSummary(c.id),
     erp ? db.select().from(invoices).where(eq(invoices.contactId, c.id)).orderBy(desc(invoices.createdAt)).limit(30) : Promise.resolve([]),
-    db.select().from(serviceJobs).where(eq(serviceJobs.contactId, c.id)).orderBy(desc(serviceJobs.createdAt)).limit(30)]);
+    db.select().from(serviceJobs).where(eq(serviceJobs.contactId, c.id)).orderBy(desc(serviceJobs.createdAt)).limit(30), botState(c.id)]);
   const T2 = adminDict(lang);
   const aiOn = await aiReady();
   const portal = portalLink(c.id);
@@ -77,6 +79,13 @@ export default async function CustomerPage({ params, searchParams }: { params: P
               </tbody>
             </table>
           </section>
+          {Object.keys(waState.preferences).length > 0 && (
+            <section className="a-panel">
+              <h2>🤖 {T2.wa.prefs}</h2>
+              <WaPrefs contactId={c.id} lang={lang} state={waState} />
+              <p><Link href={`/admin/whatsapp/${c.id}`}>{T2.wa.title} →</Link></p>
+            </section>
+          )}
           {erp && docs.length > 0 && (
             <section className="a-panel">
               <h2>🧾 {m.invoices}</h2>
@@ -136,6 +145,8 @@ export default async function CustomerPage({ params, searchParams }: { params: P
               <label className="a-field"><span>{t.name}</span><input name="name" defaultValue={c.name} required /></label>
               <label className="a-field"><span>{t.phone}</span><input name="phone" defaultValue={c.phone ?? ""} dir="ltr" /></label>
               <label className="a-field"><span>{t.email}</span><input name="email" type="email" defaultValue={c.email ?? ""} dir="ltr" /></label>
+              <label className="a-field"><span>{t.address}</span><input name="address" dir="auto" maxLength={300} defaultValue={c.address} /></label>
+              <label className="a-field"><span>{t.vatNumber}</span><input name="vatNumber" dir="ltr" maxLength={40} defaultValue={c.vatNumber} /></label>
               <label className="a-field"><span>{T2.ai.idNumber}</span><input name="idNumber" dir="ltr" maxLength={40} defaultValue={c.idNumber ?? ""} /></label>
               <label className="a-field"><span>{T2.ai.nationality}</span><input name="nationality" dir="auto" maxLength={60} defaultValue={c.nationality ?? ""} /></label>
               <label className="a-field"><span>{T2.ai.idExpiry}</span><input name="idExpiry" type="date" dir="ltr" defaultValue={c.idExpiry ?? ""} /></label>

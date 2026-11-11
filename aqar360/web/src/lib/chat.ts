@@ -7,9 +7,8 @@ import { and, eq, gte, inArray, lte, sql } from "drizzle-orm";
 import { db } from "@/db";
 import { areas, chatUsage, projects, properties, settings, wilayats } from "@/db/schema";
 
-import { create, textOf } from "./ai";
+import { aiReady, create, textOf } from "./ai";
 import { siteUrl } from "./config";
-import { integrationConfig } from "./integrations";
 import { FORM_OPTIONS, sha256, submitForm } from "./intake";
 import { muscatDay } from "./viewings";
 
@@ -24,7 +23,7 @@ export async function chatSettings() {
 
 /** The chat button shows only when the owner switched it on and AI is connected. */
 export async function chatAvailable() {
-  const [s, ai] = await Promise.all([chatSettings(), integrationConfig("anthropic")]);
+  const [s, ai] = await Promise.all([chatSettings(), aiReady()]);
   return s.enabled && !!ai;
 }
 

@@ -48,11 +48,11 @@ function areaPoints(area: MapArea): Point[] {
   return area.center ? (circle(area.center, AREA_RADIUS_KM, 8).coordinates[0] as Point[]) : [];
 }
 
-/** Area labels sit on the area's northern edge so they never cover the pins near its centre. */
+/** Area labels hang below the area's southern edge: pins stand up from their point, so the two do not cover each other. */
 function labelPoint(area: MapArea): Point {
   const points = areaPoints(area);
-  const north = Math.max(...points.map((p) => p[1]));
-  return [area.center![0], Number.isFinite(north) ? north : area.center![1]];
+  const south = Math.min(...points.map((p) => p[1]));
+  return [area.center![0], Number.isFinite(south) ? south : area.center![1]];
 }
 
 /** One view per listing per browser session for the owner's dashboard; never blocks or breaks the map. */
@@ -86,18 +86,18 @@ export function PropertyMap({ lang, dict, data }: { lang: Locale; dict: Dictiona
   const [view, setView] = useState<"map" | "list">("map");
   const [areaId, setAreaId] = useState<string | null>(null);
   const [selectedId, setSelectedId] = useState<string | null>(null);
-  const [threeD, setThreeD] = useState(false);
   const [mapState, setMapState] = useState<"loading" | "ready" | "error">("loading");
   const [budget, setBudget] = useState<{ monthly: number; maxSale: number } | null>(null);
   const [compare, setCompare] = useState<string[]>([]);
   const [showCompare, setShowCompare] = useState(false);
-  const [mapOnly, setMapOnly] = useState(false);
-  const [box, setBox] = useState<[number, number, number, number] | null>(null);
 
   const container = useRef<HTMLDivElement>(null);
   const mapRef = useRef<MlMap | null>(null);
   const libRef = useRef<typeof import("maplibre-gl") | null>(null);
   const markers = useRef<Marker[]>([]);
+  // Pin elements by listing id, so hovering a card lights up its pin without redrawing the map.
+  const pinEls = useRef<Map<string, HTMLElement>>(new Map());
+  const listRef = useRef<HTMLUListElement>(null);
   // Deep link (?area=…&listing=…) read before the URL is rewritten; applied once the map is ready.
   const initialLink = useRef<string | null>(null);
   const linkApplied = useRef(false);
@@ -110,23 +110,29 @@ export function PropertyMap({ lang, dict, data }: { lang: Locale; dict: Dictiona
     return p.rent ? p.value <= budget.monthly : p.value <= budget.maxSale;
   }, [budget, purpose]);
   const filtered = useMemo(() => data.listings.filter((l) => matches(l, purpose, kind) && affordable(l)), [data.listings, purpose, kind, affordable]);
-  // "Only what's on the map": listings whose pin (or area centre) is inside the visible map.
-  const onMap = useCallback((l: MapListing) => {
-    if (!box) return true;
-    const at = l.point ?? (l.area ? areasById[l.area]?.center : null);
-    return !!at && at[0] >= box[0] && at[0] <= box[2] && at[1] >= box[1] && at[1] <= box[3];
-  }, [box, areasById]);
-  const inScope = (areaId ? filtered.filter((l) => l.area === areaId) : filtered).filter((l) => !mapOnly || onMap(l));
+  const inScope = areaId ? filtered.filter((l) => l.area === areaId) : filtered;
   const compared = compare.map((id) => data.listings.find((l) => l.id === id)).filter((l): l is MapListing => !!l);
   const toggleCompare = (id: string) => setCompare((c) => (c.includes(id) ? c.filter((x) => x !== id) : c.length >= 3 ? c : [...c, id]));
   const selected = data.listings.find((l) => l.id === selectedId) || null;
   const [nearby, setNearby] = useState<NearbyPlace[] | null>(null);
   const nearbyMarkers = useRef<Marker[]>([]);
-  const counts = useMemo(() => {
-    const result: Record<string, number> = {};
-    for (const l of filtered) if (l.area) result[l.area] = (result[l.area] || 0) + 1;
+  // Per area: how many listings match, and the lowest price among them (rent and sale kept apart).
+  const areaStats = useMemo(() => {
+    const result: Record<string, { n: number; sale: number | null; rent: number | null }> = {};
+    for (const l of filtered) {
+      if (!l.area) continue;
+      const s = (result[l.area] ??= { n: 0, sale: null, rent: null });
+      s.n++;
+      const p = listingPrice(l, purpose);
+      if (!p.value) continue;
+      if (p.rent) s.rent = Math.min(s.rent ?? Infinity, p.value);
+      else s.sale = Math.min(s.sale ?? Infinity, p.value);
+    }
     return result;
-  }, [filtered]);
+  }, [filtered, purpose]);
+  const hot = useCallback((id: string | null) => {
+    pinEls.current.forEach((el, key) => el.classList.toggle("hot", key === id));
+  }, []);
 
   const title = useCallback((l: MapListing) => l.title || fill(t.inArea, {
     kind: optionLabel(dict, l.kind), area: (l.area && areasById[l.area]?.name) || "" }), [t, dict, areasById]);
@@ -168,7 +174,8 @@ export function PropertyMap({ lang, dict, data }: { lang: Locale; dict: Dictiona
     setAreaId(id);
     setSelectedId(null);
     if (id) focusArea(id);
-  }, [focusArea]);
+    else fitAll();
+  }, [focusArea, fitAll]);
 
   const selectListing = useCallback((l: MapListing) => {
     setSelectedId(l.id);
@@ -188,17 +195,18 @@ export function PropertyMap({ lang, dict, data }: { lang: Locale; dict: Dictiona
         const ml = await loadMapLibre();
         if (cancelled || !container.current) return;
         libRef.current = ml;
+        // A flat map that only shows what we have: no tilting or turning, just move and zoom.
         map = new ml.Map({ container: container.current, style: mapStyleUrl, center: MUSCAT, zoom: 10,
-          attributionControl: { compact: true } });
+          attributionControl: { compact: true }, dragRotate: false, pitchWithRotate: false, touchPitch: false, maxPitch: 0 });
+        map.touchZoomRotate.disableRotation();
         mapRef.current = map;
-        map.addControl(new ml.NavigationControl({ visualizePitch: true }), lang === "ar" ? "bottom-left" : "bottom-right");
+        map.addControl(new ml.NavigationControl({ showCompass: false }), lang === "ar" ? "bottom-left" : "bottom-right");
         map.on("error", () => { if (!map?.isStyleLoaded()) setMapState((s) => (s === "loading" ? "error" : s)); });
         map.on("load", () => {
           if (!map) return;
           localizeLabels(map, lang);
           addAreaLayers(map, data.areas, colors);
           addPlotLayers(map, data.listings);
-          add3dBuildings(map);
           map.on("click", "aqar-plots-fill", (e) => {
             const code = e.features?.[0]?.properties?.id;
             const hit = data.listings.find((l) => l.id === code);
@@ -222,9 +230,6 @@ export function PropertyMap({ lang, dict, data }: { lang: Locale; dict: Dictiona
             hovered = null;
             if (map) map.getCanvas().style.cursor = "";
           });
-          const keepBox = () => { const b = map?.getBounds(); if (b) setBox([b.getWest(), b.getSouth(), b.getEast(), b.getNorth()]); };
-          map.on("moveend", keepBox);
-          keepBox();
           map.on("zoom", () => {
             const zoom = map?.getZoom() ?? 0;
             container.current?.classList.toggle("zoomed-in", zoom >= 14);
@@ -284,7 +289,8 @@ export function PropertyMap({ lang, dict, data }: { lang: Locale; dict: Dictiona
     if (mapState !== "ready" || !map || !ml) return;
     markers.current.forEach((m) => m.remove());
     markers.current = [];
-    const add = (el: HTMLElement, at: Point, anchor: "center" | "bottom" = "center") =>
+    pinEls.current.clear();
+    const add = (el: HTMLElement, at: Point, anchor: "center" | "bottom" | "top" = "center") =>
       markers.current.push(new ml.Marker({ element: el, anchor }).setLngLat(at).addTo(map));
 
     for (const area of data.areas) {
@@ -298,20 +304,33 @@ export function PropertyMap({ lang, dict, data }: { lang: Locale; dict: Dictiona
       name.className = "name";
       name.textContent = area.name;
       el.append(name);
-      if (counts[area.id]) {
+      const stats = areaStats[area.id];
+      el.classList.toggle("empty", !stats);
+      if (stats) {
         const badge = document.createElement("span");
         badge.className = "count";
-        badge.textContent = String(counts[area.id]);
+        badge.textContent = String(stats.n);
         el.append(badge);
+        // The lowest price here, so the map answers "what does it cost there?" without a click.
+        const low = purpose === "Rent" ? stats.rent : purpose === "Sale" ? stats.sale : stats.sale ?? stats.rent;
+        if (low) {
+          const from = document.createElement("span");
+          from.className = "from";
+          from.textContent = `${t.legend.from} ${fmt.compact(low)}${low === stats.rent && low !== stats.sale ? ` ${t.perMonth}` : ""}`;
+          el.append(from);
+        }
+        el.setAttribute("aria-label", `${area.name}: ${count(t.results, stats.n)}${low ? `, ${t.from} ${fmt.amount(low)} ${t.currency}` : ""}`);
       }
       el.addEventListener("click", (e) => { e.stopPropagation(); selectArea(area.id); });
-      add(el, labelPoint(area), "bottom");
+      add(el, labelPoint(area), "top");
     }
     for (const l of filtered) {
       if (!l.point) continue;
       const el = document.createElement("button");
       el.type = "button";
-      el.className = `map-pin ${l.type}${l.id === selectedId ? " active" : ""}`;
+      // Same price as the card: rent when it is let, or offered both ways and the visitor is not looking to buy.
+      const rentPin = l.type === "property" && !!l.rent_price && (l.purpose === "Rent" || (l.purpose === "Sale or Rent" && purpose !== "Sale"));
+      el.className = `map-pin ${l.type}${l.type === "property" ? (rentPin ? " rent" : " sale") : ""}${l.id === selectedId ? " active" : ""}`;
       el.setAttribute("aria-label", `${title(l)} — ${price(l)}`);
       if (l.type === "project") {
         el.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 21V5l7-3v19M11 21V9l9 3v9M2 21h20M7 8h1M7 12h1M7 16h1M14 14h2M14 17h2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>';
@@ -319,13 +338,37 @@ export function PropertyMap({ lang, dict, data }: { lang: Locale; dict: Dictiona
         label.textContent = title(l);
         el.append(label);
       } else {
-        const value = l.rent_price && l.purpose !== "Sale" && purpose !== "Sale" ? l.rent_price : l.sale_price || l.rent_price;
+        const value = rentPin ? l.rent_price : l.sale_price || l.rent_price;
         el.textContent = value ? fmt.compact(value) : "•";
+        // A small card on hover: the photo, what it is and the full price, so the map answers "what is this?" at a glance.
+        const peek = document.createElement("span");
+        peek.className = "map-peek";
+        peek.setAttribute("aria-hidden", "true");
+        if (l.image) {
+          const img = document.createElement("img");
+          img.src = l.image;
+          img.alt = "";
+          img.loading = "lazy";
+          peek.append(img);
+        }
+        const what = document.createElement("strong");
+        what.textContent = title(l);
+        const cost = document.createElement("span");
+        cost.textContent = [price(l), l.bedrooms ? count(t.bedroomsCount, l.bedrooms) : ""].filter(Boolean).join(" · ");
+        peek.append(what, cost);
+        el.append(peek);
       }
       el.addEventListener("click", (e) => { e.stopPropagation(); selectListing(l); });
+      el.addEventListener("mouseenter", () => {
+        listRef.current?.querySelector(`[data-id="${CSS.escape(l.id)}"]`)?.classList.add("hot");
+      });
+      el.addEventListener("mouseleave", () => {
+        listRef.current?.querySelectorAll(".hot").forEach((c) => c.classList.remove("hot"));
+      });
+      pinEls.current.set(l.id, el);
       add(el, l.point, "bottom");
     }
-  }, [mapState, filtered, selectedId, counts]);
+  }, [mapState, filtered, selectedId, areaStats]);
 
   // Nearby places chosen in the listing panel, as small markers (cleared when the listing changes).
   useEffect(() => {
@@ -345,27 +388,13 @@ export function PropertyMap({ lang, dict, data }: { lang: Locale; dict: Dictiona
   useEffect(() => { if (!selectedId) setNearby(null); }, [selectedId]);
 
   useEffect(() => {
-    const map = mapRef.current;
-    if (mapState !== "ready" || !map) return;
-    if (map.getLayer("aqar-3d")) map.setLayoutProperty("aqar-3d", "visibility", threeD ? "visible" : "none");
-    map.easeTo({ pitch: threeD ? 55 : 0, bearing: threeD ? -17 : 0, duration: 700 });
-  }, [threeD, mapState]);
-
-  useEffect(() => {
     if (view === "map") requestAnimationFrame(() => mapRef.current?.resize());
   }, [view]);
 
-  const reset = () => {
-    setAreaId(null);
-    setSelectedId(null);
-    setThreeD(false);
-    fitAll();
-  };
-
   const area = areaId ? areasById[areaId] : null;
   const card = (l: MapListing) => (
-    <li key={l.id}>
-      <button type="button" className={`map-card${l.id === selectedId ? " active" : ""}`} onClick={() => {
+    <li key={l.id} onMouseEnter={() => hot(l.id)} onMouseLeave={() => hot(null)}>
+      <button type="button" data-id={l.id} className={`map-card${l.id === selectedId ? " active" : ""}`} onClick={() => {
         if (view === "list") setView("map");
         selectListing(l);
       }}>
@@ -408,20 +437,13 @@ export function PropertyMap({ lang, dict, data }: { lang: Locale; dict: Dictiona
           {data.areas.map((a) => <option key={a.id} value={a.id}>{a.name}{a.wilayat ? ` — ${a.wilayat}` : ""}</option>)}
         </select>
         <BudgetFilter t={t.extras} fmt={fmt} currency={t.currency} value={budget} onChange={setBudget} />
-        <button type="button" className="tool" aria-pressed={mapOnly} onClick={() => setMapOnly(!mapOnly)}>🗺 {t.extras.mapOnly}</button>
         {compared.length > 0 && (
           <button type="button" className="tool map-compare-btn" onClick={() => setShowCompare(true)}>⚖ {t.extras.compareCount.replace("{n}", String(compared.length))}</button>
         )}
-        <div className="segmented" role="group">
+        <div className="segmented map-view-switch" role="group">
           <button type="button" aria-pressed={view === "map"} onClick={() => setView("map")}>{t.mapView}</button>
           <button type="button" aria-pressed={view === "list"} onClick={() => setView("list")}>{t.listView}</button>
         </div>
-        {view === "map" && mapState === "ready" && (
-          <>
-            <button type="button" className="tool" aria-pressed={threeD} onClick={() => setThreeD(!threeD)}>{t.threeD}</button>
-            <button type="button" className="tool" onClick={reset}>{t.resetView}</button>
-          </>
-        )}
       </div>
 
       <div className="map-app">
@@ -498,7 +520,7 @@ export function PropertyMap({ lang, dict, data }: { lang: Locale; dict: Dictiona
               ) : (
                 <p className="map-count">{count(t.results, inScope.length)}</p>
               )}
-              {inScope.length > 0 ? <ul className="map-list">{inScope.map(card)}</ul> : (
+              {inScope.length > 0 ? <ul className="map-list" ref={listRef}>{inScope.map(card)}</ul> : (
                 <div className="map-empty">
                   <p>{t.noResults}</p>
                   <Link className="btn primary" href={`/${lang}/find-me-a-property${areaId ? `?areas=${encodeURIComponent(areaId)}` : ""}`}>
@@ -514,6 +536,14 @@ export function PropertyMap({ lang, dict, data }: { lang: Locale; dict: Dictiona
               areaName={(l) => (l.area && areasById[l.area]?.name) || ""} onRemove={(id) => toggleCompare(id)} onClose={() => setShowCompare(false)} />
           )}
           <div ref={container} className="map-canvas" role="region" aria-label={t.mapLabel} />
+          {mapState === "ready" && (
+            <ul className="map-legend" aria-label={t.legend.title}>
+              {purpose !== "Rent" && <li><i className="sale" />{t.sale}</li>}
+              {purpose !== "Sale" && <li><i className="rent" />{t.rent}</li>}
+              {data.listings.some((l) => l.type === "project") && <li><i className="project" />{t.legend.project}</li>}
+              <li><i className="area" />{t.legend.area}</li>
+            </ul>
+          )}
           {mapState !== "ready" && <p className={`map-status ${mapState}`}>{mapState === "error" ? t.unavailable : t.loading}</p>}
         </div>
       </div>
@@ -560,16 +590,4 @@ function addPlotLayers(map: MlMap, listings: MapListing[]) {
   map.addSource("aqar-plots", { type: "geojson", data: { type: "FeatureCollection", features } });
   map.addLayer({ id: "aqar-plots-fill", type: "fill", source: "aqar-plots", minzoom: 12, paint: { "fill-color": "#e3a33b", "fill-opacity": 0.35 } });
   map.addLayer({ id: "aqar-plots-line", type: "line", source: "aqar-plots", minzoom: 12, paint: { "line-color": "#b42318", "line-width": 2 } });
-}
-
-function add3dBuildings(map: MlMap) {
-  const building = map.getStyle().layers.find((l) => "source-layer" in l && l["source-layer"] === "building");
-  if (!building || !("source" in building)) return;
-  map.addLayer({ id: "aqar-3d", type: "fill-extrusion", source: building.source as string, "source-layer": "building",
-    minzoom: 13, layout: { visibility: "none" }, paint: {
-      "fill-extrusion-color": "#d6dbe3",
-      "fill-extrusion-height": ["coalesce", ["get", "render_height"], 6],
-      "fill-extrusion-base": ["coalesce", ["get", "render_min_height"], 0],
-      "fill-extrusion-opacity": 0.75,
-    } });
 }

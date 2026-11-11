@@ -3,6 +3,7 @@
 import { useState } from "react";
 
 import { loanFor } from "@/components/Calculators";
+
 import type { Dictionary } from "@/i18n/dictionaries";
 import type { MapListing } from "@/lib/content";
 

@@ -106,14 +106,15 @@ export async function updateCustomer(form: FormData) {
   const parsed = z.object({ id, name: z.string().trim().min(1).max(120), phone: z.string().trim().max(30),
     email: z.union([z.literal(""), z.string().trim().toLowerCase().email()]), notes: z.string().trim().max(4000),
     idNumber: z.string().trim().max(40).default(""), nationality: z.string().trim().max(60).default(""),
-    idExpiry: z.union([z.literal(""), z.string().regex(/^\d{4}-\d{2}-\d{2}$/)]).default("") })
+    idExpiry: z.union([z.literal(""), z.string().regex(/^\d{4}-\d{2}-\d{2}$/)]).default(""),
+    address: z.string().trim().max(300).default(""), vatNumber: z.string().trim().max(40).default("") })
     .safeParse(Object.fromEntries(form));
   if (!parsed.success) return;
-  const { name, phone, email, notes, idNumber, nationality, idExpiry } = parsed.data;
+  const { name, phone, email, notes, idNumber, nationality, idExpiry, address, vatNumber } = parsed.data;
   const [visible] = await db.select({ id: requests.id }).from(requests).where(eq(requests.contactId, parsed.data.id)).limit(1);
   if (user.role === "agent" && (!visible || !(await canSeeRequest(user, visible.id)))) return;
   await db.update(contacts).set({ name, phone: normalizePhone(phone) ?? (phone || null), email: email || null, notes,
-    idNumber: idNumber || null, nationality: nationality || null, idExpiry: idExpiry || null, updatedAt: new Date() }).where(eq(contacts.id, parsed.data.id));
+    idNumber: idNumber || null, nationality: nationality || null, idExpiry: idExpiry || null, address, vatNumber, updatedAt: new Date() }).where(eq(contacts.id, parsed.data.id));
   await audit("customer_updated", "contact", parsed.data.id, {}, user.id);
   refresh(undefined, parsed.data.id);
 }

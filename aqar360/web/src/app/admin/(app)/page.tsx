@@ -1,15 +1,17 @@
 import { and, count, eq, isNull } from "drizzle-orm";
 import Link from "next/link";
 
+import { change, StatTile } from "@/admin/charts";
 import { todayFor } from "@/admin/crm";
 import { suggestionsToReview } from "@/admin/deals";
-import { ago, dateTime } from "@/admin/format";
+import { ago, dateTime, money } from "@/admin/format";
 import { expiringSoon } from "@/admin/hr";
 import { adminDict, adminLang, fill } from "@/admin/i18n";
+import { last14 } from "@/admin/trends";
 import { db } from "@/db";
 import { agentOpenCount } from "@/lib/agent";
 import { projects, properties } from "@/db/schema";
-import { requireApp } from "@/lib/auth";
+import { canOpen, requireApp } from "@/lib/auth";
 
 export default async function TodayPage({ searchParams }: { searchParams: Promise<{ denied?: string }> }) {
   const user = await requireApp("crm");
@@ -35,6 +37,9 @@ export default async function TodayPage({ searchParams }: { searchParams: Promis
     [T.today.projects, projectCount, `/${lang}/projects`],
     [T.today.properties, propertyCount, `/${lang}/map`],
   ];
+  // Office staff see the whole business trend; agents keep their own lists.
+  const trend = user.role === "agent" ? null : await last14(canOpen(user, "erp"));
+  const C = T.charts;
   return (
     <>
       <section className="a-band">
@@ -57,6 +62,21 @@ export default async function TodayPage({ searchParams }: { searchParams: Promis
           ))}
         </div>
       </section>
+      {trend && (
+        <section className="a-panel">
+          <h2>{C.last14}</h2>
+          <div className="viz-stats">
+            <StatTile lang={lang} label={C.newRequests} value={String(trend.created.total)} values={trend.created.values}
+              delta={change(trend.created.total, trend.created.before)} deltaLabel={C.vsBefore} href="/admin/reports" />
+            <StatTile lang={lang} label={C.won} value={String(trend.won.total)} values={trend.won.values}
+              delta={change(trend.won.total, trend.won.before)} deltaLabel={C.vsBefore} href="/admin/requests" />
+            <StatTile lang={lang} label={C.waIn} value={String(trend.wa.total)} values={trend.wa.values}
+              delta={change(trend.wa.total, trend.wa.before)} deltaLabel={C.vsBefore} href="/admin/whatsapp" />
+            {trend.income && <StatTile lang={lang} label={C.income14} value={money(trend.income.total, lang)} values={trend.income.values}
+              delta={change(trend.income.total, trend.income.before)} deltaLabel={C.vsBefore} href="/admin/finance" />}
+          </div>
+        </section>
+      )}
       <div className="a-two">
         <section className="a-panel">
           <h2>{t.newToday}</h2>

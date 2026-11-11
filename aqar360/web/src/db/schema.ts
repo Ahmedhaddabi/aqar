@@ -203,6 +203,8 @@ export const contacts = pgTable("contacts", {
   idNumber: text("id_number"), // civil ID / passport number, when staff need it for a contract
   nationality: text("nationality"),
   idExpiry: date("id_expiry"),
+  address: text("address").notNull().default(""), // printed on invoices
+  vatNumber: text("vat_number").notNull().default(""), // the customer's own VAT number (companies), printed on invoices
   createdAt: created(),
   updatedAt: updated(),
 }, (t) => [index("contacts_phone_idx").on(t.phone), index("contacts_email_idx").on(t.email)]);
@@ -336,11 +338,17 @@ export const invoices = pgTable("invoices", {
   kind: text("kind").$type<"quote" | "invoice">().notNull(),
   contactId: integer("contact_id").notNull().references(() => contacts.id),
   requestId: integer("request_id").references(() => requests.id),
+  propertyId: integer("property_id").references(() => properties.id), // the property the work is for, printed on the bill
   quoteId: integer("quote_id"),
   status: text("status").$type<InvoiceStatus>().notNull().default("draft"),
   issueDate: date("issue_date").notNull(),
   dueDate: date("due_date"),
   lines: jsonb("lines").$type<InvoiceLine[]>().notNull().default([]),
+  // subtotal (all lines) − discount (on our fees only) + VAT (on our fees after discount; client media money has no VAT) = total.
+  subtotal: money("subtotal").notNull().default(0),
+  discount: money("discount").notNull().default(0),
+  vatRate: numeric("vat_rate", { precision: 5, scale: 2, mode: "number" }).notNull().default(0), // percent, fixed when the invoice is made
+  vatTotal: money("vat_total").notNull().default(0),
   total: money("total").notNull().default(0),
   passThroughTotal: money("pass_through_total").notNull().default(0), // client media money: not revenue
   notes: text("notes").notNull().default(""),
@@ -697,8 +705,23 @@ export const waMessages = pgTable("wa_messages", {
   status: text("status").notNull().default("received"), // out: sent | delivered | read | failed; in: received
   error: text("error"),
   userId: integer("user_id").references(() => users.id), // staff who replied
+  bot: boolean("bot").notNull().default(false), // written by the WhatsApp agent (status "draft" = waiting for staff approval)
+  media: jsonb("media").$type<{ url: string; caption?: string }[]>().notNull().default([]), // photos sent with (or after) the text
   createdAt: created(),
 }, (t) => [index("wa_messages_contact_idx").on(t.contactId)]);
+
+export type WaPreferences = { purpose?: "buy" | "rent"; kind?: string; areaIds?: number[]; budgetMin?: number; budgetMax?: number;
+  bedrooms?: number; notes?: string };
+/** The WhatsApp agent's memory per customer: paused (a person took over) and what they are looking for. */
+export const waBot = pgTable("wa_bot", {
+  contactId: integer("contact_id").primaryKey().references(() => contacts.id, { onDelete: "cascade" }),
+  paused: boolean("paused").notNull().default(false),
+  pausedReason: text("paused_reason"),
+  pausedAt: timestamp("paused_at", { withTimezone: true }),
+  preferences: jsonb("preferences").$type<WaPreferences>().notNull().default({}),
+  language: text("language").$type<"ar" | "en">(),
+  updatedAt: updated(),
+});
 
 /** Properties a customer saved (❤) from the suggestions in the portal: a buying signal for the agent. */
 export const savedProperties = pgTable("saved_properties", {

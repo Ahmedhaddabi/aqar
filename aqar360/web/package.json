@@ -20,6 +20,8 @@
     "test:extras": "tsx --env-file=.env.test.local scripts/test-extras.mts",
     "test:accounts": "tsx --env-file=.env.test.local scripts/test-accounts.mts",
     "test:agent": "tsx --env-file=.env.test.local scripts/test-agent.mts",
+    "test:wa-agent": "tsx --env-file=.env.test.local scripts/test-wa-agent.mts",
+    "test:ai-openrouter": "tsx --env-file=.env.test.local scripts/test-ai-openrouter.mts",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "tsx --env-file=.env.local scripts/migrate.mts",
     "db:seed": "tsx --env-file=.env.local scripts/seed.mts",

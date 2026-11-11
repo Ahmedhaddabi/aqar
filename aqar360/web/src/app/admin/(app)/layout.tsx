@@ -56,6 +56,7 @@ export default async function AdminAppLayout({ children }: { children: ReactNode
     { href: "/admin/recurring", label: n.recurring, icon: "repeat" },
     { href: "/admin/finance", label: n.finance, icon: "chart" },
     { href: "/admin/payment-methods", label: n.payMethods, icon: "card" },
+    { href: "/admin/invoice-design", label: n.invoiceDesign, icon: "pen" },
   ] }] });
   // HR: team, payroll and hiring (salaries stay out of sight for anyone without this app).
   if (canOpen(user, "hr")) modules.push({ key: "hr", label: n.hrApp, home: "/admin/hr", groups: [{ label: n.team, items: [
