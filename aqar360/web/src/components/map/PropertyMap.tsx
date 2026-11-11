@@ -55,6 +55,18 @@ function labelPoint(area: MapArea): Point {
   return [area.center![0], Number.isFinite(south) ? south : area.center![1]];
 }
 
+/** Listings whose owner did not share the exact place still get a pin, set at a fixed spot inside their area
+ *  (from the listing code, so it does not move or hint at the real address). The panel says the location is approximate. */
+function approxPoint(code: string, area: MapArea | undefined): Point | null {
+  if (!area?.center) return null;
+  let h = 2166136261;
+  for (const ch of code) h = Math.imul(h ^ ch.charCodeAt(0), 16777619);
+  const angle = ((h >>> 0) % 3600) / 3600 * 2 * Math.PI;
+  const km = AREA_RADIUS_KM * (0.2 + 0.6 * Math.sqrt(((h >>> 12) % 1000) / 1000));
+  const [lng, lat] = area.center;
+  return [lng + (km / (111.32 * Math.cos((lat * Math.PI) / 180))) * Math.cos(angle), lat + (km / 110.57) * Math.sin(angle)];
+}
+
 /** One view per listing per browser session for the owner's dashboard; never blocks or breaks the map. */
 function countView(code: string) {
   try {
@@ -325,12 +337,13 @@ export function PropertyMap({ lang, dict, data }: { lang: Locale; dict: Dictiona
       add(el, labelPoint(area), "top");
     }
     for (const l of filtered) {
-      if (!l.point) continue;
+      const at = l.point ?? (l.area ? approxPoint(l.id, areasById[l.area]) : null);
+      if (!at) continue;
       const el = document.createElement("button");
       el.type = "button";
       // Same price as the card: rent when it is let, or offered both ways and the visitor is not looking to buy.
       const rentPin = l.type === "property" && !!l.rent_price && (l.purpose === "Rent" || (l.purpose === "Sale or Rent" && purpose !== "Sale"));
-      el.className = `map-pin ${l.type}${l.type === "property" ? (rentPin ? " rent" : " sale") : ""}${l.id === selectedId ? " active" : ""}`;
+      el.className = `map-pin ${l.type}${l.type === "property" ? (rentPin ? " rent" : " sale") : ""}${l.id === selectedId ? " active" : ""}${l.point ? "" : " approx"}`;
       el.setAttribute("aria-label", `${title(l)} — ${price(l)}`);
       if (l.type === "project") {
         el.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 21V5l7-3v19M11 21V9l9 3v9M2 21h20M7 8h1M7 12h1M7 16h1M14 14h2M14 17h2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>';
@@ -366,9 +379,9 @@ export function PropertyMap({ lang, dict, data }: { lang: Locale; dict: Dictiona
         listRef.current?.querySelectorAll(".hot").forEach((c) => c.classList.remove("hot"));
       });
       pinEls.current.set(l.id, el);
-      add(el, l.point, "bottom");
+      add(el, at, "bottom");
     }
-  }, [mapState, filtered, selectedId, areaStats]);
+  }, [mapState, filtered, selectedId, areaStats, areasById]);
 
   // Nearby places chosen in the listing panel, as small markers (cleared when the listing changes).
   useEffect(() => {
@@ -541,6 +554,7 @@ export function PropertyMap({ lang, dict, data }: { lang: Locale; dict: Dictiona
               {purpose !== "Rent" && <li><i className="sale" />{t.sale}</li>}
               {purpose !== "Sale" && <li><i className="rent" />{t.rent}</li>}
               {data.listings.some((l) => l.type === "project") && <li><i className="project" />{t.legend.project}</li>}
+              {filtered.some((l) => l.type === "property" && !l.point) && <li><i className="approx" />{t.legend.approx}</li>}
               <li><i className="area" />{t.legend.area}</li>
             </ul>
           )}

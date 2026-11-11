@@ -814,6 +814,14 @@ input[type="checkbox"], input[type="radio"] { width: 16px; height: 16px; min-hei
 /* Invoice design page: settings beside a live preview. */
 .a-design { display: grid; grid-template-columns: minmax(300px, 420px) 1fr; gap: 20px; align-items: start; }
 .a-design-preview { position: sticky; top: 16px; }
+.a-billnew { grid-template-columns: minmax(420px, 1fr) minmax(0, 1fr); }
+.a-billnew .a-design-preview { top: 84px; }
+.a-billnew .a-design-preview .inv { zoom: 0.75; }
+/* Form beside the preview: lines and totals fit a narrower column. */
+.a-billnew .a-line { grid-template-columns: minmax(0, 1fr) 70px 110px auto auto; }
+.a-billnew .a-line .a-check { grid-column: 1 / -1; order: 1; }
+.a-billnew .a-sumbox { grid-template-columns: 1fr 1fr; }
+.a-billnew .a-sumlist { grid-column: 1 / -1; }
 .a-design-preview .inv { transform-origin: top left; }
 .a-swatches { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
 .a-swatches input[type="color"] { width: 48px; height: 40px; padding: 2px; }

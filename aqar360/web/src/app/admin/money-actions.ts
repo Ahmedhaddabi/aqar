@@ -9,6 +9,7 @@ import { db } from "@/db";
 import { contacts, EXPENSE_CATEGORIES, expenses, invoices, PAYMENT_METHODS, payments, properties } from "@/db/schema";
 import { audit, requireUser } from "@/lib/auth";
 import { docLink } from "@/lib/doc-link";
+import { normalizePhone } from "@/lib/intake";
 import { invoiceDesign } from "@/lib/invoice-design";
 import { invoiceTotals } from "@/lib/invoice-math";
 import { recalcInvoice } from "@/lib/invoices";
@@ -49,6 +50,26 @@ function priced(data: z.infer<typeof invoiceForm>) {
 }
 
 const addDays = (date: string, days: number) => new Date(Date.parse(date) + days * 86_400_000).toISOString().slice(0, 10);
+
+/** "New customer" on the new quote/invoice page: name and phone, then straight on to the bill (an existing phone reuses that customer). */
+export async function newBillCustomer(form: FormData) {
+  const user = await requireUser([...STAFF]);
+  const kind = form.get("kind") === "quote" ? "quote" : "invoice";
+  const copy = id.safeParse(form.get("copy"));
+  const name = String(form.get("name") ?? "").trim().slice(0, 120);
+  const rawPhone = String(form.get("phone") ?? "").trim();
+  const phone = rawPhone ? normalizePhone(rawPhone) : null;
+  const back = `/admin/invoices/new?kind=${kind}${copy.success ? `&copy=${copy.data}` : ""}`;
+  if (!name || (rawPhone && !phone)) redirect(`${back}&error=customer`);
+  const [same] = phone ? await db.select({ id: contacts.id }).from(contacts).where(eq(contacts.phone, phone)).limit(1) : [];
+  let contactId = same?.id;
+  if (!contactId) {
+    const [created] = await db.insert(contacts).values({ name, phone, source: "Invoice" }).returning({ id: contacts.id });
+    contactId = created.id;
+    await audit("contact_created", "contact", contactId, { via: "invoice" }, user.id);
+  }
+  redirect(`${back}&contact=${contactId}`);
+}
 
 export async function createInvoice(form: FormData) {
   const user = await requireUser([...STAFF]);
