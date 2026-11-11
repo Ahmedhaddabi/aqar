@@ -57,6 +57,7 @@ export default async function WhatsAppInbox({ searchParams }: { searchParams: Pr
               <select name="hours" defaultValue={bot.hours}><option value="always">{t.hoursAlways}</option><option value="after_hours">{t.hoursAfter}</option></select>
             </Field>
             <Field label={t.dailyCap}><input type="number" name="dailyCap" min={10} max={5000} defaultValue={bot.dailyCap} required /></Field>
+            <Field label={t.delay} help={t.delayHelp}><input type="number" name="delay" min={0} max={60} defaultValue={bot.delay} required /></Field>
             <Field label={`${t.instructions} · ${bot.customInstructions ? t.customised : t.defaults}`} help={t.instructionsHelp} wide>
               <textarea name="instructions" rows={14} maxLength={6000} defaultValue={bot.instructions} dir="auto" />
             </Field>

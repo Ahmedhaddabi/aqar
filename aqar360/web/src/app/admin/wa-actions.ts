@@ -77,7 +77,7 @@ export async function toggleAgent(form: FormData) {
 /** Agent settings (admin and manager): on/off, auto-send or staff approval, when it answers and the daily limit. */
 export async function saveAgentSettings(form: FormData) {
   const user = await requireApp("crm", ["admin", "manager"]);
-  const parsed = z.object({ mode: z.enum(["auto", "approve"]), hours: z.enum(["always", "after_hours"]), dailyCap: z.coerce.number().int().min(10).max(5000),
+  const parsed = z.object({ mode: z.enum(["auto", "approve"]), hours: z.enum(["always", "after_hours"]), dailyCap: z.coerce.number().int().min(10).max(5000), delay: z.coerce.number().int().min(0).max(60).default(2),
     model: z.string().trim().max(200).regex(/^[\w.:/-]*$/).default(""), instructions: z.string().max(6000).default(""), avoid: z.string().max(3000).default("") })
     .safeParse(Object.fromEntries(form));
   if (!parsed.success) redirect("/admin/whatsapp?error=1");
@@ -85,7 +85,7 @@ export async function saveAgentSettings(form: FormData) {
   const clean = (v: string) => v.replace(/\r\n/g, "\n").trim();
   const own = form.get("reset") === "on" || clean(parsed.data.instructions) === clean(DEFAULT_INSTRUCTIONS) ? "" : clean(parsed.data.instructions);
   const rows = [{ key: "waBotEnabled", value: form.get("enabled") === "on" }, { key: "waBotMode", value: parsed.data.mode },
-    { key: "waBotHours", value: parsed.data.hours }, { key: "waBotDailyCap", value: parsed.data.dailyCap }, { key: "waBotModel", value: parsed.data.model },
+    { key: "waBotHours", value: parsed.data.hours }, { key: "waBotDailyCap", value: parsed.data.dailyCap }, { key: "waBotDelay", value: parsed.data.delay }, { key: "waBotModel", value: parsed.data.model },
     { key: "waBotInstructions", value: own }, { key: "waBotAvoid", value: clean(parsed.data.avoid) }];
   await db.insert(settings).values(rows).onConflictDoUpdate({ target: settings.key, set: { value: sql`excluded.value` } });
   await audit("whatsapp_agent_settings", "settings", null, { enabled: rows[0].value, mode: parsed.data.mode, model: parsed.data.model, customInstructions: !!own }, user.id);

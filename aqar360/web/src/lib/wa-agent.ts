@@ -20,13 +20,13 @@ import { nearbyPlaces } from "./nearby";
 import { notify } from "./notify";
 import { portalLink } from "./doc-link";
 import { bookForChat, freeSlots, muscatDay, viewingRules } from "./viewings";
-import { recordOut, sendImage, sendText, waReady, windowOpen } from "./whatsapp";
+import { recordOut, sendImage, sendText, showTyping, waReady, windowOpen } from "./whatsapp";
 
 // ---- Settings -------------------------------------------------------------------------------------------------------
-export const BOT_KEYS = ["waBotEnabled", "waBotMode", "waBotHours", "waBotDailyCap", "waBotModel", "waBotInstructions", "waBotAvoid"] as const;
+export const BOT_KEYS = ["waBotEnabled", "waBotMode", "waBotHours", "waBotDailyCap", "waBotDelay", "waBotModel", "waBotInstructions", "waBotAvoid"] as const;
 export type BotMode = "auto" | "approve";
 export type BotHours = "always" | "after_hours";
-export type BotSettings = { enabled: boolean; mode: BotMode; hours: BotHours; dailyCap: number; model: string; instructions: string; avoid: string;
+export type BotSettings = { enabled: boolean; mode: BotMode; hours: BotHours; dailyCap: number; /** Seconds to wait before answering (several quick messages get one reply). */ delay: number; model: string; instructions: string; avoid: string;
   customInstructions: boolean };
 
 export async function botSettings(): Promise<BotSettings> {
@@ -34,6 +34,7 @@ export async function botSettings(): Promise<BotSettings> {
   const get = (k: string) => rows.find((r) => r.key === k)?.value;
   return { enabled: get("waBotEnabled") === true, mode: get("waBotMode") === "auto" ? "auto" : "approve",
     hours: get("waBotHours") === "after_hours" ? "after_hours" : "always", dailyCap: Number(get("waBotDailyCap")) || 200,
+    delay: Number.isFinite(Number(get("waBotDelay"))) && get("waBotDelay") !== undefined ? Math.min(Math.max(Number(get("waBotDelay")), 0), 60) : 2,
     model: String(get("waBotModel") ?? "").trim(), instructions: String(get("waBotInstructions") ?? "").trim() || DEFAULT_INSTRUCTIONS,
     avoid: String(get("waBotAvoid") ?? "").trim(), customInstructions: !!String(get("waBotInstructions") ?? "").trim() };
 }
@@ -472,12 +473,30 @@ export async function agentReply(contactId: number, triggerId: number | null, de
   const model = s.model || ai?.model || "";
   if (!model) return skip("no_model");
   if (s.mode === "auto" && !(await waReady())) return skip("no_whatsapp");
-  if (deps.waitMs ?? 4000) await new Promise((r) => setTimeout(r, deps.waitMs ?? 4000));
-
   const [contact] = await db.select().from(contacts).where(eq(contacts.id, contactId));
   if (!contact?.phone) return skip("no_contact");
   const state = await botState(contactId);
   if (state.paused) return skip("paused");
+  // In auto mode the customer sees blue ticks and "typing…" straight away, kept up while the answer is prepared.
+  const [trigger] = s.mode === "auto" && triggerId ? await db.select({ waId: waMessages.waId }).from(waMessages).where(eq(waMessages.id, triggerId)) : [];
+  const typing = trigger?.waId ? () => void showTyping(trigger.waId!) : () => undefined;
+  typing();
+  const keepTyping = setInterval(typing, 20_000);
+  try {
+    // A short pause so several quick messages get one answer.
+    const wait = deps.waitMs ?? s.delay * 1000;
+    if (wait) await new Promise((r) => setTimeout(r, wait));
+    return await answer(contactId, triggerId, deps, s, ai, model, contact, state);
+  } finally {
+    clearInterval(keepTyping);
+  }
+}
+
+async function answer(contactId: number, triggerId: number | null, deps: AgentDeps, s: Awaited<ReturnType<typeof botSettings>>,
+  ai: Record<string, string> | null, model: string, contact: typeof contacts.$inferSelect,
+  state: Awaited<ReturnType<typeof botState>>): Promise<AgentResult> {
+  const skip = (reason: string): AgentResult => ({ status: "skipped", reason });
+  if (!contact.phone) return skip("no_contact");
   const rows = (await db.select().from(waMessages).where(eq(waMessages.contactId, contactId)).orderBy(desc(waMessages.createdAt), desc(waMessages.id)).limit(40)).reverse();
   const lastIn = [...rows].reverse().find((m) => m.direction === "in");
   if (!lastIn) return skip("nothing_to_answer");

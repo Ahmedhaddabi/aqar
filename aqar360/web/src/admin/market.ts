@@ -1,9 +1,9 @@
 // Market intelligence from our own data (strategy §27.2 Demand Intelligence & Heatmap): who is looking for what, where,
 // at which budget; what we can offer; where demand has no supply; which sources turn into deals.
-import { and, eq, gte, inArray } from "drizzle-orm";
+import { and, eq, gt, gte, inArray } from "drizzle-orm";
 
 import { db } from "@/db";
-import { areas, matches, OPEN_STATUSES, properties, requests } from "@/db/schema";
+import { agentSources, areas, marketListings, matches, OPEN_STATUSES, properties, requests } from "@/db/schema";
 
 const median = (v: number[]) => {
   if (!v.length) return null;
@@ -17,11 +17,15 @@ export type AreaStat = {
   demand: number; demandBuy: number; demandRent: number; unmet: number; supply: number; supplyBuy: number; supplyRent: number;
   medianBudgetBuy: number | null; medianBudgetRent: number | null; medianPriceSale: number | null; medianRent: number | null;
   gap: number; // demand minus supply: positive = we need more listings here
+  /** Ads on other sites (Agent → sources), still posted in the last 14 days: how many, and their typical asking price. */
+  market: number; marketSale: number | null; marketRent: number | null; marketSaleN: number; marketRentN: number;
 };
+
+const MARKET_FRESH_DAYS = 14;
 
 export async function marketData(days: number) {
   const since = new Date(Date.now() - days * 86_400_000);
-  const [areaRows, openSearch, supply, recent, matchRows] = await Promise.all([
+  const [areaRows, openSearch, supply, recent, matchRows, outside, sourceRows] = await Promise.all([
     db.select().from(areas).where(eq(areas.active, true)),
     db.select({ id: requests.id, areaIds: requests.areaIds, subtype: requests.subtype, budgetMax: requests.budgetMax, propertyType: requests.propertyType,
       bedrooms: requests.bedroomsMin }).from(requests).where(and(eq(requests.kind, "search"), inArray(requests.status, [...OPEN_STATUSES]))),
@@ -30,6 +34,9 @@ export async function marketData(days: number) {
     db.select({ kind: requests.kind, status: requests.status, source: requests.sourceChannel, utm: requests.attribution, createdAt: requests.createdAt })
       .from(requests).where(gte(requests.createdAt, since)),
     db.select({ requestId: matches.requestId }).from(matches).where(inArray(matches.status, ["suggested", "approved", "sent"])),
+    db.select({ areaId: marketListings.areaId, purpose: marketListings.purpose, price: marketListings.price }).from(marketListings)
+      .where(gt(marketListings.lastSeenAt, new Date(Date.now() - MARKET_FRESH_DAYS * 86_400_000))),
+    db.select({ active: agentSources.active, lastRunAt: agentSources.lastRunAt }).from(agentSources),
   ]);
   const matched = new Set(matchRows.map((m) => m.requestId));
 
@@ -40,6 +47,9 @@ export async function marketData(days: number) {
     const rent = want.filter((r) => r.subtype === "Rent");
     const forSale = have.filter((p) => p.purpose !== "rent");
     const forRent = have.filter((p) => p.purpose !== "sale");
+    const ads = outside.filter((m) => m.areaId === a.id);
+    const adsSale = ads.filter((m) => m.purpose === "sale" && m.price).map((m) => m.price!);
+    const adsRent = ads.filter((m) => m.purpose === "rent" && m.price).map((m) => m.price!);
     return {
       id: a.id, nameAr: a.nameAr, nameEn: a.nameEn, lat: a.lat, lng: a.lng, boundary: a.boundary,
       demand: want.length, demandBuy: buy.length, demandRent: rent.length, unmet: want.filter((r) => !matched.has(r.id)).length,
@@ -47,6 +57,7 @@ export async function marketData(days: number) {
       medianBudgetBuy: median(buy.map((r) => r.budgetMax ?? 0).filter(Boolean)), medianBudgetRent: median(rent.map((r) => r.budgetMax ?? 0).filter(Boolean)),
       medianPriceSale: median(forSale.map((p) => p.salePrice ?? 0).filter(Boolean)), medianRent: median(forRent.map((p) => p.rentPrice ?? 0).filter(Boolean)),
       gap: want.length - have.length,
+      market: ads.length, marketSale: median(adsSale), marketRent: median(adsRent), marketSaleN: adsSale.length, marketRentN: adsRent.length,
     };
   }).sort((a, b) => b.demand - a.demand);
 
@@ -91,5 +102,7 @@ export async function marketData(days: number) {
     if (w) w[r.kind]++;
   }
   return { stats, types, buyBands, rentBands, sources, weeks, totals: { openSearch: openSearch.length, unmet: openSearch.filter((r) => !matched.has(r.id)).length,
-    supply: supply.length } };
+    supply: supply.length, market: outside.length, marketUnplaced: outside.filter((m) => !m.areaId).length },
+    outsideSources: { active: sourceRows.filter((s) => s.active).length,
+      lastRun: sourceRows.reduce<Date | null>((a, s) => (s.lastRunAt && (!a || s.lastRunAt > a) ? s.lastRunAt : a), null) } };
 }

@@ -1,6 +1,8 @@
+import Link from "next/link";
+
 import { optionLabel } from "@/i18n/dictionaries";
-import { siteDict } from "@/admin/format";
-import { adminDict, adminLang } from "@/admin/i18n";
+import { dateTime, siteDict } from "@/admin/format";
+import { adminDict, adminLang, fill } from "@/admin/i18n";
 import { marketData } from "@/admin/market";
 import { MarketMap } from "@/admin/MarketMap";
 import { requireApp } from "@/lib/auth";
@@ -16,6 +18,14 @@ function Bars({ rows }: { rows: { label: string; n: number }[] }) {
   );
 }
 
+/** Our price against the market's typical asking price: +12% means ours is 12% higher. */
+function Diff({ ours, market }: { ours: number | null; market: number | null }) {
+  if (ours == null || market == null || !market) return null;
+  const pct = Math.round(((ours - market) / market) * 100);
+  if (Math.abs(pct) < 3) return <span className="a-muted">(≈)</span>;
+  return <span className={pct > 0 ? "a-warn" : "a-ok-text"}>({pct > 0 ? "+" : ""}{pct}%)</span>;
+}
+
 /** Market intelligence (strategy §27.2): demand, supply and gaps by area, from our own requests and listings only. */
 export default async function MarketPage({ searchParams }: { searchParams: Promise<{ days?: string }> }) {
   const user = await requireApp("crm", ["admin", "manager"]);
@@ -26,6 +36,9 @@ export default async function MarketPage({ searchParams }: { searchParams: Promi
   const days = [30, 90, 180, 365].includes(Number((await searchParams).days)) ? Number((await searchParams).days) : 90;
   const d = await marketData(days);
   const name = (a: { nameAr: string; nameEn: string }) => (lang === "ar" ? a.nameAr : a.nameEn);
+  // Areas where we can compare: other sites' asking prices next to ours and our customers' budgets.
+  const priced = d.stats.filter((a) => a.market > 0 || a.medianPriceSale != null || a.medianRent != null)
+    .sort((a, b) => b.market - a.market);
   const maxWeek = Math.max(1, ...d.weeks.map((w) => w.search + w.listing + w.consulting));
   return (
     <>
@@ -42,11 +55,35 @@ export default async function MarketPage({ searchParams }: { searchParams: Promi
         <div className="a-card"><strong>{d.totals.openSearch}</strong><span>{t.openSearch}</span></div>
         <div className={`a-card${d.totals.unmet ? " alert" : ""}`}><strong>{d.totals.unmet}</strong><span>{t.unmet}</span></div>
         <div className="a-card"><strong>{d.totals.supply}</strong><span>{t.supply}</span></div>
+        <div className="a-card"><strong>{d.totals.market}</strong><span>{t.marketAds}</span></div>
+      </section>
+      <section className="a-panel" style={{ marginTop: 20 }}>
+        <div className="a-panel-head"><h2>{t.pricesTitle}</h2>
+          <Link className="a-btn small" href="/admin/agents/sources">{t.marketSources}</Link></div>
+        <p className="a-muted">{d.outsideSources.active === 0 ? t.marketNone
+          : fill(t.marketFrom, { n: d.outsideSources.active, when: d.outsideSources.lastRun ? dateTime(d.outsideSources.lastRun, lang) : "—" })}</p>
+        {priced.length > 0 && (
+          <table className="a-table">
+            <thead><tr><th>{t.area}</th><th>{t.mSale}</th><th>{t.oSale}</th><th>{t.cBuy}</th><th>{t.mRent}</th><th>{t.oRent}</th><th>{t.cRent}</th></tr></thead>
+            <tbody>{priced.map((a) => (
+              <tr key={a.id}>
+                <td data-label={t.area}><strong>{name(a)}</strong></td>
+                <td data-label={t.mSale}>{n0(a.marketSale)} {a.marketSaleN > 0 && <span className="a-muted">({a.marketSaleN})</span>}</td>
+                <td data-label={t.oSale}>{n0(a.medianPriceSale)} <Diff ours={a.medianPriceSale} market={a.marketSale} /></td>
+                <td data-label={t.cBuy}>{n0(a.medianBudgetBuy)}</td>
+                <td data-label={t.mRent}>{n0(a.marketRent)} {a.marketRentN > 0 && <span className="a-muted">({a.marketRentN})</span>}</td>
+                <td data-label={t.oRent}>{n0(a.medianRent)} <Diff ours={a.medianRent} market={a.marketRent} /></td>
+                <td data-label={t.cRent}>{n0(a.medianBudgetRent)}</td>
+              </tr>))}</tbody>
+          </table>
+        )}
+        {d.totals.marketUnplaced > 0 && <p className="a-muted">{fill(t.marketUnplaced, { n: d.totals.marketUnplaced })}</p>}
+        <p className="a-muted">{t.pricesNote}</p>
       </section>
       <section className="a-panel" style={{ marginTop: 20 }}>
         <h2>{t.map}</h2>
-        <MarketMap areas={d.stats.map((a) => ({ id: a.id, name: name(a), lat: a.lat, lng: a.lng, boundary: a.boundary, demand: a.demand, supply: a.supply, unmet: a.unmet }))}
-          labels={{ demand: t.modeDemand, gap: t.modeGap, unmet: t.modeUnmet }} />
+        <MarketMap areas={d.stats.map((a) => ({ id: a.id, name: name(a), lat: a.lat, lng: a.lng, boundary: a.boundary, demand: a.demand, supply: a.supply, unmet: a.unmet, market: a.market }))}
+          labels={{ demand: t.modeDemand, gap: t.modeGap, unmet: t.modeUnmet, market: t.modeMarket }} />
         <p className="a-muted" style={{ marginTop: 8 }}>{t.gapHint}</p>
       </section>
       <section className="a-panel">

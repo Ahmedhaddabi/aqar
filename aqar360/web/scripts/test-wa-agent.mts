@@ -9,7 +9,7 @@ import { eq, inArray, like } from "drizzle-orm";
 import { db } from "@/db";
 import { activities, areas, chatUsage, contacts, images, notifications, properties, settings, users, waBot, waMessages } from "@/db/schema";
 import { removeIntegration, saveIntegration } from "@/lib/integrations";
-import { agentReply, botState, type ChatRequest, type ChatResponse, deliver, inOfficeHours, languageOf, runTool, setPaused, toTurns } from "@/lib/wa-agent";
+import { agentReply, botSettings, botState, type ChatRequest, type ChatResponse, deliver, inOfficeHours, languageOf, runTool, setPaused, toTurns } from "@/lib/wa-agent";
 import { handleWebhook } from "@/lib/whatsapp";
 
 let failures = 0;
@@ -22,11 +22,13 @@ const made = { contacts: [] as number[], properties: [] as number[], areas: [] a
 
 // ---- Pretend WhatsApp: every Graph API call is recorded and answered with a message id ----------------------------------
 const sent: { type: string; to: string; text?: string; link?: string; caption?: string }[] = [];
+const typing: string[] = [];
 const realFetch = globalThis.fetch;
 globalThis.fetch = (async (input: RequestInfo | URL, init?: RequestInit) => {
   const url = String(input);
   if (url.startsWith("https://graph.facebook.com/")) {
     const body = JSON.parse(String(init?.body ?? "{}"));
+    if (body.typing_indicator) { typing.push(body.message_id); return new Response(JSON.stringify({ success: true }), { status: 200 }); }
     sent.push({ type: body.type, to: body.to, text: body.text?.body, link: body.image?.link, caption: body.image?.caption });
     return new Response(JSON.stringify({ messages: [{ id: `wamid.${tag}.${sent.length}` }] }), { status: 200 });
   }
@@ -62,9 +64,9 @@ async function setBot(values: Record<string, unknown>) {
   for (const [key, value] of Object.entries(values)) await db.update(settings).set({ value }).where(eq(settings.key, key));
 }
 let waSeq = 0;
-async function customerSays(phone: string, text: string, name = "Customer") {
+async function customerSays(phone: string, text: string, name = "Customer", sentAt = new Date()) {
   const res = await handleWebhook({ entry: [{ changes: [{ field: "messages", value: { contacts: [{ wa_id: phone.slice(1), profile: { name } }],
-    messages: [{ from: phone.slice(1), id: `wamid.in.${tag}.${++waSeq}`, type: "text", text: { body: text } }] } }] }] });
+    messages: [{ from: phone.slice(1), id: `wamid.in.${tag}.${++waSeq}`, timestamp: String(Math.floor(sentAt.getTime() / 1000)), type: "text", text: { body: text } }] } }] }] });
   return res.inbound[0];
 }
 
@@ -72,6 +74,11 @@ try {
   await saveIntegration("whatsapp", { token: "EAAfake", phoneNumberId: "123", appSecret: "app-secret-1" }, [], true);
   await saveIntegration("openrouter", { apiKey: "sk-or-fake", model: "fake/default-model" }, [], true);
   await setBot({ waBotEnabled: true, waBotMode: "auto", waBotHours: "always", waBotDailyCap: 200 });
+  check("reply wait: 2 seconds by default", (await botSettings()).delay === 2);
+  await setBot({ waBotDelay: 7 });
+  check("reply wait: set by the admin", (await botSettings()).delay === 7);
+  await setBot({ waBotDelay: 0 });
+  check("reply wait: 0 answers at once", (await botSettings()).delay === 0);
 
   // Listings: two apartments for rent in one area, a villa for sale in another, and one hidden listing.
   const [khoudh] = await db.insert(areas).values({ slug: `${tag}-khoudh`, nameEn: "Al Khoudh Test", nameAr: "الخوض تجربة" }).returning();
@@ -106,6 +113,11 @@ try {
   const first = await customerSays(phone, "هلا، أبي شقة للإيجار في الخوض بحدود 400 ريال، غرفتين", "سالم");
   made.contacts.push(first.contactId);
   check("webhook hands the new message to the agent", !!first.contactId && !!first.messageId);
+  // A message Meta retried hours later (e.g. while the webhook was refusing it) is saved but not answered again.
+  const late = await handleWebhook({ entry: [{ changes: [{ field: "messages", value: { messages: [{ from: phone.slice(1), id: `wamid.in.${tag}.late`,
+    timestamp: String(Math.floor(Date.now() / 1000) - 3 * 3600), type: "text", text: { body: "old message" } }] } }] }] });
+  const [lateRow] = await db.select().from(waMessages).where(eq(waMessages.waId, `wamid.in.${tag}.late`));
+  check("retried old message: saved with its real time, no automatic answer", late.inbound.length === 0 && !!lateRow && Date.now() - lateRow.createdAt.getTime() > 2 * 3600_000);
   let searchResult: { listings?: { code: string }[] } = {};
   const r1 = await agentReply(first.contactId, first.messageId, { waitMs: 0, chat: fakeAi([
     () => ({ tools: [{ name: "save_preferences", input: { purpose: "rent", property_type: "Apartment", area_ids: [khoudh.id], budget_max: 400, bedrooms: 2 } },
@@ -114,6 +126,7 @@ try {
     () => ({ text: "هلا والله! عندي لك شقتين في الخوض ضمن ميزانيتك…" }),
   ]) });
   const req1 = requests[0];
+  check("typing: blue ticks and typing shown on the customer's message", typing.includes(`wamid.in.${tag}.${waSeq}`), JSON.stringify(typing));
   check("Arabic: reply sent automatically", r1.status === "sent", JSON.stringify(r1));
   check("Arabic: told to answer in Arabic", systemText(req1).includes("reply in Arabic"));
   check("prompt asks for the Omani tone and to switch language", systemText(req1).includes("Omani") && systemText(req1).includes("switch when they switch"));
@@ -271,7 +284,7 @@ try {
     await db.delete(properties).where(inArray(properties.id, made.properties));
   }
   await db.delete(areas).where(like(areas.slug, `${tag}-%`));
-  await db.delete(settings).where(inArray(settings.key, ["waBotEnabled", "waBotMode", "waBotHours", "waBotDailyCap", "waBotModel", "waBotInstructions", "waBotAvoid"]));
+  await db.delete(settings).where(inArray(settings.key, ["waBotEnabled", "waBotMode", "waBotHours", "waBotDailyCap", "waBotDelay", "waBotModel", "waBotInstructions", "waBotAvoid"]));
   await db.delete(chatUsage).where(eq(chatUsage.key, "wa_bot"));
   await removeIntegration("whatsapp");
   await removeIntegration("openrouter");

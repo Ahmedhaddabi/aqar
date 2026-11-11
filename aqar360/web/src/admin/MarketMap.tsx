@@ -7,8 +7,8 @@ import { useEffect, useRef, useState } from "react";
 import { mapStyleUrl } from "@/lib/config";
 import { loadMapLibre } from "@/lib/format";
 
-type AreaPoint = { id: number; name: string; lat: number | null; lng: number | null; boundary: unknown; demand: number; supply: number; unmet: number };
-type Mode = "demand" | "gap" | "unmet";
+type AreaPoint = { id: number; name: string; lat: number | null; lng: number | null; boundary: unknown; demand: number; supply: number; unmet: number; market: number };
+type Mode = "demand" | "gap" | "unmet" | "market";
 
 /** Heat map of demand by area: outlined areas are filled, others shown as circles sized by the number. */
 export function MarketMap({ areas, labels }: { areas: AreaPoint[]; labels: Record<Mode, string> }) {
@@ -16,7 +16,7 @@ export function MarketMap({ areas, labels }: { areas: AreaPoint[]; labels: Recor
   const mapRef = useRef<import("maplibre-gl").Map | null>(null);
   const [mode, setMode] = useState<Mode>("demand");
 
-  const value = (a: AreaPoint, m: Mode) => (m === "demand" ? a.demand : m === "unmet" ? a.unmet : Math.max(0, a.demand - a.supply));
+  const value = (a: AreaPoint, m: Mode) => (m === "demand" ? a.demand : m === "unmet" ? a.unmet : m === "market" ? a.market : Math.max(0, a.demand - a.supply));
   const data = (m: Mode): GeoJSON.FeatureCollection => {
     const max = Math.max(1, ...areas.map((a) => value(a, m)));
     const features: GeoJSON.Feature[] = [];

@@ -60,6 +60,22 @@ export async function sendImage(phone: string, link: string, caption?: string): 
   return post({ to: digits(phone), type: "image", image: { link, ...(caption ? { caption: caption.slice(0, 1024) } : {}) } });
 }
 
+/** Blue ticks on the customer's message and "typing…" in their chat, shown until we reply or for about 25 seconds. Best effort. */
+export async function showTyping(waId: string) {
+  const c = await waConfig();
+  if (!c.token || !c.phoneNumberId) return false;
+  try {
+    const res = await fetch(`https://graph.facebook.com/${c.version}/${c.phoneNumberId}/messages`, {
+      method: "POST", cache: "no-store", signal: AbortSignal.timeout(8_000),
+      headers: { Authorization: `Bearer ${c.token}`, "Content-Type": "application/json" },
+      body: JSON.stringify({ messaging_product: "whatsapp", status: "read", message_id: waId, typing_indicator: { type: "text" } }),
+    });
+    return res.ok;
+  } catch {
+    return false;
+  }
+}
+
 export async function windowOpen(contactId: number) {
   const [last] = await db.select({ at: waMessages.createdAt }).from(waMessages)
     .where(and(eq(waMessages.contactId, contactId), eq(waMessages.direction, "in"))).orderBy(desc(waMessages.createdAt)).limit(1);
@@ -87,6 +103,9 @@ type WebhookValue = {
   statuses?: { id: string; status: string; recipient_id?: string; errors?: { code?: number; title?: string; message?: string }[] }[];
 };
 
+/** Older than this when it reaches us (Meta retried it, e.g. while the webhook was refusing it): saved, but the agent does not answer. */
+const STALE_MS = 10 * 60_000;
+
 const STOP = /^(stop|unsubscribe|ايقاف|إيقاف|الغاء|إلغاء|توقف)$/i;
 
 /**
@@ -113,9 +132,13 @@ export async function handleWebhook(payload: { entry?: { changes?: { field?: str
       const name = v.contacts?.find((c) => c.wa_id === m.from)?.profile?.name;
       let [contact] = await db.select().from(contacts).where(eq(contacts.phone, phone)).limit(1);
       if (!contact) [contact] = await db.insert(contacts).values({ name: name || phone, phone, source: "WhatsApp" }).returning();
-      const inserted = await db.insert(waMessages).values({ contactId: contact.id, direction: "in", phone, body: text, waId: m.id }).onConflictDoNothing().returning();
+      // Meta's own time for the message: a delivery Meta retried hours later keeps its real time and gets no automatic answer.
+      const sentAt = m.timestamp && Number(m.timestamp) > 0 ? new Date(Number(m.timestamp) * 1000) : new Date();
+      const stale = Date.now() - sentAt.getTime() > STALE_MS;
+      const inserted = await db.insert(waMessages).values({ contactId: contact.id, direction: "in", phone, body: text, waId: m.id,
+        ...(stale ? { createdAt: sentAt } : {}) }).onConflictDoNothing().returning();
       if (!inserted.length) continue; // Meta retries: the same message is stored once
-      inbound.set(contact.id, inserted[0].id);
+      if (!stale) inbound.set(contact.id, inserted[0].id);
       const [open] = await db.select().from(requests).where(and(eq(requests.contactId, contact.id), inArray(requests.status, [...OPEN_STATUSES])))
         .orderBy(desc(requests.updatedAt)).limit(1);
       await db.insert(activities).values({ requestId: open?.id ?? null, contactId: contact.id, type: "whatsapp", body: `⬅ ${text}`, done: true });
